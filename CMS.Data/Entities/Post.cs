@@ -3,7 +3,7 @@
  * Mã SV: 2123110135
  * Lớp: CCQ2311D
  * Ngày tạo: 16/05/2026
- * Mô tả: tạo thực thể Category
+ * Mô tả: tạo thực thể Post
  */
 
 using System;

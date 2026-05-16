@@ -1,4 +1,11 @@
-﻿using System;
+﻿/* Họ tên: Phạm Đức Anh
+ * Mã SV: 2123110135
+ * Lớp: CCQ2311D
+ * Ngày tạo: 16/05/2026
+ * Mô tả: tạo thực thể Customer
+ */
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
