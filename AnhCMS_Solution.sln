@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36518.9 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CMS.Data", "CMS.Data\CMS.Data.csproj", "{71E7BB91-7817-4FEB-99D5-6EBAD68D6C65}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CMS.Backend", "CMS.Backend\CMS.Backend.csproj", "{5F889B30-5F4F-4432-AB32-0DFA7DB71A61}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{71E7BB91-7817-4FEB-99D5-6EBAD68D6C65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71E7BB91-7817-4FEB-99D5-6EBAD68D6C65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71E7BB91-7817-4FEB-99D5-6EBAD68D6C65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71E7BB91-7817-4FEB-99D5-6EBAD68D6C65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F889B30-5F4F-4432-AB32-0DFA7DB71A61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F889B30-5F4F-4432-AB32-0DFA7DB71A61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F889B30-5F4F-4432-AB32-0DFA7DB71A61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F889B30-5F4F-4432-AB32-0DFA7DB71A61}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F9603D1A-FAD4-482E-8B7F-CC822925E1FA}
+	EndGlobalSection
+EndGlobal
