@@ -1,0 +1,38 @@
+﻿@model List<CMS.Data.Entities.Product>
+
+@{
+    ViewData["Title"] = "Sản phẩm";
+}
+
+<h2>Sản phẩm nổi bật</h2>
+
+<div class="row">
+    @foreach (var product in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                @if (!string.IsNullOrEmpty(product.ImageUrl))
+                {
+                    <img src="@product.ImageUrl" class="card-img-top" style="height:200px; object-fit:cover;" />
+                }
+                <div class="card-body">
+                    <h5 class="card-title">@product.Name</h5>
+                    <p class="card-text">
+                        <strong>Danh mục:</strong> @(product.CategoryProduct?.Name ?? "Chưa phân loại")<br />
+                        <strong>Giá:</strong> @product.Price.ToString("N0") VNĐ<br />
+                        <strong>Tồn kho:</strong> @product.StockQuantity
+                    </p>
+                    <p class="card-text">@(product.Description?.Length > 100 ? product.Description.Substring(0, 100) + "..." : product.Description)</p>
+                </div>
+                <div class="card-footer">
+                    <a asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary">Xem chi tiết</a>
+                    <a asp-action="Edit" asp-route-id="@product.Id" class="btn btn-sm btn-warning">Sửa</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div>
+    <a asp-action="Create" class="btn btn-primary">Thêm sản phẩm mới</a>
+</div>

@@ -1,0 +1,44 @@
+﻿@model List<CMS.Data.Entities.OrderDetail>
+
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng";
+}
+
+<h2>Danh sách chi tiết đơn hàng</h2>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Đơn hàng (ID)</th>
+            <th>Khách hàng</th>
+            <th>Sản phẩm</th>
+            <th>Số lượng</th>
+            <th>Đơn giá (VNĐ)</th>
+            <th>Thành tiền (VNĐ)</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var od in Model)
+        {
+            <tr>
+                <td>@od.Id</td>
+                <td>@od.OrderId</td>
+                <td>@(od.Order?.Customer?.FullName ?? "N/A")</td>
+                <td>@(od.Product?.Name ?? "N/A")</td>
+                <td>@od.Quantity</td>
+                <td>@od.UnitPrice.ToString("N0")</td>
+                <td>@((od.Quantity * od.UnitPrice).ToString("N0"))</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@od.Id" class="btn btn-sm btn-warning">Sửa</a>
+                    <a asp-action="Delete" asp-route-id="@od.Id" class="btn btn-sm btn-danger">Xóa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a asp-action="Create" class="btn btn-primary">Thêm chi tiết đơn hàng</a>
+</div>

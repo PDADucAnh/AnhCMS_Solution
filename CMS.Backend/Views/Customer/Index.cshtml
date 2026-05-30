@@ -1,0 +1,40 @@
+﻿@model List<CMS.Data.Entities.Customer>
+
+@{
+    ViewData["Title"] = "Quản lý khách hàng";
+}
+
+<h2>Danh sách khách hàng</h2>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Họ và tên</th>
+            <th>Email</th>
+            <th>Điện thoại</th>
+            <th>Địa chỉ</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var c in Model)
+        {
+            <tr>
+                <td>@c.Id</td>
+                <td>@c.FullName</td>
+                <td>@c.Email</td>
+                <td>@c.Phone</td>
+                <td>@c.Address</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@c.Id" class="btn btn-sm btn-warning">Sửa</a>
+                    <a asp-action="Delete" asp-route-id="@c.Id" class="btn btn-sm btn-danger">Xóa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a asp-action="Create" class="btn btn-primary">Thêm khách hàng mới</a>
+</div>
