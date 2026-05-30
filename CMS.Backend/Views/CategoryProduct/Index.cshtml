@@ -1,0 +1,27 @@
+﻿@model List<CMS.Data.Entities.CategoryProduct>
+
+@{
+    ViewData["Title"] = "Danh mục sản phẩm";
+}
+
+<h2>Danh mục sản phẩm</h2>
+
+<div class="row">
+    @foreach (var cat in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">@cat.Name</h5>
+                    <p class="card-text">@(cat.Description ?? "Không có mô tả")</p>
+                    <a asp-action="Edit" asp-route-id="@cat.Id" class="btn btn-sm btn-warning">Sửa</a>
+                    <a asp-action="Delete" asp-route-id="@cat.Id" class="btn btn-sm btn-danger">Xoá</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div>
+    <a asp-action="Create" class="btn btn-primary">Thêm danh mục mới</a>
+</div>
