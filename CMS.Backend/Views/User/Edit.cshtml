@@ -1,47 +1,46 @@
 ﻿@model CMS.Data.Entities.User
-
 @{
-    ViewData["Title"] = "Sửa thành viên";
+    Layout = "_LayoutAdmin";
 }
 
-<h2>Sửa thông tin thành viên</h2>
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0">CẬP NHẬT THÔNG TIN THÀNH VIÊN</h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit" method="post">
+                <input type="hidden" asp-for="Id" />
 
-<form asp-action="Edit" method="post">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="fw-bold">Tên đăng nhập:</label>
+                        <input asp-for="Username" class="form-control" readonly />
+                        <small class="text-muted">Tên đăng nhập không được phép sửa.</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="fw-bold">Mật khẩu mới:</label>
+                        <input type="password" name="NewPassword" class="form-control" placeholder="Để trống nếu không muốn đổi" />
+                    </div>
+                </div>
 
-    <input type="hidden" asp-for="Id" />
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="fw-bold">Họ và Tên:</label>
+                        <input asp-for="FullName" class="form-control" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="fw-bold">Vai trò:</label>
+                        <select asp-for="Role" class="form-select">
+                            <option value="Admin">Admin</option>
+                            <option value="Editor">Editor</option>
+                        </select>
+                    </div>
+                </div>
 
-    <div class="form-group mb-3">
-        <label asp-for="Username" class="control-label">Tên đăng nhập</label>
-        <input asp-for="Username" class="form-control" />
-        <span asp-validation-for="Username" class="text-danger"></span>
+                <button type="submit" class="btn btn-primary">Cập nhật</button>
+                <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+            </form>
+        </div>
     </div>
-
-    <div class="form-group mb-3">
-        <label asp-for="FullName" class="control-label">Họ và tên</label>
-        <input asp-for="FullName" class="form-control" />
-        <span asp-validation-for="FullName" class="text-danger"></span>
-    </div>
-
-    <div class="form-group mb-3">
-        <label asp-for="Role" class="control-label">Quyền hạn</label>
-        <select asp-for="Role" class="form-control">
-            <option value="Admin">Admin</option>
-            <option value="Editor">Editor</option>
-            <option value="Moderator">Moderator</option>
-            <option value="User">User</option>
-        </select>
-        <span asp-validation-for="Role" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary">Lưu</button>
-        <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
-    </div>
-</form>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
+</div>
