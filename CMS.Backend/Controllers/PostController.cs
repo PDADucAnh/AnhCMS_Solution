@@ -1,8 +1,8 @@
 ﻿/* Họ tên: Phạm Đức Anh
  * Mã SV: 2123110135
  * Lớp: CCQ2311D
- * Ngày tạo: 30/05/2026
- * Mô tả: tạo dữ liệu test Post Controller
+ * Ngày tạo: 03/06/2026
+ * Mô tả: Truy vấn dữ liệu LINQ Post Controller
  */
 /* Tạo dữ liệu mẫu trong SQLServer
 -- 1. Bật tính năng chèn giá trị thủ công vào cột Id của bảng Categories
@@ -45,32 +45,43 @@ namespace CMS.Backend.Controllers
         {
             _context = context;
         }
-        public IActionResult Index()
+        public IActionResult Index(int? id)
         {
-            // 1.Lấy tất cả bài viết, bao gồm thông tin Category (nếu muốn hiển thị tên danh mục)
+            // 1. Kiểm tra nếu không có id truyền vào thì trả về lỗi hoặc toàn bộ bài viết
+            if (id == null)
+            {
+                return BadRequest("Vui lòng cung cấp mã danh mục.");
+            }
+
+            // 2. Sử dụng LINQ với tham số 'id' linh hoạt
             var posts = _context.Posts
-                .Include(p => p.Category)   // eager loading để dùng Category.Name trong View
-                .ToList();
-            // 2. Gửi danh sách dữ liệu sang View
+                        .Where(p => p.CategoryId == id)
+                        .OrderByDescending(p => p.CreatedDate)
+                        .Include(p => p.Category)
+                        .ToList();
+
+
+            // 3. Truyền dữ liệu ra View
             return View(posts);
         }
 
         // Hàm Details: Hiển thị chi tiết một bài viết (Bổ sung  khá giỏi)
+        // GET: Post/Details/5
         public IActionResult Details(int id)
         {
-            // Giả lập tìm bài viết trong Database bằng Id
-            // Trong thực tế tuần sau sẽ là: _context.Posts.Find(id);
-            var post = new Post
+            // 1. Truy vấn bài viết theo ID
+            // Sử dụng .Include(p => p.Category) để lấy kèm thông tin Danh mục (Join bảng)
+            var post = _context.Posts
+                .Include(p => p.Category)
+                .FirstOrDefault(p => p.Id == id);
+
+            // 2. Kiểm tra nếu không tìm thấy bài viết (tránh lỗi màn hình trắng)
+            if (post == null)
             {
-                Id = id,
-                Title = "Nội dung chi tiết bài viết số " + id,
-                Content = "Đây là nội dung đầy đủ của bài viết mà bạn vừa click vào. Ở đây  có thể viết dài hơn để thấy sự khác biệt với trang danh sách.",
-                ImageUrl = "https://via.placeholder.com/600x300", // Ảnh to hơn
-                CreatedDate = DateTime.Now
-            };
+                return NotFound(); // Trả về trang lỗi 404
+            }
 
-            if (post == null) return NotFound();
-
+            // 3. Truyền dữ liệu sang View
             return View(post);
         }
     }

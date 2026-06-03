@@ -1,30 +1,22 @@
-﻿@model List<CMS.Data.Entities.Post>
+﻿@model IEnumerable<CMS.Data.Entities.Post>
 
-@{
-    ViewData["Title"] = "Bài viết";
-}
-
-<h2>Danh sách bài viết</h2>
-
-<div class="row">
-    @foreach (var post in Model)
-    {
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                @if (!string.IsNullOrEmpty(post.ImageUrl))
-                {
-                    <img src="@post.ImageUrl" class="card-img-top" style="height:200px; object-fit:cover;" />
-                }
-                <div class="card-body">
-                    <h5 class="card-title">@post.Title</h5>
-                    <p class="card-text">
-                        <small class="text-muted">Danh mục: @(post.Category?.Name ?? "Chưa phân loại")</small><br />
-                        <small class="text-muted">Ngày đăng: @post.CreatedDate.ToString("dd/MM/yyyy")</small>
-                    </p>
-                    <p class="card-text">@(post.Content?.Length > 100 ? post.Content.Substring(0, 100) + "..." : post.Content)</p>
-                    <a asp-action="Details" asp-route-id="@post.Id" class="btn btn-primary">Đọc tiếp</a>
+<div class="container mt-4">
+    <h2 class="mb-4 text-danger">DANH SÁCH BÀI VIẾT MỚI NHẤT</h2>
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm">
+                    <img src="@item.ImageUrl" class="card-img-top" alt="Thumbnail">
+                    <div class="card-body">
+                        <span class="badge bg-info text-dark">@item.Category.Name</span>
+                        <h5 class="card-title text-primary">@item.Title</h5>
+                        <p class="card-text text-truncate">@item.Content</p>
+                        <p class="text-muted small">Ngày đăng: @item.CreatedDate.ToString("dd/MM/yyyy")</p>
+                        <a href="/Post/Details/@item.Id" class="btn btn-outline-primary btn-sm">Xem chi tiết</a>
+                    </div>
                 </div>
             </div>
-        </div>
-    }
+        }
+    </div>
 </div>
