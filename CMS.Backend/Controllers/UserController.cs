@@ -4,15 +4,21 @@
  * Ngày tạo: 04/06/2026
  * Mô tả: 1.tạo dữ liệu DbSQLServer cho User Controller
  *        2. Tạo trang admin hiển thị danh sách thành viên, có chức năng thêm, sửa, xóa thành viên
+ *        3. Thiết kế giao diện quản lý thành viên (CRUD) trong UserController
+ *        4. Sử dụng Entity Framework để kết nối và thao tác với cơ sở dữ liệu SQL Server trong UserController
+ *        5. Áp dụng phân quyền truy cập cho các chức năng quản lý thành viên trong UserController (chỉ Admin mới được phép xóa, Editor chỉ được phép xem và sửa) trong UserController
+ *        6. Xử lý bảo mật: Không hiển thị mật khẩu trong danh sách thành viên, và có chức năng đổi mật khẩu riêng biệt trong UserController
  */
 
 using CMS.Data;
 using CMS.Data.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace CMS.Backend.Controllers
 {
+    [Authorize(Roles = "Admin")] // Chỉ tài khoản có Role là Admin mới được phép vào
     public class UserController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -66,20 +72,6 @@ namespace CMS.Backend.Controllers
         {
             return View();
         }
-
-        // POST: User/Create
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create([Bind("Username,PasswordHash,FullName,Role")] User user)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        _context.Add(user);
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    return View(user);
-        //}
 
         private bool UserExists(int id)
         {

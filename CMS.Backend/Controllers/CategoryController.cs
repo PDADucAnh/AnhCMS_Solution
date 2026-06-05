@@ -1,16 +1,21 @@
 ﻿/* Họ tên: Phạm Đức Anh
  * Mã SV: 2123110135
  * Lớp: CCQ2311D
- * Ngày tạo: 16/05/2026
- * Mô tả: tạo dữ liệu test Category Controller
+ * Ngày tạo: 05/06/2026
+ * Mô tả: 1. Tạo dữ liệu test Category Controller
+ *        2. Thiết kế giao diện quản lý danh mục sản phẩm (CRUD) trong CategoryController
+ *        3. Sử dụng Entity Framework để kết nối và thao tác với cơ sở dữ liệu SQL Server trong CategoryController
+ *        4. Áp dụng phân quyền truy cập cho các chức năng quản lý danh mục trong CategoryController (chỉ Admin mới được phép xóa, Editor chỉ được phép xem và sửa) trong CategoryController
  */
 
 using CMS.Data;
 using CMS.Data.Entities;// Kết nối tới lớp dữ liệu vừa tạo
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CMS.Backend.Controllers
 {
+    [Authorize]
     public class CategoryController : Controller
     {
         private readonly ApplicationDbContext _context;
