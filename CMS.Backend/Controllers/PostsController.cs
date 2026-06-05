@@ -68,5 +68,24 @@ namespace CMS.Backend.Controllers
 
             return Ok(posts);
         }
+        // 3. Định nghĩa đường dẫn nhận ID trực tiếp: api/posts/{id}
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetDetail(int id)
+        {
+            // 3.1. Quét bảng Posts để tìm bài viết đầu tiên có Id khớp với tham số
+            var post = await _context.Posts
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            // 3.2 Xử lý kịch bản lỗi bảo vệ hệ thống: ID không tồn tại trong Database
+            if (post == null)
+            {
+                // Trả về mã lỗi 404 kèm một "gói tin" JSON thông báo nhỏ gọn để Frontend tự xử lý UI
+                return NotFound(new { message = "Không tìm thấy bài viết này trong hệ thống" });
+            }
+
+            // 3.3. Trả về toàn bộ đối tượng bài viết (bao gồm cả trường Content chứa mã HTML) kèm mã 200 OK
+            return Ok(post);
+        }
+
     }
 }
