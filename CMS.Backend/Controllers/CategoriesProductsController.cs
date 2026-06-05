@@ -2,53 +2,69 @@
     Họ tên: Phạm Đức Anh
     Mã SV: 2123110135
     Ngày tạo: 06/06/2026
-    Mô tả:    1. Truy vấn dữ liệu LINQ CategoryProducts Controller
-              2. Tạo trang admin hiển thị danh sách danh mục sản phẩm
-              3. Thiết kế giao diện quản lý danh mục sản phẩm (CRUD) trong CategoryProductsController
-              4. Sử dụng Entity Framework để kết nối và thao tác với cơ sở dữ liệu SQL Server trong CategoryProductsController
+    Mô tả:    1. Truy vấn dữ liệu LINQ CategoriesProducts Controller
+              2. Tạo trang admin hiển thị danh sách danh mục sản phẩm thời trang
+              3. Thiết kế giao diện quản lý danh mục sản phẩm (CRUD) trong CategoriesProductsController
+              4. Sử dụng Entity Framework để kết nối và thao tác với cơ sở dữ liệu SQL Server trong CategoriesProductsController
  */
-using CMS.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using CMS.Data;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace CMS.Backend.Controllers
 {
+    // 1. Cấu hình đường dẫn API: api/CategoriesProducts
     [Route("api/[controller]")]
+
+    // 2. Kích hoạt tính năng tự động kiểm tra lỗi dữ liệu (Validation)
     [ApiController]
-    public class CategoryProductsController : ControllerBase
+
+    // 3. Kế thừa ControllerBase để tối ưu bộ nhớ cho API thuần dữ liệu JSON
+    public class CategoriesProductsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
-        public CategoryProductsController(ApplicationDbContext context)
+        // 4. Hàm khởi tạo: Nạp cơ sở dữ liệu SQL Server vào Controller thông qua DI
+        public CategoriesProductsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
+        /// <summary>
+        /// API lấy toàn bộ danh mục sản phẩm thời trang (Giao thức GET)
+        /// Đường dẫn gọi dữ liệu: GET https://localhost:xxxx/api/CategoriesProducts
+        /// </summary>
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var categories = _context.CategoriesProducts
-                .OrderByDescending(x => x.Id)
-                .Select(x => new
+            try
+            {
+                // Bước A: Quét bảng dữ liệu CategoriesProducts số nhiều dưới SQL Server lên
+                var categories = await _context.CategoriesProducts
+                        .Select(c => new
+                        {
+                            // Bước B: Kỹ thuật gọt tỉa (Projection) - chỉ lấy các trường cần thiết ra FrontEnd
+                            c.Id,
+                            c.Name,
+                            c.Description
+                        })
+                    .ToListAsync(); // Chuyển đổi bất đồng bộ sang dạng danh sách mảng
+
+                // Bước C: Trả về mã thành công HTTP 200 OK đính kèm chuỗi chữ JSON sạch
+                return Ok(categories);
+            }
+            catch (System.Exception ex)
+            {
+                // Bảo vệ hệ thống: Nếu sập kết nối SQL thì trả về lỗi 500 kèm lời nhắn lý do lỗi
+                return StatusCode(500, new
                 {
-                    x.Id,
-                    x.Name,
-                    x.Description
-                })
-                .ToList();
-
-            return Ok(categories);
+                    message = "Lỗi kết nối cơ sở dữ liệu hệ thống",
+                    detail = ex.Message
+                });
+            }
         }
 
-        [HttpGet("{id}")]
-        public IActionResult GetDetail(int id)
-        {
-            var category = _context.CategoriesProducts
-                .FirstOrDefault(x => x.Id == id);
-
-            if (category == null)
-                return NotFound(new { message = "Không tìm thấy danh mục" });
-
-            return Ok(category);
-        }
     }
 }

@@ -1,4 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿/*
+    Họ tên: Phạm Đức Anh
+    Mã SV: 2123110135
+    Ngày tạo: 06/06/2026
+    Mô tả:    1. Truy vấn dữ liệu LINQ Products Controller
+              2. Tạo trang admin hiển thị danh sách sản phẩm theo từng danh mục sản phẩm
+              3. Thiết kế giao diện quản lý sản phẩm (CRUD) trong ProductsController
+              4. Sử dụng Entity Framework để kết nối và thao tác với cơ sở dữ liệu SQL Server trong ProductsController
+              5. Áp dụng phân quyền truy cập cho các chức năng quản lý sản phẩm trong ProductsController (chỉ Admin mới được phép xóa, Editor chỉ được phép xem và sửa) trong ProductsController
+ */
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CMS.Data;
 
