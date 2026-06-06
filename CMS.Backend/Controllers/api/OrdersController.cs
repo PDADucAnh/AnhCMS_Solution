@@ -14,7 +14,7 @@ using CMS.Data;
 using CMS.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CMS.Backend.Controllers
+namespace CMS.Backend.Controllers.api
 {
     [Route("api/[controller]")]
     [ApiController]

@@ -1,0 +1,112 @@
+@model CMS.Data.Entities.OrderDetail
+
+@{
+	Layout = "_LayoutAdmin";
+	ViewData["Title"] = "Chỉnh sửa chi tiết đơn hàng";
+}
+
+<div class="container-fluid mt-4">
+	<div class="row justify-content-center">
+		<div class="col-md-8">
+			<div class="card shadow-sm">
+				<div class="card-header bg-warning text-dark">
+					<h5 class="mb-0">
+						<i class="bi bi-pencil-square"></i> CHỈNH SỬA CHI TIẾT ĐƠN HÀNG
+					</h5>
+				</div>
+				<div class="card-body">
+					@if (!ViewData.ModelState.IsValid)
+					{
+						<div class="alert alert-danger">
+							<h6>Vui lòng kiểm tra lại các thông tin:</h6>
+							<ul class="mb-0">
+								@foreach (var item in ViewData.ModelState)
+								{
+									@foreach (var error in item.Value.Errors)
+									{
+										<li>@error.ErrorMessage</li>
+									}
+								}
+							</ul>
+						</div>
+					}
+
+					<form asp-action="Edit" method="post" class="needs-validation">
+						<input type="hidden" asp-for="Id" />
+
+						<div class="mb-3">
+							<label for="OrderId" class="form-label">
+								<i class="bi bi-box"></i> Đơn hàng <span class="text-danger">*</span>
+							</label>
+							<select id="OrderId" asp-for="OrderId" asp-items="ViewBag.Orders"
+									class="form-select @(ViewData.ModelState["OrderId"]?.ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")"
+									required>
+								<option value="">-- Chọn đơn hàng --</option>
+							</select>
+							<span class="invalid-feedback d-block">
+								@ViewData.ModelState["OrderId"]?.Errors?.FirstOrDefault()?.ErrorMessage
+							</span>
+						</div>
+
+						<div class="mb-3">
+							<label for="ProductId" class="form-label">
+								<i class="bi bi-bag"></i> Sản phẩm <span class="text-danger">*</span>
+							</label>
+							<select id="ProductId" asp-for="ProductId" asp-items="ViewBag.Products"
+									class="form-select @(ViewData.ModelState["ProductId"]?.ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")"
+									required>
+								<option value="">-- Chọn sản phẩm --</option>
+							</select>
+							<span class="invalid-feedback d-block">
+								@ViewData.ModelState["ProductId"]?.Errors?.FirstOrDefault()?.ErrorMessage
+							</span>
+						</div>
+
+						<div class="row">
+							<div class="col-md-6">
+								<div class="mb-3">
+									<label for="Quantity" class="form-label">
+										<i class="bi bi-stack"></i> Số lượng <span class="text-danger">*</span>
+									</label>
+									<input type="number" id="Quantity" asp-for="Quantity"
+										   class="form-control @(ViewData.ModelState["Quantity"]?.ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")"
+										   placeholder="Nhập số lượng" min="1" required />
+									<span class="invalid-feedback d-block">
+										@ViewData.ModelState["Quantity"]?.Errors?.FirstOrDefault()?.ErrorMessage
+									</span>
+								</div>
+							</div>
+
+							<div class="col-md-6">
+								<div class="mb-3">
+									<label for="UnitPrice" class="form-label">
+										<i class="bi bi-currency-dollar"></i> Đơn giá (VNĐ) <span class="text-danger">*</span>
+									</label>
+									<input type="number" id="UnitPrice" asp-for="UnitPrice"
+										   class="form-control @(ViewData.ModelState["UnitPrice"]?.ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid ? "is-invalid" : "")"
+										   placeholder="Nhập đơn giá" step="0.01" min="0" required />
+									<span class="invalid-feedback d-block">
+										@ViewData.ModelState["UnitPrice"]?.Errors?.FirstOrDefault()?.ErrorMessage
+									</span>
+								</div>
+							</div>
+						</div>
+
+						<div class="alert alert-info mt-3">
+							<i class="bi bi-info-circle"></i> <strong>Thành tiền:</strong> @((Model.Quantity * Model.UnitPrice).ToString("N0")) VNĐ
+						</div>
+
+						<div class="text-end mt-4">
+							<a asp-action="Index" class="btn btn-secondary">
+								<i class="bi bi-x-circle"></i> Hủy
+							</a>
+							<button type="submit" class="btn btn-warning">
+								<i class="bi bi-check-circle"></i> Cập nhật
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

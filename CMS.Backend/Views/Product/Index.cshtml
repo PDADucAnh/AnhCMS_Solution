@@ -1,38 +1,87 @@
-﻿@model List<CMS.Data.Entities.Product>
-
-@{
-    ViewData["Title"] = "Sản phẩm";
+﻿@{
+    Layout = "_LayoutAdmin";
 }
+@model List<CMS.Data.Entities.Product>
 
-<h2>Sản phẩm nổi bật</h2>
+<h2 class="text-primary">DANH SÁCH SẢN PHẨM</h2>
+<a asp-action="Create" class="btn btn-success mb-3">
+    <i class="bi bi-plus-circle"></i> Thêm sản phẩm mới
+</a>
 
-<div class="row">
-    @foreach (var product in Model)
-    {
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                @if (!string.IsNullOrEmpty(product.ImageUrl))
-                {
-                    <img src="@product.ImageUrl" class="card-img-top" style="height:200px; object-fit:cover;" />
-                }
-                <div class="card-body">
-                    <h5 class="card-title">@product.Name</h5>
-                    <p class="card-text">
-                        <strong>Danh mục:</strong> @(product.CategoryProduct?.Name ?? "Chưa phân loại")<br />
-                        <strong>Giá:</strong> @product.Price.ToString("N0") VNĐ<br />
-                        <strong>Tồn kho:</strong> @product.StockQuantity
-                    </p>
-                    <p class="card-text">@(product.Description?.Length > 100 ? product.Description.Substring(0, 100) + "..." : product.Description)</p>
-                </div>
-                <div class="card-footer">
-                    <a asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary">Xem chi tiết</a>
-                    <a asp-action="Edit" asp-route-id="@product.Id" class="btn btn-sm btn-warning">Sửa</a>
-                </div>
-            </div>
-        </div>
-    }
+<div class="table-responsive">
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th style="width: 60px;">ID</th>
+                <th>Tên sản phẩm</th>
+                <th style="width: 150px;">Danh mục</th>
+                <th style="width: 100px;">Giá</th>
+                <th style="width: 100px;">Tồn kho</th>
+                <th style="width: 200px;">Mô tả</th>
+                <th style="width: 180px;">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td><strong>@item.Name</strong></td>
+                    <td>
+                        @if (item.CategoryProduct != null)
+                        {
+                            <span class="badge bg-info">@item.CategoryProduct.Name</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Chưa phân loại</span>
+                        }
+                    </td>
+                    <td class="text-end">@item.Price.ToString("N0") VNĐ</td>
+                    <td class="text-center">
+                        @if (item.StockQuantity > 0)
+                        {
+                            <span class="badge bg-success">@item.StockQuantity</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Hết hàng</span>
+                        }
+                    </td>
+                    <td>
+                        @{
+                            var description = item.Description?.Length > 50 
+                                ? item.Description.Substring(0, 50) + "..." 
+                                : item.Description ?? "Không có mô tả";
+                        }
+                        <small>@description</small>
+                    </td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.Id"
+                           class="btn btn-sm btn-outline-primary" title="Xem chi tiết">
+                            <i class="bi bi-eye"></i> Xem
+                        </a>
+
+                        <a asp-action="Edit" asp-route-id="@item.Id"
+                           class="btn btn-sm btn-outline-warning" title="Chỉnh sửa">
+                            <i class="bi bi-pencil"></i> Sửa
+                        </a>
+
+                        <a asp-action="Delete" asp-route-id="@item.Id"
+                           class="btn btn-sm btn-outline-danger" title="Xóa"
+                           onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')">
+                            <i class="bi bi-trash"></i> Xóa
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
 
-<div>
-    <a asp-action="Create" class="btn btn-primary">Thêm sản phẩm mới</a>
-</div>
+@if (Model.Count == 0)
+{
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i> Chưa có sản phẩm nào. <a asp-action="Create">Thêm sản phẩm mới</a>
+    </div>
+}

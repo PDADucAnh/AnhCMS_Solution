@@ -1,0 +1,36 @@
+@{
+	Layout = "_LayoutAdmin";
+}
+@model CMS.Data.Entities.CategoryProduct
+
+<div class="container mt-4">
+	<h2 class="text-primary">THÊM DANH MỤC SẢN PHẨM MỚI</h2>
+	<hr />
+
+	<form asp-action="Create" method="post">
+		<div class="mb-3">
+			<label class="form-label">Tên danh mục: <span class="text-danger">*</span></label>
+			<input asp-for="Name" class="form-control" placeholder="Nhập tên danh mục" required />
+			<span asp-validation-for="Name" class="text-danger"></span>
+		</div>
+
+		<div class="mb-3">
+			<label class="form-label">Mô tả:</label>
+			<textarea asp-for="Description" class="form-control" rows="4" placeholder="Nhập mô tả danh mục"></textarea>
+			<span asp-validation-for="Description" class="text-danger"></span>
+		</div>
+
+		<div>
+			<button type="submit" class="btn btn-success">
+				<i class="bi bi-check-circle"></i> Lưu danh mục
+			</button>
+			<a asp-action="Index" class="btn btn-secondary">
+				<i class="bi bi-x-circle"></i> Hủy bỏ
+			</a>
+		</div>
+	</form>
+</div>
+
+@section Scripts {
+	@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -13,7 +13,7 @@ using CMS.Data;
 using System.Threading.Tasks;
 using System.Linq;
 
-namespace CMS.Backend.Controllers
+namespace CMS.Backend.Controllers.api
 {
     // 1. Cấu hình đường dẫn API: api/CategoriesProducts
     [Route("api/[controller]")]

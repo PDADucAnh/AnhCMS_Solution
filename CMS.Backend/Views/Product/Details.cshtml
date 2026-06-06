@@ -1,0 +1,96 @@
+@{
+	Layout = "_LayoutAdmin";
+}
+@model CMS.Data.Entities.Product
+
+<div class="container mt-4">
+	<h2 class="text-primary">CHI TIẾT SẢN PHẨM</h2>
+	<hr />
+
+	<div class="row">
+		<div class="col-md-6">
+			<div class="card mb-4">
+				@if (!string.IsNullOrEmpty(Model.ImageUrl))
+				{
+					<img src="@Model.ImageUrl" class="card-img-top" style="height: 400px; object-fit: cover;" />
+				}
+				else
+				{
+					<img src="https://via.placeholder.com/400x300?text=No+Image" class="card-img-top" />
+				}
+				<div class="card-body">
+					<h5 class="card-title">@Model.Name</h5>
+					<p class="card-text">
+						<small class="text-muted">ID: @Model.Id</small>
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-6">
+			<div class="card">
+				<div class="card-body">
+					<h5 class="card-title text-success">Thông tin sản phẩm</h5>
+
+					<table class="table table-borderless">
+						<tr>
+							<th style="width: 150px;">Tên sản phẩm:</th>
+							<td><strong>@Model.Name</strong></td>
+						</tr>
+						<tr>
+							<th>Danh mục:</th>
+							<td>
+								@if (Model.CategoryProduct != null)
+								{
+									<span class="badge bg-info">@Model.CategoryProduct.Name</span>
+								}
+								else
+								{
+									<span class="badge bg-secondary">Chưa phân loại</span>
+								}
+							</td>
+						</tr>
+						<tr>
+							<th>Giá:</th>
+							<td>
+								<span class="fs-5 text-danger">
+									<strong>@Model.Price.ToString("N0") VNĐ</strong>
+								</span>
+							</td>
+						</tr>
+						<tr>
+							<th>Tồn kho:</th>
+							<td>
+								@if (Model.StockQuantity > 0)
+								{
+									<span class="badge bg-success">@Model.StockQuantity</span>
+								}
+								else
+								{
+									<span class="badge bg-danger">Hết hàng</span>
+								}
+							</td>
+						</tr>
+						<tr>
+							<th>Mô tả:</th>
+							<td>@Model.Description</td>
+						</tr>
+					</table>
+
+					<div class="mt-4">
+						<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+							<i class="bi bi-pencil"></i> Chỉnh sửa
+						</a>
+						<a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"
+						   onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')">
+							<i class="bi bi-trash"></i> Xóa
+						</a>
+						<a asp-action="Index" class="btn btn-secondary">
+							<i class="bi bi-arrow-left"></i> Quay lại
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

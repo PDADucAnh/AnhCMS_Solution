@@ -27,24 +27,34 @@ namespace CMS.Backend.Controllers
         {
             _context = context;
         }
-        public IActionResult Index(int? id)
+        /// <summary>
+        /// Hiển thị tất cả bài viết
+        /// </summary>
+        public IActionResult Index()
         {
-            // 1. Kiểm tra nếu không có id truyền vào thì trả về lỗi hoặc toàn bộ bài viết
-            if (id == null)
-            {
-                return BadRequest("Vui lòng cung cấp mã danh mục.");
-            }
+            // Lấy tất cả bài viết, sắp xếp mới nhất trước
+            var posts = _context.Posts
+                        .OrderByDescending(p => p.CreatedDate)
+                        .Include(p => p.Category)
+                        .ToList();
 
-            // 2. Sử dụng LINQ với tham số 'id' linh hoạt
+            return View(posts);
+        }
+
+        /// <summary>
+        /// Hiển thị bài viết theo danh mục (nếu cần)
+        /// </summary>
+        public IActionResult ByCategory(int id)
+        {
+            // Sử dụng LINQ với tham số 'id' linh hoạt
             var posts = _context.Posts
                         .Where(p => p.CategoryId == id)
                         .OrderByDescending(p => p.CreatedDate)
                         .Include(p => p.Category)
                         .ToList();
 
-
-            // 3. Truyền dữ liệu ra View
-            return View(posts);
+            // Truyền dữ liệu ra View
+            return View("Index", posts);
         }
 
         // Hàm Details: Hiển thị chi tiết một bài viết (Bổ sung  khá giỏi)
