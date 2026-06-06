@@ -46,8 +46,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
-var app = builder.Build();
-
 // ---- CẤU HÌNH CORS (THÊM VÀO TRƯỚC builder.Build()) ----
 builder.Services.AddCors(options =>
 {
@@ -59,6 +57,9 @@ builder.Services.AddCors(options =>
               .AllowCredentials();                  // Hỗ trợ truyền Cookie/Session nếu cần sau này
     });
 });
+
+var app = builder.Build();
+
 
 if (app.Environment.IsDevelopment())
 {
