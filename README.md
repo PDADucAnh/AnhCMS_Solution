@@ -1,512 +1,158 @@
-# AnhCMS Solution - ASP.NET Core CMS FullStack
+# 🚀 TÀI LIỆU DỰ ÁN: AnhCMS_Solution
+### 🌐 Full-Stack ASP.NET Core & ReactJS
 
-![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core-.NET%208-blue)
-![CSharp](https://img.shields.io/badge/C%23-12.0-purple)
-![SQL Server](https://img.shields.io/badge/Database-SQL%20Server-red)
-![ReactJS](https://img.shields.io/badge/Frontend-ReactJS-61DAFB)
-![Status](https://img.shields.io/badge/Status-Development-success)
+> **💡 Tổng quan:** Dự án AnhCMS_Solution là một hệ thống Website Full-Stack kết hợp giữa nền tảng Thương mại điện tử (bán hàng thời trang công sở & dạ hội) và Hệ thống quản trị nội dung tin tức/blog.
 
 ---
 
-# 📌 Giới thiệu dự án
-
-**AnhCMS Solution** là dự án xây dựng hệ thống **CMS FullStack** bằng công nghệ **ASP.NET Core MVC + ReactJS + SQL Server**.
-
-Dự án được thực hiện nhằm:
-- Xây dựng hệ thống quản lý nội dung (CMS)
-- Quản lý bài viết, danh mục, sản phẩm và đơn hàng
-- Làm quen mô hình kiến trúc 3 lớp chuyên nghiệp
-- Thực hành Entity Framework Core và Migration
-- Kết nối Backend ASP.NET Core với Frontend ReactJS
+## 📑 Mục lục
+1. [Định hướng và Mục tiêu dự án](#-1-định-hướng-và-mục-tiêu-dự-án)
+2. [Môi trường & Công nghệ (Tech Stack)](#️-2-môi-trường--công-nghệ-tech-stack)
+3. [Kiến trúc Solution 3 lớp](#️-3-kiến-trúc-solution-3-lớp)
+4. [Cấu trúc Cơ sở dữ liệu (Database Schema)](#-4-cấu-trúc-cơ-sở-dữ-liệu-database-schema)
+5. [Lộ trình phát triển dự án](#-5-lộ-trình-phát-triển-dự-án-theo-từng-buổi)
+6. [Những lưu ý kỹ thuật cốt lõi](#️-6-những-lưu-ý-kỹ-thuật-cốt-lõi)
 
 ---
 
-# 👨‍🎓 Thông tin sinh viên
+## 📌 1. ĐỊNH HƯỚNG VÀ MỤC TIÊU DỰ ÁN
 
-| Thông tin | Chi tiết |
-|---|---|
-| 👤 Sinh viên | **Phạm Đức Anh** |
-| 🆔 MSSV | **2123110135** |
-| 🏫 Trường | **Cao Đẳng Công Thương** |
-| 📚 Môn học | **Chuyên Đề ASP.NET** |
-| 👨‍🏫 Giảng viên | **Thầy Nguyễn Cao Thái** |
+Hệ thống được thiết kế theo **kiến trúc Lai (Hybrid)** và **phân tách trách nhiệm (Decoupling)**:
+
+* 🖥️ **Backend:** Đóng vai trò cung cấp giao diện quản trị Admin bằng kiến trúc ASP.NET Core MVC truyền thống, đồng thời mở các cổng RESTful Web API để cung cấp dữ liệu thô (chuẩn JSON) cho các nền tảng khác. Việc Backend chỉ trả về dữ liệu thô giúp tiết kiệm băng thông và tối ưu tốc độ tải trang.
+* ⚛️ **Frontend:** Chuyển đổi tư duy từ Render phía Server sang Render phía Client bằng ReactJS (Single Page Application). ReactJS tự động gọi API lấy dữ liệu thực tế từ Database thông qua Axios và hiển thị lên giao diện.
 
 ---
 
-# 🎯 Mục tiêu Chương 1
+## ⚙️ 2. MÔI TRƯỜNG & CÔNG NGHỆ (TECH STACK)
 
-Sau khi hoàn thành chương 1, dự án đạt được:
-
-- Thiết lập môi trường lập trình ASP.NET Core
-- Hiểu cấu trúc Solution 3 lớp
-- Tạo kiến trúc FullStack chuyên nghiệp
-- Xây dựng các Entity đầu tiên
-- Tạo Backend ASP.NET Core MVC
-- Tạo Frontend ReactJS
-- Hiển thị dữ liệu mẫu từ Backend ra giao diện
+| Phân hệ | Công nghệ & Công cụ sử dụng |
+| :--- | :--- |
+| **Backend** | .NET 6.0 / .NET 8.0 SDK, ASP.NET Core MVC, ASP.NET Core Web API |
+| **Frontend** | ReactJS, Axios, Bootstrap 4.6/5, FontAwesome |
+| **Database** | SQL Server (Express/LocalDB), Entity Framework Core (Code-First Migration) |
+| **Công cụ** | Visual Studio 2022 *(cài đặt workload ASP.NET and web development & .NET desktop)*, SSMS, Node.js (LTS), Postman, Swagger UI |
 
 ---
 
-# 🏗 Kiến trúc hệ thống
+## 🏗 3. KIẾN TRÚC SOLUTION 3 LỚP
 
-```bash
-AnhCMS_Solution
-│
-├── CMS.Data          # Lớp dữ liệu (Entities)
-├── CMS.Backend       # ASP.NET Core MVC + API
-└── CMS.Frontend      # ReactJS Frontend
-```
+Dự án được chia thành 3 Project độc lập để dễ dàng quản lý mã nguồn:
+
+1. 📦 **CMS.Data (Lớp Dữ liệu):** Class Library chứa lớp `ApplicationDbContext` và định nghĩa toàn bộ 8 thực thể (Entities) của Database.
+2. ⚙️ **CMS.Backend (Lớp Xử lý):** Đóng vai trò là "trạm điều khiển" cung cấp giao diện quản trị Admin (Controller, View) và mở các cổng Web API RESTful. Lớp này được cấu hình Reference tới `CMS.Data`.
+3. 🎨 **cms.frontend (Lớp Giao diện):** Ứng dụng ReactJS giao tiếp với Backend qua cổng API.
 
 ---
 
-# ⚙️ Công nghệ sử dụng
+## 🗄 4. CẤU TRÚC CƠ SỞ DỮ LIỆU (DATABASE SCHEMA)
 
-| Công nghệ | Mô tả |
-|---|---|
-| ASP.NET Core MVC | Backend Framework |
-| Entity Framework Core | ORM quản lý dữ liệu |
-| SQL Server | Hệ quản trị cơ sở dữ liệu |
-| ReactJS | Frontend Framework |
-| Visual Studio 2022 | IDE phát triển |
-| NodeJS | Runtime cho ReactJS |
-| Git & GitHub | Quản lý source code |
+Hệ thống gồm 8 bảng có mối quan hệ chặt chẽ với nhau:
 
----
-
-# 🖥 Yêu cầu môi trường
-
-## 1. Visual Studio 2022
-
-Cần cài đặt:
-- ASP.NET and web development
-- .NET desktop development
+| Tên Bảng | Mô tả & Trường dữ liệu cốt lõi |
+| :--- | :--- |
+| **Categories** | Danh mục tin tức blog. Khóa chính `Id`, `Name`, `Description`. |
+| **Posts** | Bài viết. `Title`, `Content`, `ImageUrl`, khóa ngoại `CategoryId`. |
+| **Users** | Quản trị viên hệ thống. `Username`, `PasswordHash`, `FullName`, `Role`. |
+| **CategoriesProducts**| Danh mục sản phẩm thời trang. `Id`, `Name`, `Description`. |
+| **Products** | Sản phẩm. `Name`, `Price`, `StockQuantity`, `ImageUrl`, khóa ngoại `CategoryProductId`. |
+| **Customers** | Khách hàng mua sắm trực tuyến. `FullName`, `Email`, `Address`, `Password`. |
+| **Orders** | Đơn hàng. `OrderDate`, `Status` (0: Chờ duyệt, 1: Đang giao, 2: Đã xong), `Notes`, khóa ngoại `CustomerId`. |
+| **OrderDetails** | Chi tiết đơn hàng. Số lượng `Quantity`, giá mua `UnitPrice`, khóa ngoại `OrderId` và `ProductId`. |
 
 ---
 
-## 2. SQL Server & SSMS
+## 🗓 5. LỘ TRÌNH PHÁT TRIỂN DỰ ÁN (THEO TỪNG BUỔI)
 
-Sử dụng:
-- SQL Server Express
-- SQL Server Management Studio (SSMS)
+### 🟢 Giai đoạn 1: Nền tảng Backend & Cơ sở dữ liệu
+* **Buổi 1: Khởi tạo kiến trúc dự án**
+  * Tạo Blank Solution và thiết lập cấu trúc 3 lớp (Data, Backend, Frontend).
+  * Viết mã các Class Entity chuẩn hóa.
+  * Tạo dữ liệu giả (Mock Data) trong Controller để hiển thị lên View `.cshtml` nhằm kiểm tra kết nối giữa các project.
+* **Buổi 2: Kết nối Database với EF Core**
+  * Cài đặt NuGet Packages (`SqlServer`, `Tools`, `Design`).
+  * Tạo `ApplicationDbContext` và cấu hình Connection String trong `appsettings.json`.
+  * Sử dụng kỹ thuật Code-First Migration (`Add-Migration InitialCreate` và `Update-Database`) để sinh tự động các bảng vào SQL Server.
+* **Buổi 3: Truy vấn LINQ & Thao tác dữ liệu (CRUD)**
+  * Áp dụng LINQ (`Where`, `OrderByDescending`, `Take`) để lọc và sắp xếp dữ liệu.
+  * Sử dụng lệnh `.Include()` (Eager Loading) để Join bảng (ví dụ: lấy tên Danh mục kèm theo Bài viết) tránh lỗi dữ liệu rỗng.
+  * Thực hiện đầy đủ quy trình Thêm - Xóa - Sửa và lưu vào SQL bằng `SaveChanges()`.
 
-Kiểm tra kết nối:
+### 🟡 Giai đoạn 2: Xây dựng Admin Panel, Bảo mật & Web API
+* **Buổi 4: Giao diện Quản trị Toàn diện (Admin Panel)**
+  * Xây dựng `_LayoutAdmin.cshtml` kết hợp Bootstrap với Sidebar điều hướng tĩnh.
+  * Xử lý logic Upload hình ảnh (`IFormFile`) vào thư mục `wwwroot/uploads` với tên file sinh ngẫu nhiên bằng `Guid`.
+  * Tích hợp trình soạn thảo văn bản CKEditor 5 để biên tập nội dung, dùng `@Html.Raw()` hiển thị mã HTML.
+* **Buổi 5: Bảo mật & Phân quyền (Security & Identity)**
+  * Cấu hình dịch vụ xác thực `CookieAuthentication` trong `Program.cs`.
+  * Xây dựng luồng Đăng nhập (Login Flow) cấp thẻ bài qua Claims (lưu Username, Role).
+  * Áp dụng Attribute `[Authorize]` để khóa trang quản trị, và `[Authorize(Roles="Admin")]` để phân quyền chặt chẽ.
+* **Buổi 6: Khởi tạo Web API chuẩn RESTful**
+  * Cấu hình kiến trúc Lai (Hybrid) chạy song song MVC và API trên cùng một Backend.
+  * Cài đặt Swagger sinh tài liệu API tự động để kiểm thử.
+  * Thiết kế API Controllers (`[ApiController]`, `[Route("api/[controller]")]`) với các phương thức GET, POST.
+  * Áp dụng kỹ thuật Projection (`.Select()`) để gọt tỉa dữ liệu thừa trước khi trả về chuỗi JSON.
+  * Test API nhận Đơn hàng (POST) qua công cụ Postman bằng chuỗi JSON thô.
 
-```bash
-(localdb)\MSSQLLocalDB
-```
+### 🔵 Giai đoạn 3: Kết nối Frontend ReactJS (Client-Side)
+* **Buổi 7: Khởi tạo ReactJS & Cấu hình CORS**
+  * Mở cửa bảo mật CORS trên Backend (`AllowAnyOrigin`, `AllowAnyMethod`).
+  * Khởi tạo ReactJS (`npx create-react-app`), cài đặt thư viện `axios`.
+  * Tạo file cấu hình tập trung `axiosClient.js` và viết Service lấy danh mục sản phẩm từ API.
+* **Buổi 8: Vòng đời Component & Hook useEffect**
+  * Nắm vững cơ chế `useEffect` để kích hoạt việc gọi API (Side Effects).
+  * Sử dụng Hook `useState` kết hợp `async/await` để quản lý trạng thái dữ liệu và vòng tải (Loading).
+  * Gọi API lấy danh sách Bài viết và Danh mục blog thời trang, xử lý định dạng tiền tệ và ngày tháng (`toLocaleDateString('vi-VN')`).
 
-hoặc:
-
-```bash
-.\SQLEXPRESS
-```
-
----
-
-## 3. .NET SDK
-
-Khuyến nghị:
-- .NET 8.0 LTS
-
-Kiểm tra phiên bản:
-
-```bash
-dotnet --version
-```
-
----
-
-## 4. NodeJS
-
-Kiểm tra:
-
-```bash
-node -v
-npm -v
-```
-
----
-
-# 📦 Cấu trúc Project
-
-## 1. CMS.Data
-
-Chứa:
-- Entity Models
-- Quan hệ dữ liệu
-- Data Annotations
-
-### Các Entity chính
-
-| Entity | Chức năng |
-|---|---|
-| Category | Danh mục bài viết |
-| Post | Bài viết |
-| User | Người dùng quản trị |
-| CategoryProduct | Danh mục sản phẩm |
-| Product | Sản phẩm |
-| Customer | Khách hàng |
-| Order | Đơn hàng |
-| OrderDetail | Chi tiết đơn hàng |
+### 🟣 Giai đoạn 4: Tính năng Nâng cao (Dự kiến lộ trình chuẩn)
+* **Buổi 9:** Ứng dụng React Router Dom để làm chức năng điều hướng chi tiết trang bài viết (SPA).
+* **Buổi 10:** Xây dựng Giỏ hàng (Cart), truyền đối tượng đơn hàng lên Web API; giới thiệu gRPC Service.
+* **Buổi 11:** Kỹ năng gỡ lỗi (Debug) bằng Chrome DevTools, sửa lỗi API, tối ưu SEO cơ bản.
+* **Buổi 12:** Tổng kết, Demo ứng dụng E-Commerce Full-stack và bảo vệ đồ án.
 
 ---
 
-## 2. CMS.Backend
+## ⚠️ 6. NHỮNG LƯU Ý KỸ THUẬT CỐT LÕI
 
-Chứa:
-- ASP.NET Core MVC
-- Controllers
-- Views
-- API xử lý dữ liệu
+> ⚠️ **Cảnh báo:** Việc bỏ qua các lưu ý dưới đây có thể dẫn đến các lỗi nghiêm trọng về bảo mật, hiệu năng hoặc sập hệ thống.
 
-### Chức năng hiện tại
-- Hiển thị danh sách Category
-- Tạo dữ liệu mẫu
-- Kết nối sang CMS.Data
-
----
-
-## 3. CMS.Frontend
-
-Chứa:
-- ReactJS Frontend
-- Giao diện người dùng
-- Kết nối API Backend
-
----
-
-# 🚀 Hướng dẫn khởi chạy dự án
-
-# 1️⃣ Clone Source Code
-
-```bash
-git clone https://github.com/yourusername/AnhCMS_Solution.git
-```
-
----
-
-# 2️⃣ Mở Solution
-
-Mở file:
-
-```bash
-AnhCMS_Solution.sln
-```
-
----
-
-# 3️⃣ Chạy Backend ASP.NET Core
-
-Thiết lập:
-
-```bash
-CMS.Backend -> Set as Startup Project
-```
-
-Sau đó nhấn:
-
-```bash
-F5
-```
-
-Kết quả:
-- Trình duyệt mở ASP.NET Core Welcome Page
-- Backend chạy tại localhost
-
----
-
-# 4️⃣ Chạy Frontend ReactJS
-
-Mở terminal:
-
-```bash
-cd cms.frontend
-```
-
-Cài package:
-
-```bash
-npm install
-```
-
-Chạy ReactJS:
-
-```bash
-npm start
-```
-
-Hoặc:
-
-```bash
-npm run dev
-```
-
----
-
-# 📚 Nội dung đã thực hiện trong Chương 1
-
-## ✅ Cài đặt môi trường ASP.NET Core
-
-Đã cài đặt:
-- Visual Studio 2022
-- SQL Server
-- SSMS
-- .NET SDK
-- NodeJS
-- Git
-
----
-
-## ✅ Xây dựng Solution 3 lớp
-
-Bao gồm:
-- Data Layer
-- Backend Layer
-- Frontend Layer
-
----
-
-## ✅ Tạo Entity Models
-
-Đã xây dựng:
-- Category
-- Post
-- User
-- Product
-- Order
-- Customer
-
----
-
-## ✅ Tạo ASP.NET Core MVC Backend
-
-Đã thực hiện:
-- Controllers
-- Razor Views
-- MVC Routing
-- Mock Data
-
----
-
-## ✅ Tạo ReactJS Frontend
-
-Đã thực hiện:
-- Khởi tạo React App
-- Kết nối Solution
-- Chạy giao diện Frontend
-
----
-
-## ✅ Demo dữ liệu đầu tiên
-
-Đã hiển thị:
-- Danh sách Category
-- Dữ liệu mẫu từ Backend
-
----
-
-# 🧠 Kiến thức đạt được
-
-Sau chương 1:
-- Hiểu cấu trúc ASP.NET Core
-- Hiểu mô hình 3 lớp
-- Hiểu Entity và Database Design
-- Hiểu MVC Pattern
-- Biết cách tạo Controller và View
-- Biết cách kết nối Backend và Frontend
-
----
-
-# 🔥 Tóm tắt nội dung Chương 2
-
-## 📌 Chủ đề chính
-### Entity Framework Core & Migration
-
----
-
-# 🎯 Mục tiêu Chương 2
-
-- Thiết lập kết nối SQL Server
-- Cấu hình DbContext
-- Tạo Database tự động bằng Migration
-- Quản lý dữ liệu bằng Entity Framework Core
-- Thay thế dữ liệu giả bằng dữ liệu thật từ Database
-
----
-
-# ⚙️ Nội dung sẽ thực hiện
-
-## 1. Cài đặt EF Core Packages
-
-Cài:
-```bash
-Microsoft.EntityFrameworkCore
-Microsoft.EntityFrameworkCore.SqlServer
-Microsoft.EntityFrameworkCore.Tools
-```
-
----
-
-## 2. Tạo DbContext
-
-Ví dụ:
-
+### 🔴 1. Cấu hình CORS
+Middleware `app.UseCors("TênPolicy")` bắt buộc phải nằm **chính xác** giữa `app.UseRouting()` và `app.UseAuthorization()` trong file `Program.cs`. Nếu sai vị trí, ReactJS sẽ bị lỗi *Network Error*.
 ```csharp
-public class CMSDbContext : DbContext
+app.UseRouting();
+app.UseCors("AllowAll"); // <-- BẮT BUỘC nằm ở đây
+app.UseAuthorization();
+```
+
+### 🔴 2. Chống lặp vô hạn ở ReactJS
+Khi sử dụng Hook `useEffect` để fetch data, bắt buộc phải truyền **mảng phụ thuộc rỗng `[]`** vào tham số thứ hai để API chỉ gọi 1 lần duy nhất khi render.
+```javascript
+useEffect(() => {
+    fetchDataFromAPI();
+}, []); // Mảng rỗng ngăn chặn vòng lặp vô hạn
+```
+
+### 🔴 3. Tối ưu gói tin JSON
+Khi viết Web API lấy danh sách dữ liệu, nên sử dụng cú pháp LINQ `.Select()` để loại bỏ các cột không cần thiết, giúp web tải nhanh hơn.
+```csharp
+// Chỉ lấy những trường cần thiết
+var data = await _context.Posts.Select(x => new { x.Id, x.Title }).ToListAsync();
+```
+
+### 🔴 4. Kiểm soát cập nhật Mật khẩu
+Trong chức năng Sửa (Edit) User Admin, phải xử lý logic `if (!string.IsNullOrEmpty(NewPassword))` để quyết định sử dụng mật khẩu mới hay giữ nguyên mã Hash cũ, tránh làm mất mật khẩu khi người dùng để trống form.
+```csharp
+if (!string.IsNullOrEmpty(userDto.NewPassword))
 {
-    public CMSDbContext(DbContextOptions<CMSDbContext> options)
-        : base(options)
-    {
-    }
-
-    public DbSet<Category> Categories { get; set; }
-    public DbSet<Post> Posts { get; set; }
+    // Mã hóa và cập nhật mật khẩu mới
 }
+// Ngược lại: Giữ nguyên PasswordHash cũ trong DB
 ```
 
----
-
-## 3. Cấu hình Connection String
-
-Trong:
-
-```bash
-appsettings.json
-```
-
-Ví dụ:
-
-```json
-"ConnectionStrings": {
-  "DefaultConnection": "Server=.;Database=CMS_DB;Trusted_Connection=True;TrustServerCertificate=True"
-}
-```
+### 🔴 5. Ràng buộc toàn vẹn SQL
+Việc gọi lệnh xóa một Danh mục (Category) đang có Bài viết (Post) bên trong sẽ gây lỗi hệ thống (Foreign Key Constraint). **Cần xóa hết các bài viết liên kết trước khi xóa danh mục cha.**
 
 ---
-
-## 4. Thực hiện Migration
-
-Lệnh tạo migration:
-
-```bash
-Add-Migration InitialCreate
-```
-
-Cập nhật Database:
-
-```bash
-Update-Database
-```
-
----
-
-## 5. Tạo Database CMS_DB
-
-Sau khi migration:
-- SQL Server tự sinh database
-- Tự sinh bảng
-- Không cần viết SQL thủ công
-
----
-
-## 6. CRUD dữ liệu thật
-
-Thay vì Mock Data:
-- Lấy dữ liệu từ SQL Server
-- Thêm/Sửa/Xóa dữ liệu thực tế
-
----
-
-# 📷 Demo dự kiến Chương 2
-
-Sau chương 2 hệ thống sẽ:
-- Có Database thật
-- Có bảng dữ liệu thật
-- Kết nối SQL Server thành công
-- Hiển thị dữ liệu động
-
----
-
-# 📖 Kiến thức trọng tâm
-
-| Nội dung | Ý nghĩa |
-|---|---|
-| DbContext | Cầu nối giữa C# và Database |
-| Migration | Quản lý thay đổi Database |
-| EF Core | ORM thao tác dữ liệu |
-| Connection String | Kết nối SQL Server |
-| CRUD | Thao tác dữ liệu |
-
----
-
-# 🧪 Công cụ hỗ trợ
-
-| Công cụ | Chức năng |
-|---|---|
-| Postman | Test API |
-| SSMS | Quản lý Database |
-| GitHub | Lưu source code |
-| JSON Viewer | Xem JSON đẹp hơn |
-
----
-
-# 📌 Trạng thái dự án
-
-| Module | Trạng thái |
-|---|---|
-| CMS.Data | ✅ Hoàn thành cơ bản |
-| CMS.Backend | ✅ Đã chạy |
-| CMS.Frontend | ✅ Đã khởi tạo |
-| EF Core | 🔄 Chuẩn bị triển khai |
-| Database | 🔄 Chuẩn bị tạo |
-| API CRUD | 🔄 Đang phát triển |
-
----
-
-# 📈 Định hướng phát triển
-
-Các chức năng sẽ triển khai tiếp:
-- Authentication & Authorization
-- CRUD Product
-- CRUD Category
-- CRUD Post
-- Upload hình ảnh
-- RESTful API
-- JWT Authentication
-- Dashboard Admin
-- Deploy Hosting
-
----
-
-# 🤝 Đóng góp
-
-Dự án phục vụ mục đích:
-- Học tập
-- Nghiên cứu ASP.NET Core
-- Thực hành FullStack Development
-
----
-
-# 📄 License
-
-Project sử dụng cho mục đích học tập tại:
-**Cao Đẳng Công Thương**
-
----
-
-# ❤️ Lời cảm ơn
-
-Xin chân thành cảm ơn:
-- Thầy Nguyễn Cao Thái
-- Khoa Công Nghệ Thông Tin
-- Trường Cao Đẳng Công Thương
-
-đã hỗ trợ và hướng dẫn trong quá trình thực hiện dự án.
-
----
-
-# ⭐ Author
-
-## Phạm Đức Anh
-### MSSV: 2123110135
-### ASP.NET Core FullStack Developer Student
+<p align="center">
+  <i>© 2026 AnhCMS_Solution - Full-Stack ASP.NET Core & ReactJS Documentation</i>
+</p>
