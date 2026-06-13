@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosClient = axios.create({
-    baseURL: 'https://localhost:7224/api', // Updated to match launchSettings.json
+    baseURL: process.env.REACT_APP_API_URL ? `${process.env.REACT_APP_API_URL}/api` : 'https://localhost:7224/api', // Use environment variable if available
     headers: {
         'Content-Type': 'application/json',
     },

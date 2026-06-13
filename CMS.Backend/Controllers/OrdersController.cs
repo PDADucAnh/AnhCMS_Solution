@@ -43,18 +43,28 @@ namespace CMS.Backend.Controllers
             try
             {
                 // Bước A: Tự động khởi tạo cấu trúc thực thể Đơn hàng mới
-                // LƯU Ý: Đã hiệu chỉnh bỏ trường TotalAmount, dùng trường [Notes] số nhiều theo đúng hình ảnh thực tế
                 var newOrder = new Order
                 {
-                    OrderDate = DateTime.Now, // Tự động lấy ngày giờ thực tế máy tính lúc mua
+                    OrderDate = DateTime.Now,
                     CustomerId = input.CustomerId,
-                    Status = 0,               // 0: Mặc định đơn hàng mới ở trạng thái "Chờ xử lý"
+                    Status = 0,
                     Notes = input.Notes
                 };
 
+                // Thêm OrderDetails nếu có
+                if (input.Items != null && input.Items.Count > 0)
+                {
+                    newOrder.OrderDetails = input.Items.Select(item => new OrderDetail
+                    {
+                        ProductId = item.ProductId,
+                        Quantity = item.Quantity,
+                        UnitPrice = item.UnitPrice
+                    }).ToList();
+                }
+
                 // Bước B: Thêm vào bảng tạm và chốt lưu xuống SQL Server
                 _context.Orders.Add(newOrder);
-                await _context.SaveChangesAsync(); // Ép hệ thống sinh ra mã ID Đơn hàng tự động tăng
+                await _context.SaveChangesAsync(); 
 
                 // Bước C: Trả về mã thành công 201 Created và gửi ngược lại mã ID đơn hàng vừa tạo
                 return StatusCode(201, new
@@ -68,12 +78,20 @@ namespace CMS.Backend.Controllers
                 return StatusCode(500, new { message = "Lỗi xử lý tạo đơn hàng ngầm", detail = ex.Message });
             }
         }
-    }
 
-    // LỚP DTO TRUNG GIAN ĐỂ HỨNG DỮ LIỆU TỪ FRONTEND TRUYỀN LÊN
-    public class OrderInputDTO
-    {
-        public int CustomerId { get; set; }
-        public string Notes { get; set; }
+        // LỚP DTO TRUNG GIAN ĐỂ HỨNG DỮ LIỆU TỪ FRONTEND TRUYỀN LÊN
+        public class OrderInputDTO
+        {
+            public int CustomerId { get; set; }
+            public string Notes { get; set; }
+            public List<OrderItemDTO> Items { get; set; }
+        }
+
+        public class OrderItemDTO
+        {
+            public int ProductId { get; set; }
+            public int Quantity { get; set; }
+            public decimal UnitPrice { get; set; }
+        }
     }
 }
