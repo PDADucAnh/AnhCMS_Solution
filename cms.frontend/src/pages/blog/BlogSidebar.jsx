@@ -17,22 +17,22 @@ const BlogSidebar = ({ onCategoryChange, activeId }) => {
   }, []);
 
   return (
-    <div className="blog-sidebar pl-lg-4">
-      <div className="mb-4">
-        <h6 className="font-weight-bold text-uppercase border-bottom pb-2 mb-3">Danh mục tin tức</h6>
-        <ul className="list-unstyled">
-          <li className="mb-2">
+    <div className="space-y-xl">
+      <div className="space-y-md">
+        <h6 className="text-[10px] uppercase tracking-[0.3em] font-bold text-secondary border-b border-outline-variant pb-2">Editorial Pillars</h6>
+        <ul className="space-y-sm list-none p-0">
+          <li>
             <button 
-              className={`btn btn-link p-0 text-decoration-none small ${activeId === null ? 'font-weight-bold text-primary' : 'text-dark'}`}
+              className={`bg-transparent border-0 p-0 text-label-sm uppercase tracking-widest transition-all ${activeId === null ? 'text-primary font-bold' : 'text-secondary hover:text-primary'}`}
               onClick={() => onCategoryChange(null)}
             >
-              Tất cả bài viết
+              The Full Narrative
             </button>
           </li>
           {categories.map((cat) => (
-            <li className="mb-2" key={cat.id}>
+            <li key={cat.id}>
               <button 
-                className={`btn btn-link p-0 text-decoration-none small ${activeId === cat.id ? 'font-weight-bold text-primary' : 'text-dark'}`}
+                className={`bg-transparent border-0 p-0 text-label-sm uppercase tracking-widest transition-all ${activeId === cat.id ? 'text-primary font-bold' : 'text-secondary hover:text-primary'}`}
                 onClick={() => onCategoryChange(cat.id)}
               >
                 {cat.name}
@@ -42,15 +42,17 @@ const BlogSidebar = ({ onCategoryChange, activeId }) => {
         </ul>
       </div>
 
-      <div className="mb-4">
-        <h6 className="font-weight-bold text-uppercase border-bottom pb-2 mb-3">Bài viết nổi bật</h6>
-        <div className="small mb-3">
-          <a href="#" className="text-dark font-weight-bold text-decoration-none d-block mb-1">Cách chọn váy dạ hội phù hợp vóc dáng</a>
-          <span className="text-muted extra-small">12/06/2026</span>
-        </div>
-        <div className="small">
-          <a href="#" className="text-dark font-weight-bold text-decoration-none d-block mb-1">Top 5 mẫu sơ mi công sở không thể thiếu</a>
-          <span className="text-muted extra-small">10/06/2026</span>
+      <div className="space-y-md">
+        <h6 className="text-[10px] uppercase tracking-[0.3em] font-bold text-secondary border-b border-outline-variant pb-2">Journal Highlights</h6>
+        <div className="space-y-lg">
+          <div className="group cursor-pointer">
+            <a href="#" className="text-body-md font-bold uppercase tracking-tight text-primary group-hover:text-secondary transition-colors text-decoration-none block mb-1 leading-tight">Mastering the Evening Silhouette</a>
+            <span className="text-[10px] text-outline uppercase tracking-widest font-bold">12 June 2026</span>
+          </div>
+          <div className="group cursor-pointer">
+            <a href="#" className="text-body-md font-bold uppercase tracking-tight text-primary group-hover:text-secondary transition-colors text-decoration-none block mb-1 leading-tight">Essential Minimalism for the Office</a>
+            <span className="text-[10px] text-outline uppercase tracking-widest font-bold">10 June 2026</span>
+          </div>
         </div>
       </div>
     </div>

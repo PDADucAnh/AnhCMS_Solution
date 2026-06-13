@@ -17,47 +17,46 @@ const ShopSidebar = ({ onCategoryChange, activeId }) => {
   }, []);
 
   return (
-    <div className="shop-sidebar pr-lg-3">
-      <div className="mb-4">
-        <h6 className="font-weight-bold text-uppercase border-bottom pb-2 mb-3">Danh mục sản phẩm</h6>
-        <ul className="list-unstyled">
-          <li className="mb-2">
+    <div className="space-y-xl">
+      <div className="space-y-md">
+        <h6 className="text-[10px] uppercase tracking-[0.3em] font-bold text-secondary border-b border-outline-variant pb-2">Division</h6>
+        <ul className="space-y-sm list-none p-0">
+          <li>
             <button 
-              className={`btn btn-link p-0 text-decoration-none small ${activeId === null ? 'font-weight-bold text-primary' : 'text-dark'}`}
+              className={`bg-transparent border-0 p-0 text-label-sm uppercase tracking-widest transition-all ${activeId === null ? 'text-primary font-bold' : 'text-secondary hover:text-primary'}`}
               onClick={() => onCategoryChange(null)}
             >
-              Tất cả sản phẩm
+              The Full Collection
             </button>
           </li>
           {categories.map((cat) => (
-            <li className="mb-2" key={cat.id}>
+            <li key={cat.id}>
               <button 
-                className={`btn btn-link p-0 text-decoration-none small ${activeId === cat.id ? 'font-weight-bold text-primary' : 'text-dark'}`}
+                className={`bg-transparent border-0 p-0 text-label-sm uppercase tracking-widest transition-all ${activeId === cat.id ? 'text-primary font-bold' : 'text-secondary hover:text-primary'}`}
                 onClick={() => onCategoryChange(cat.id)}
               >
                 {cat.name}
               </button>
             </li>
           ))}
-          {categories.length === 0 && (
-            <li className="text-muted small italic">Đang tải danh mục...</li>
-          )}
         </ul>
       </div>
 
-      <div className="mb-4">
-        <h6 className="font-weight-bold text-uppercase border-bottom pb-2 mb-3">Lọc theo giá</h6>
-        <div className="custom-control custom-checkbox mb-2">
-          <input type="checkbox" className="custom-control-input" id="price1" />
-          <label className="custom-control-label small" htmlFor="price1">Dưới 200.000 ₫</label>
-        </div>
-        <div className="custom-control custom-checkbox mb-2">
-          <input type="checkbox" className="custom-control-input" id="price2" />
-          <label className="custom-control-label small" htmlFor="price2">200.000 ₫ - 500.000 ₫</label>
-        </div>
-        <div className="custom-control custom-checkbox">
-          <input type="checkbox" className="custom-control-input" id="price3" />
-          <label className="custom-control-label small" htmlFor="price3">Trên 500.000 ₫</label>
+      <div className="space-y-md">
+        <h6 className="text-[10px] uppercase tracking-[0.3em] font-bold text-secondary border-b border-outline-variant pb-2">Price Bracket</h6>
+        <div className="space-y-sm">
+            <label className="flex items-center gap-3 cursor-pointer group">
+                <input type="checkbox" className="size-4 border-outline-variant text-primary focus:ring-primary rounded-none" />
+                <span className="text-label-sm uppercase tracking-widest text-secondary group-hover:text-primary transition-all">Under 500k đ</span>
+            </label>
+            <label className="flex items-center gap-3 cursor-pointer group">
+                <input type="checkbox" className="size-4 border-outline-variant text-primary focus:ring-primary rounded-none" />
+                <span className="text-label-sm uppercase tracking-widest text-secondary group-hover:text-primary transition-all">500k - 2M đ</span>
+            </label>
+            <label className="flex items-center gap-3 cursor-pointer group">
+                <input type="checkbox" className="size-4 border-outline-variant text-primary focus:ring-primary rounded-none" />
+                <span className="text-label-sm uppercase tracking-widest text-secondary group-hover:text-primary transition-all">Over 2M đ</span>
+            </label>
         </div>
       </div>
     </div>

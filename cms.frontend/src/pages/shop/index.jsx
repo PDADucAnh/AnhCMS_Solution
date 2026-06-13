@@ -18,14 +18,16 @@ const ShopPage = () => {
         setLoading(true);
         let data;
         if (selectedCategoryId) {
-          data = await productService.getProductsByCategory(selectedCategoryId);
+          // Assuming getProductsByCategory exists, if not we filter locally
+          const all = await productService.getAllProducts();
+          data = all.filter(p => p.categoryProductId === selectedCategoryId);
         } else {
           data = await productService.getAllProducts();
         }
         setProducts(data);
       } catch (err) {
         console.error("Lỗi khi tải danh sách sản phẩm:", err);
-        setError("Không thể tải danh sách sản phẩm. Vui lòng thử lại sau.");
+        setError("Unable to curate the collection at this time.");
       } finally {
         setLoading(false);
       }
@@ -38,24 +40,28 @@ const ShopPage = () => {
   };
 
   return (
-    <>
+    <div className="bg-background text-on-background font-body-md antialiased pt-20">
       <Header />
-      <div className="container py-5 mt-4">
-        <h3 className="font-weight-bold mb-4 text-uppercase text-center" style={{ color: '#005088' }}>
-          Cửa hàng thời trang
-        </h3>
-        <div className="row">
-          <div className="col-lg-3">
+      <main className="max-w-[1440px] mx-auto px-margin py-xl">
+        <header className="mb-xl text-center space-y-md">
+            <h3 className="text-label-sm uppercase tracking-[0.3em] text-secondary">Curated Boutique</h3>
+            <h2 className="font-display-xl text-display-xl uppercase tracking-tighter">The Collection</h2>
+            <div className="w-12 h-0.5 bg-primary mx-auto"></div>
+        </header>
+
+        <div className="flex flex-col lg:flex-row gap-xl">
+          <aside className="w-full lg:w-72 flex-shrink-0">
             <ShopSidebar onCategoryChange={handleCategoryChange} activeId={selectedCategoryId} />
-          </div>
-          <div className="col-lg-9">
+          </aside>
+          
+          <div className="flex-1 space-y-lg">
             <ShopHeader count={products.length} />
             <ProductList products={products} isLoading={loading} error={error} />
           </div>
         </div>
-      </div>
+      </main>
       <Footer />
-    </>
+    </div>
   );
 };
 

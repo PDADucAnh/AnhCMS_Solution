@@ -1,126 +1,167 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 import authService from '../../services/authService';
 
 const RegisterPage = () => {
-    const navigate = useNavigate();
-    const [formData, setFormData] = useState({ username: '', password: '', fullName: '' });
-    const [loading, setLoading] = useState(false);
+    const [formData, setFormData] = useState({
+        username: '',
+        fullName: '',
+        email: '',
+        password: '',
+        confirmPassword: ''
+    });
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
-    const handleInputChange = (e) => {
-        const { id, value } = e.target;
-        setFormData(prev => ({ ...prev, [id]: value }));
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
         setError('');
+        
+        if (formData.password !== formData.confirmPassword) {
+            setError('Security tokens do not match.');
+            return;
+        }
+
         setLoading(true);
         try {
-            const result = await authService.register(formData);
-            if (result) {
-                alert('Đăng ký thành công! Vui lòng đăng nhập.');
+            const success = await authService.register({
+                username: formData.username,
+                fullName: formData.fullName,
+                email: formData.email,
+                password: formData.password
+            });
+            if (success) {
+                alert('Account commissioned successfully. Please authenticate.');
                 navigate('/login');
+            } else {
+                setError('Registration failed. Identity code may already be in use.');
             }
         } catch (err) {
-            setError(err.response?.data?.message || 'Đăng ký thất bại. Vui lòng thử lại.');
+            setError('An error occurred during commissioning.');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="bg-background text-on-background font-body-md text-body-md antialiased min-h-screen flex flex-col">
-            <main className="flex-grow flex w-full">
-                <div className="grid grid-cols-1 md:grid-cols-2 w-full min-h-screen">
-                    {/* Left Side: Image */}
-                    <div className="hidden md:block relative h-full bg-surface-container w-full">
-                        <img 
-                            alt="Minimalist Fashion" 
-                            className="absolute inset-0 w-full h-full object-cover" 
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7QihfaxL2aopZuh2G8F_BmtS2DVALgr-7TG9xIQ88FgwWs6Kqp0GA6jj3GDlHJx9gZJeXcWVarI_4uCVuQUMfyqE7WSQMEkpVHLYkY1NFKiCq7T6j72zi2BQpJyxP71F9SnMg7-mWO2UACqHe_4MuZ9Z0HfBcsTtfdobKlsRLgRMpdJ52zEGr-6zhzlPevHDRdGLpWzuxTONOc6wOaPgWTfzssbEvsrLazzuWbf5FY3sp26s6Tz10zQQtCruNu1W5tlBWrst8kt0" 
-                        />
-                        <div className="absolute inset-0 bg-primary/10"></div>
-                        <div className="absolute inset-0 flex flex-col justify-end p-margin pb-xl">
-                            <span className="font-display-xl text-display-xl text-on-primary uppercase tracking-tighter mix-blend-difference">AnhCMS.Fashion</span>
+        <div className="bg-background text-on-background font-body-md antialiased pt-20 flex flex-col min-h-screen">
+            <Header />
+
+            <main className="flex-1 flex items-center justify-center p-sm py-20">
+                <div className="w-full max-w-md space-y-xl">
+                    <div className="text-center space-y-md">
+                        <div className="inline-flex size-16 bg-black items-center justify-center mb-4">
+                            <svg className="text-white size-10" fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z" fill="currentColor"></path>
+                            </svg>
                         </div>
+                        <h1 className="serif text-4xl font-bold tracking-tighter uppercase">AnhCMS.Fashion</h1>
+                        <p className="text-[10px] text-neutral-500 uppercase tracking-[0.4em] font-bold">New Identity Commissioning</p>
                     </div>
 
-                    {/* Right Side: Form Container */}
-                    <div className="flex flex-col justify-center px-margin py-xl w-full max-w-md mx-auto md:max-w-none md:px-[10%] lg:px-[15%] bg-surface-container-lowest">
-                        <div className="w-full max-w-sm mx-auto">
-                            <div className="md:hidden mb-12 text-center">
-                                <span className="font-display-xl-mobile text-display-xl-mobile text-primary uppercase tracking-tighter">AnhCMS.Fashion</span>
-                            </div>
-
-                            {/* Toggle */}
-                            <div className="flex space-x-8 mb-12 border-b border-surface-variant pb-2">
-                                <Link to="/login" className="font-headline-sm text-headline-sm text-secondary hover:text-primary transition-colors text-decoration-none">Login</Link>
-                                <button className="font-headline-sm text-headline-sm text-primary border-b-2 border-primary pb-1 transition-colors bg-transparent border-0">Register</button>
-                            </div>
-
-                            {error && <div className="alert alert-danger mb-4 text-sm py-2">{error}</div>}
-
-                            {/* Form */}
-                            <form className="space-y-6" onSubmit={handleSubmit}>
-                                <div className="relative">
-                                    <input 
-                                        className="peer block w-full appearance-none border-0 border-b border-secondary-container bg-transparent px-0 py-2 text-primary focus:border-primary focus:outline-none focus:ring-0 font-body-md text-body-md transition-colors" 
-                                        id="fullName" 
-                                        placeholder=" " 
-                                        type="text" 
-                                        required
-                                        value={formData.fullName}
-                                        onChange={handleInputChange}
-                                    />
-                                    <label className="absolute top-3 -z-10 origin-[0] -translate-y-6 scale-75 transform text-secondary duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:left-0 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary font-label-sm text-label-sm uppercase tracking-widest" htmlFor="fullName">
-                                        Full Name
-                                    </label>
-                                </div>
-                                <div className="relative mt-8">
-                                    <input 
-                                        className="peer block w-full appearance-none border-0 border-b border-secondary-container bg-transparent px-0 py-2 text-primary focus:border-primary focus:outline-none focus:ring-0 font-body-md text-body-md transition-colors" 
-                                        id="username" 
-                                        placeholder=" " 
-                                        type="text" 
-                                        required
-                                        value={formData.username}
-                                        onChange={handleInputChange}
-                                    />
-                                    <label className="absolute top-3 -z-10 origin-[0] -translate-y-6 scale-75 transform text-secondary duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:left-0 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary font-label-sm text-label-sm uppercase tracking-widest" htmlFor="username">
-                                        Username
-                                    </label>
-                                </div>
-                                <div className="relative mt-8">
-                                    <input 
-                                        className="peer block w-full appearance-none border-0 border-b border-secondary-container bg-transparent px-0 py-2 text-primary focus:border-primary focus:outline-none focus:ring-0 font-body-md text-body-md transition-colors" 
-                                        id="password" 
-                                        placeholder=" " 
-                                        type="password" 
-                                        required
-                                        value={formData.password}
-                                        onChange={handleInputChange}
-                                    />
-                                    <label className="absolute top-3 -z-10 origin-[0] -translate-y-6 scale-75 transform text-secondary duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:left-0 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary font-label-sm text-label-sm uppercase tracking-widest" htmlFor="password">
-                                        Password
-                                    </label>
-                                </div>
-
-                                <div className="pt-6">
-                                    <button 
-                                        className="w-full bg-primary text-on-primary py-4 px-6 font-label-sm text-label-sm uppercase tracking-widest rounded-none hover:bg-transparent hover:text-primary border border-primary transition-all duration-300" 
-                                        type="submit"
-                                        disabled={loading}
-                                    >
-                                        {loading ? 'Processing...' : 'Register'}
-                                    </button>
-                                </div>
-                            </form>
+                    <form onSubmit={handleRegister} className="bg-white border border-neutral-200 p-lg space-y-lg shadow-sm">
+                        <div className="space-y-sm">
+                            <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold">Identity Code (Username)</label>
+                            <input 
+                                type="text" 
+                                name="username"
+                                value={formData.username}
+                                onChange={handleChange}
+                                className="w-full bg-neutral-50 border-none focus:ring-1 focus:ring-black px-md py-4 text-sm font-semibold tracking-widest uppercase placeholder:text-neutral-300" 
+                                placeholder="Username" 
+                                required 
+                            />
                         </div>
+
+                        <div className="space-y-sm">
+                            <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold">Full Nomenclature</label>
+                            <input 
+                                type="text" 
+                                name="fullName"
+                                value={formData.fullName}
+                                onChange={handleChange}
+                                className="w-full bg-neutral-50 border-none focus:ring-1 focus:ring-black px-md py-4 text-sm font-semibold tracking-widest uppercase placeholder:text-neutral-300" 
+                                placeholder="Full Name" 
+                                required 
+                            />
+                        </div>
+
+                        <div className="space-y-sm">
+                            <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold">Electronic Mail</label>
+                            <input 
+                                type="email" 
+                                name="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                className="w-full bg-neutral-50 border-none focus:ring-1 focus:ring-black px-md py-4 text-sm tracking-widest placeholder:text-neutral-300" 
+                                placeholder="Email" 
+                                required 
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
+                            <div className="space-y-sm">
+                                <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold">Security Token</label>
+                                <input 
+                                    type="password" 
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    className="w-full bg-neutral-50 border-none focus:ring-1 focus:ring-black px-md py-4 text-sm tracking-widest placeholder:text-neutral-300" 
+                                    placeholder="Password" 
+                                    required 
+                                />
+                            </div>
+                            <div className="space-y-sm">
+                                <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold">Verify Token</label>
+                                <input 
+                                    type="password" 
+                                    name="confirmPassword"
+                                    value={formData.confirmPassword}
+                                    onChange={handleChange}
+                                    className="w-full bg-neutral-50 border-none focus:ring-1 focus:ring-black px-md py-4 text-sm tracking-widest placeholder:text-neutral-300" 
+                                    placeholder="Confirm" 
+                                    required 
+                                />
+                            </div>
+                        </div>
+
+                        {error && (
+                            <div className="p-md bg-red-50 border border-red-100 text-red-600 text-[10px] uppercase tracking-widest font-bold text-center">
+                                {error}
+                            </div>
+                        )}
+
+                        <button 
+                            type="submit" 
+                            disabled={loading}
+                            className="w-full bg-black text-white py-4 text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-neutral-800 transition-all border-0 outline-none"
+                        >
+                            {loading ? 'Commissioning...' : 'Commission Account'}
+                        </button>
+
+                        <div className="text-center pt-4 border-t border-outline-variant">
+                            <p className="text-[10px] text-secondary uppercase tracking-widest">
+                                Already Commissioned? <Link to="/login" className="text-primary font-bold hover:underline ml-2">Authenticate Access</Link>
+                            </p>
+                        </div>
+                    </form>
+
+                    <div className="text-center">
+                        <p className="text-[10px] text-neutral-400 uppercase tracking-widest">© 2024 International Holdings. All Rights Reserved.</p>
                     </div>
                 </div>
             </main>
+
+            <Footer />
         </div>
     );
 };

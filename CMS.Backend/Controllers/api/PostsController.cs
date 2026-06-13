@@ -9,6 +9,7 @@
               5. Áp dụng phân quyền truy cập cho các chức năng quản lý bài viết trong PostController (chỉ Admin mới được phép xóa, Editor chỉ được phép xem và sửa) trong PostController
 */
 using CMS.Data;
+using CMS.Data.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -87,5 +88,40 @@ namespace CMS.Backend.Controllers
             return Ok(post);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Create(Post post)
+        {
+            post.CreatedDate = DateTime.Now;
+            _context.Posts.Add(post);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction(nameof(GetDetail), new { id = post.Id }, post);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, Post post)
+        {
+            if (id != post.Id) return BadRequest();
+            _context.Entry(post).State = EntityState.Modified;
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.Posts.Any(e => e.Id == id)) return NotFound();
+                else throw;
+            }
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var post = await _context.Posts.FindAsync(id);
+            if (post == null) return NotFound();
+            _context.Posts.Remove(post);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
     }
 }

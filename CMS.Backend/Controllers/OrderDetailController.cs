@@ -11,6 +11,7 @@
 using CMS.Data;
 using CMS.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace CMS.Backend.Controllers
@@ -35,6 +36,51 @@ namespace CMS.Backend.Controllers
                     .ThenInclude(p => p.CategoryProduct) // Lấy tên danh mục sản phẩm (nếu muốn)
                 .ToList();
             return View(orderDetails);
+        }
+
+        [HttpGet]
+        public IActionResult Create()
+        {
+            ViewBag.OrderList = new SelectList(_context.Orders, "Id", "Id");
+            ViewBag.ProductList = new SelectList(_context.Products, "Id", "Name");
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Create(OrderDetail model)
+        {
+            _context.OrderDetails.Add(model);
+            _context.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult Delete(int id)
+        {
+            var orderDetail = _context.OrderDetails.Find(id);
+            if (orderDetail != null)
+            {
+                _context.OrderDetails.Remove(orderDetail);
+                _context.SaveChanges();
+            }
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            var orderDetail = _context.OrderDetails.Find(id);
+            if (orderDetail == null) return NotFound();
+            ViewBag.OrderList = new SelectList(_context.Orders, "Id", "Id", orderDetail.OrderId);
+            ViewBag.ProductList = new SelectList(_context.Products, "Id", "Name", orderDetail.ProductId);
+            return View(orderDetail);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(OrderDetail model)
+        {
+            _context.OrderDetails.Update(model);
+            _context.SaveChanges();
+            return RedirectToAction("Index");
         }
     }
 }

@@ -1,8 +1,173 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Dashboard Overview";
+    Layout = "_LayoutAdmin";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="space-y-xl">
+    <!-- Overview Header -->
+    <section class="flex flex-col md:flex-row justify-between items-end gap-md">
+        <div class="space-y-xs">
+            <h3 class="text-label-sm uppercase tracking-[0.3em] text-secondary">Analytics Overview</h3>
+            <p class="serif text-4xl font-bold">Welcome back, @(User.FindFirst("FullName")?.Value ?? "Admin").</p>
+            <p class="text-body-md text-on-surface-variant max-w-lg">Your curated luxury performance metrics for the current fiscal period.</p>
+        </div>
+        <div class="flex gap-md">
+            <button class="bg-primary text-on-primary px-lg py-3 text-label-sm uppercase tracking-widest flex items-center gap-2 hover:bg-neutral-800 transition-all">
+                <span class="material-symbols-outlined text-lg">download</span>
+                Export Report
+            </button>
+            <button class="border border-primary px-lg py-3 text-label-sm uppercase tracking-widest hover:bg-primary hover:text-on-primary transition-all">
+                Current Period
+            </button>
+        </div>
+    </section>
+
+    <!-- Key Metrics -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+        <!-- Metric 1 -->
+        <div class="bg-surface-container-lowest border border-outline-variant p-lg space-y-md group hover:border-primary transition-colors">
+            <div class="flex justify-between items-start">
+                <div class="space-y-1">
+                    <span class="text-label-sm uppercase tracking-widest text-secondary">Total Sales</span>
+                    <p class="text-3xl font-bold tracking-tighter serif">128.430.000 đ</p>
+                </div>
+                <div class="text-green-600 bg-green-50 px-2 py-1 text-xs font-bold">+12.5%</div>
+            </div>
+            <div class="h-16 w-full chart-gradient relative overflow-hidden">
+                <div class="absolute bottom-0 left-0 w-full h-px bg-primary opacity-20"></div>
+                <svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 100 40">
+                    <path d="M0,35 Q10,30 20,32 T40,20 T60,25 T80,10 T100,15" fill="none" stroke="black" stroke-width="2"></path>
+                </svg>
+            </div>
+        </div>
+        <!-- Metric 2 -->
+        <div class="bg-surface-container-lowest border border-outline-variant p-lg space-y-md group hover:border-primary transition-colors">
+            <div class="flex justify-between items-start">
+                <div class="space-y-1">
+                    <span class="text-label-sm uppercase tracking-widest text-secondary">New Orders</span>
+                    <p class="text-3xl font-bold tracking-tighter serif">432</p>
+                </div>
+                <div class="text-green-600 bg-green-50 px-2 py-1 text-xs font-bold">+8.2%</div>
+            </div>
+            <div class="h-16 w-full chart-gradient relative overflow-hidden">
+                <svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 100 40">
+                    <path d="M0,30 Q20,35 40,25 T60,15 T80,20 T100,5" fill="none" stroke="black" stroke-width="2"></path>
+                </svg>
+            </div>
+        </div>
+        <!-- Metric 3 -->
+        <div class="bg-surface-container-lowest border border-outline-variant p-lg space-y-md group hover:border-primary transition-colors">
+            <div class="flex justify-between items-start">
+                <div class="space-y-1">
+                    <span class="text-label-sm uppercase tracking-widest text-secondary">Active Customers</span>
+                    <p class="text-3xl font-bold tracking-tighter serif">1.284</p>
+                </div>
+                <div class="text-on-surface-variant bg-surface-container px-2 py-1 text-xs font-bold">+5.1%</div>
+            </div>
+            <div class="h-16 w-full chart-gradient relative overflow-hidden">
+                <svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 100 40">
+                    <path d="M0,38 Q25,30 50,32 T75,20 T100,18" fill="none" stroke="black" stroke-width="2"></path>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- Performance Charts Section -->
+    <section class="grid grid-cols-1 xl:grid-cols-3 gap-lg">
+        <!-- Main Revenue Chart -->
+        <div class="xl:col-span-2 bg-surface-container-lowest border border-outline-variant p-lg">
+            <div class="flex justify-between items-center mb-xl">
+                <h4 class="text-headline-sm uppercase tracking-widest">Revenue Performance</h4>
+                <div class="flex gap-4">
+                    <span class="flex items-center gap-2 text-label-sm uppercase">
+                        <span class="size-2 bg-primary"></span> Current Year
+                    </span>
+                    <span class="flex items-center gap-2 text-label-sm uppercase text-secondary">
+                        <span class="size-2 bg-surface-container-highest"></span> Previous Year
+                    </span>
+                </div>
+            </div>
+            <div class="h-80 w-full bg-surface-container-low flex items-end justify-between px-lg relative">
+                <!-- Grid Lines -->
+                <div class="absolute inset-0 flex flex-col justify-between py-md pointer-events-none opacity-20">
+                    <div class="border-b border-outline"></div>
+                    <div class="border-b border-outline"></div>
+                    <div class="border-b border-outline"></div>
+                    <div class="border-b border-outline"></div>
+                </div>
+                <!-- Bar Visualization -->
+                <div class="w-12 bg-primary hover:opacity-80 transition-opacity" style="height: 60%;"></div>
+                <div class="w-12 bg-primary hover:opacity-80 transition-opacity" style="height: 45%;"></div>
+                <div class="w-12 bg-primary hover:opacity-80 transition-opacity" style="height: 75%;"></div>
+                <div class="w-12 bg-primary hover:opacity-80 transition-opacity" style="height: 85%;"></div>
+                <div class="w-12 bg-primary hover:opacity-80 transition-opacity" style="height: 65%;"></div>
+                <div class="w-12 bg-primary hover:opacity-80 transition-opacity" style="height: 90%;"></div>
+                <div class="w-12 bg-primary hover:opacity-80 transition-opacity" style="height: 55%;"></div>
+                <div class="w-12 bg-primary hover:opacity-80 transition-opacity" style="height: 70%;"></div>
+            </div>
+            <div class="flex justify-between px-lg mt-md text-label-sm text-secondary uppercase">
+                <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span>
+            </div>
+        </div>
+        <!-- Category Distribution -->
+        <div class="bg-surface-container-lowest border border-outline-variant p-lg flex flex-col">
+            <h4 class="text-headline-sm uppercase tracking-widest mb-xl">Inventory Split</h4>
+            <div class="flex-1 flex flex-col justify-center gap-lg">
+                <div class="space-y-xs">
+                    <div class="flex justify-between text-label-sm uppercase tracking-widest">
+                        <span>Luxury Dresses</span>
+                        <span>45%</span>
+                    </div>
+                    <div class="w-full h-1 bg-surface-container">
+                        <div class="h-full bg-primary" style="width: 45%;"></div>
+                    </div>
+                </div>
+                <div class="space-y-xs">
+                    <div class="flex justify-between text-label-sm uppercase tracking-widest">
+                        <span>Designer Bags</span>
+                        <span>30%</span>
+                    </div>
+                    <div class="w-full h-1 bg-surface-container">
+                        <div class="h-full bg-primary" style="width: 30%;"></div>
+                    </div>
+                </div>
+                <div class="space-y-xs">
+                    <div class="flex justify-between text-label-sm uppercase tracking-widest">
+                        <span>Premium Accessories</span>
+                        <span>15%</span>
+                    </div>
+                    <div class="w-full h-1 bg-surface-container">
+                        <div class="h-full bg-primary" style="width: 15%;"></div>
+                    </div>
+                </div>
+                <div class="space-y-xs">
+                    <div class="flex justify-between text-label-sm uppercase tracking-widest">
+                        <span>Limited Edition</span>
+                        <span>10%</span>
+                    </div>
+                    <div class="w-full h-1 bg-surface-container">
+                        <div class="h-full bg-primary" style="width: 10%;"></div>
+                    </div>
+                </div>
+            </div>
+            <a asp-controller="Product" asp-action="Index" class="mt-xl text-label-sm uppercase tracking-[0.2em] border-b border-primary self-start pb-1">View Full Inventory</a>
+        </div>
+    </section>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const metrics = document.querySelectorAll('section > div');
+            metrics.forEach((m, i) => {
+                m.style.opacity = '0';
+                m.style.transform = 'translateY(10px)';
+                setTimeout(() => {
+                    m.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+                    m.style.opacity = '1';
+                    m.style.transform = 'translateY(0)';
+                }, i * 100);
+            });
+        });
+    </script>
+}

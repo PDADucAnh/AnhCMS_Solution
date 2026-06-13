@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using CMS.Data;
 using CMS.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CMS.Backend.Controllers
 {
@@ -77,6 +78,56 @@ namespace CMS.Backend.Controllers
             {
                 return StatusCode(500, new { message = "Lỗi xử lý tạo đơn hàng ngầm", detail = ex.Message });
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var orders = await _context.Orders
+                .Include(o => o.Customer)
+                .OrderByDescending(o => o.OrderDate)
+                .ToListAsync();
+            return Ok(orders);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetDetail(int id)
+        {
+            var order = await _context.Orders
+                .Include(o => o.Customer)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Product)
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (order == null) return NotFound();
+            return Ok(order);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, Order order)
+        {
+            if (id != order.Id) return BadRequest();
+            _context.Entry(order).State = EntityState.Modified;
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.Orders.Any(e => e.Id == id)) return NotFound();
+                else throw;
+            }
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null) return NotFound();
+            _context.Orders.Remove(order);
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
 
         // LỚP DTO TRUNG GIAN ĐỂ HỨNG DỮ LIỆU TỪ FRONTEND TRUYỀN LÊN

@@ -1,36 +1,38 @@
-﻿@model IEnumerable<CMS.Data.Entities.Post>
+@model IEnumerable<CMS.Data.Entities.Post>
 @{
+    ViewData["Title"] = "Blog Posts";
     Layout = "_LayoutAdmin";
 }
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="text-dark">DANH SÁCH BÀI VIẾT</h2>
-        <a asp-action="Create" class="btn btn-success">
-            <i class="bi bi-plus-circle"></i> Thêm bài viết mới
+<div class="space-y-lg">
+    <div class="flex justify-between items-center">
+        <div>
+            <h3 class="text-label-sm uppercase tracking-[0.3em] text-secondary">Content Management</h3>
+            <p class="serif text-3xl font-bold">Editorial Stories</p>
+        </div>
+        <a asp-action="Create" class="bg-primary text-on-primary px-lg py-3 text-label-sm uppercase tracking-widest flex items-center gap-2 hover:bg-neutral-800 transition-all">
+            <span class="material-symbols-outlined text-lg">add</span>
+            Create New Post
         </a>
     </div>
-    <div class="row">
+
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-lg">
         @foreach (var item in Model)
         {
-            <div class="col-md-4 mb-3">
-                <div class="card shadow-sm">
-                    <img src="@item.ImageUrl" class="card-img-top" alt="Thumbnail">
-                    <div class="card-body">
-                        <span class="badge bg-info text-dark">@item.Category.Name</span>
-                        <h5 class="card-title text-primary">@item.Title</h5>
-                        <p class="card-text text-truncate">@item.Content</p>
-                        <p class="text-muted small">Ngày đăng: @item.CreatedDate.ToString("dd/MM/yyyy")</p>
-                        <a href="/Post/Details/@item.Id" class="btn btn-outline-primary btn-sm">Xem chi tiết</a>
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">
-                            Sửa
-                        </a>
-
-                        <a asp-action="Delete" asp-route-id="@item.Id"
-                           class="btn btn-sm btn-outline-danger"
-                           onclick="return confirm('Chúng ta có chắc chắn muốn xóa bài viết này không?')">
-                            <i class="bi bi-trash"></i> Xóa
-                        </a>
+            <div class="bg-surface-container-lowest border border-outline-variant overflow-hidden group hover:border-primary transition-all flex flex-col">
+                <div class="aspect-video overflow-hidden">
+                    <img src="@item.ImageUrl" class="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" alt="Thumbnail">
+                </div>
+                <div class="p-lg flex-1 flex flex-col space-y-md">
+                    <div class="flex justify-between items-start">
+                        <span class="text-[10px] font-bold uppercase tracking-[0.2em] px-2 py-1 border border-outline text-secondary">@item.Category.Name</span>
+                        <span class="text-label-sm text-secondary">@item.CreatedDate.ToString("MMM dd, yyyy")</span>
+                    </div>
+                    <h4 class="serif text-xl font-bold leading-tight flex-1">@item.Title</h4>
+                    <div class="flex gap-md pt-4 border-t border-outline-variant">
+                        <a asp-action="Details" asp-route-id="@item.Id" class="text-label-sm uppercase tracking-widest font-bold border-b border-primary pb-1">Details</a>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="text-label-sm uppercase tracking-widest font-bold text-secondary hover:text-primary transition-colors">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="text-label-sm uppercase tracking-widest font-bold text-error ml-auto" onclick="return confirm('Delete this post?')">Delete</a>
                     </div>
                 </div>
             </div>

@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import blogService from '../../services/postService';
-// IMPORT  component CON VÀO ĐỂ SỬ DỤNG
 import PostCard from '../../components/PostCard';
 
-
-function LatestBlog() { // chỉ lấy 3 tin
+function LatestBlog() {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
-
 
     useEffect(() => {
         const fetchLatestPosts = async () => {
@@ -25,47 +22,23 @@ function LatestBlog() { // chỉ lấy 3 tin
         fetchLatestPosts();
     }, []);
 
-
-    if (loading) {
-        return (
-            <div className="container my-4 text-center">
-                <div className="spinner-border spinner-border-sm text-secondary" role="status"></div>
-                <span className="ml-2 text-muted" style={{ fontSize: '14px' }}>Đang nạp tin tức xu hướng...</span>
-            </div>
-        );
-    }
-
+    if (loading) return null;
 
     return (
-        <section className="latest-blog-section py-5" style={{ backgroundColor: '#fdfbf7' }}>
-            <div className="container">
+        <section className="px-margin mb-xl py-xl bg-surface">
+            <div className="text-center mb-xl">
+                <h2 className="font-display-xl text-headline-lg uppercase tracking-tight mb-sm">XU HƯỚNG THỜI TRANG</h2>
+                <p className="text-secondary font-body-md max-w-xl mx-auto italic serif">Cập nhật những mẹo phối đồ và tin tức phong cách mới nhất cùng AnhCMS.Fashion</p>
+                <div className="w-12 h-0.5 bg-primary mx-auto mt-md"></div>
+            </div>
 
-                <div className="section-heading mb-4 text-center">
-                    <h3 className="font-weight-bold text-uppercase" style={{ color: '#005088' }}>
-                        Xu Hướng Thời Trang
-                    </h3>
-                    <p className="text-muted lead" style={{ fontSize: '15px' }}>
-                        Cập nhật những mẹo phối đồ và tin tức phong cách mới nhất cùng ThaiCMS
-                    </p>
-                    <div className="mx-auto" style={{ width: '60px', height: '3px', backgroundColor: '#11CAA0' }}></div>
-                </div>
-
-
-                {/* KHUNG LƯỚI ĐỒNG BỘ  component CON */}
-                <div className="row mt-5">
-                    {posts.map((item) => (
-                        <div className="col-lg-4 col-md-6 col-12 mb-4" key={item.id}>
-                            {/* CHÈN COMPONENT CON VÀ TRUYỀN DỮ LIỆU QUA PROP post */}
-                            <PostCard post={item} />
-                        </div>
-                    ))}
-                </div>
-
-
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+                {posts.map((item) => (
+                    <PostCard key={item.id} post={item} />
+                ))}
             </div>
         </section>
     );
 }
-
 
 export default LatestBlog;

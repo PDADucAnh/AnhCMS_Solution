@@ -3,17 +3,19 @@ import React from 'react';
 const LoadingOrEmpty = ({ isLoading, message }) => {
   if (isLoading) {
     return (
-      <div className="col-12 text-center py-5">
-        <div className="spinner-border text-primary" role="status"></div>
-        <p className="mt-3 text-muted">Đang tải dữ liệu...</p>
+      <div className="w-full text-center py-20">
+        <div className="animate-pulse flex flex-col items-center">
+            <div className="size-12 bg-surface-container rounded-full mb-md"></div>
+            <p className="text-label-sm uppercase tracking-widest text-secondary">Curating Content...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="col-12 text-center py-5">
-      <i className="fas fa-box-open fa-3x text-light mb-3"></i>
-      <p className="text-muted">{message || 'Không tìm thấy kết quả nào.'}</p>
+    <div className="w-full text-center py-20 bg-surface-container-low border border-dashed border-outline-variant">
+      <span className="material-symbols-outlined text-4xl text-outline mb-md">inventory_2</span>
+      <p className="text-label-sm uppercase tracking-widest text-secondary">{message || 'No distinctive pieces found.'}</p>
     </div>
   );
 };

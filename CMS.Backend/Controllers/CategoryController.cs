@@ -12,6 +12,7 @@ using CMS.Data;
 using CMS.Data.Entities;// Kết nối tới lớp dữ liệu vừa tạo
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CMS.Backend.Controllers
 {
@@ -32,6 +33,18 @@ namespace CMS.Backend.Controllers
             var data = _context.Categories.ToList();
             return View(data);
         }
+
+        public IActionResult Details(int id)
+        {
+            var category = _context.Categories
+                .Include(c => c.Posts)
+                .FirstOrDefault(c => c.Id == id);
+
+            if (category == null) return NotFound();
+
+            return View(category);
+        }
+
         // 1. Hàm GET: Dùng để hiển thị giao diện Form cho  nhập
         [HttpGet]
         public IActionResult Create()

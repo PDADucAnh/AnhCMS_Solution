@@ -2,13 +2,11 @@ import React from 'react';
 import { useCart } from '../context/CartContext';
 import { Link } from 'react-router-dom';
 
-const IMAGE_BASE_URL = process.env.REACT_APP_API_URL || "https://localhost:7111"; // Sử dụng biến môi trường nếu có
+const IMAGE_BASE_URL = process.env.REACT_APP_API_URL || "https://localhost:7224";
 
-// file thành phần component nhận vào đối tượng 'item' từ file thành phần component cha truyền xuống
 function ProductCard({ item }) {
     const { addToCart } = useCart();
     
-    // Hàm bổ trợ: Định dạng số thô thành chuỗi tiền tệ VNĐ (450.000 ₫)
     const formatCurrency = (value) => {
         return new Intl.NumberFormat('vi-VN', {
             style: 'currency',
@@ -16,71 +14,48 @@ function ProductCard({ item }) {
         }).format(value);
     };
 
-    // Xử lý logic đường dẫn ảnh: Nếu là đường dẫn tuyệt đối thì dùng luôn, nếu không thì nối với BASE_URL
     const imageUrl = item.imageUrl?.startsWith('http') 
         ? item.imageUrl 
         : `${IMAGE_BASE_URL}${item.imageUrl || ''}`;
 
     return (
-        <div className="card h-100 shadow-sm border-0 product-card-hover" style={{ borderRadius: '12px', overflow: 'hidden', transition: '0.3s' }}>
-            
-            {/* Khối 1: Hình ảnh trang phục + Nhãn tồn kho */}
-            <div className="position-relative overflow-hidden" style={{ height: '320px', backgroundColor: '#f8fafc' }}>
+        <div className="group cursor-pointer pb-md flex flex-col h-full">
+            <div className="relative aspect-[4/5] bg-surface-container mb-sm overflow-hidden">
                 <Link to={`/product/${item.id}`}>
                     <img 
                         src={imageUrl}
-                        className="card-img-top w-100 h-100" 
+                        className="w-full h-full object-cover transition-transform duration-700 grayscale group-hover:grayscale-0 group-hover:scale-105" 
                         alt={item.name}
-                        style={{ objectFit: 'cover', transition: 'transform 0.5s' }}
-                        onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
-                        onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
                     />
                 </Link>
                 
-                {/* Thuật toán: Nếu tồn kho thấp (<= 5) thì đóng dấu cảnh báo */}
                 {item.stockQuantity <= 5 && (
-                    <span className="badge badge-danger position-absolute px-2 py-1" style={{ top: '15px', left: '15px', borderRadius: '4px', fontSize: '11px' }}>
-                        Bán chạy / Còn {item.stockQuantity} chiếc
-                    </span>
+                    <div className="absolute top-xs left-xs bg-transparent border border-error px-2 py-1">
+                        <span className="font-label-sm text-[10px] text-error uppercase tracking-widest">Limited / {item.stockQuantity} Left</span>
+                    </div>
                 )}
-            </div>
 
-            {/* Khối 2: Nội dung thông tin chi tiết trang phục */}
-            <div className="card-body d-flex flex-column p-3">
-                {/* Tên sản phẩm */}
-                <Link to={`/product/${item.id}`} className="text-decoration-none">
-                    <h6 className="card-title font-weight-bold text-dark text-truncate mb-1" title={item.name} style={{ fontSize: '16px' }}>
-                        {item.name}
-                    </h6>
-                </Link>
-                
-                {/* Giá tiền sản phẩm */}
-                <p className="card-text font-weight-bold text-danger mb-3" style={{ fontSize: '17px' }}>
-                    {formatCurrency(item.price)}
-                </p>
-
-                {/* Cụm nút bấm tương tác đẩy sát đáy thẻ (mt-auto) */}
-                <div className="mt-auto pt-2 border-top d-flex justify-content-between">
-                    <Link 
-                        to={`/product/${item.id}`} 
-                        className="btn btn-sm btn-outline-primary font-weight-bold px-3" 
-                        style={{ borderRadius: '20px', flexGrow: 1, textAlign: 'center' }}
-                    >
-                        <i className="fas fa-eye mr-1"></i> Chi tiết
-                    </Link>
+                <div className="absolute bottom-0 left-0 w-full p-sm flex gap-xs bg-gradient-to-t from-black/50 to-transparent opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                    <Link to={`/product/${item.id}`} className="flex-1 bg-surface text-primary py-2 font-label-sm text-[10px] text-center uppercase tracking-widest hover:bg-primary hover:text-white transition-colors border border-transparent hover:border-primary text-decoration-none">Quick View</Link>
                     <button 
-                        className="btn btn-sm text-white font-weight-bold px-3 ml-2" 
-                        style={{ borderRadius: '20px', backgroundColor: '#11CAA0', borderColor: '#11CAA0', flexGrow: 1 }}
+                        className="bg-primary text-on-primary p-2 flex items-center justify-center hover:bg-surface hover:text-primary transition-colors border border-primary outline-none"
                         onClick={() => {
                             addToCart(item);
-                            alert(`Đã thêm mẫu [${item.name}] vào giỏ hàng!`);
+                            // We could use a more elegant toast notification here
                         }}
                     >
-                        <i className="fas fa-cart-plus mr-1"></i> Mua ngay
+                        <span className="material-symbols-outlined text-[18px]">add_shopping_cart</span>
                     </button>
                 </div>
             </div>
-
+            <div className="flex justify-between items-start mt-2">
+                <div className="space-y-1">
+                    <h3 className="font-body-md text-sm text-primary font-bold uppercase tracking-tight leading-none truncate w-48">
+                        <Link to={`/product/${item.id}`} className="text-primary text-decoration-none">{item.name}</Link>
+                    </h3>
+                    <p className="font-body-md text-sm text-secondary">{formatCurrency(item.price)}</p>
+                </div>
+            </div>
         </div>
     );
 }

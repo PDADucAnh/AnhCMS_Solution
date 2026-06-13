@@ -10,6 +10,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CMS.Data;
+using CMS.Data.Entities;
 using System.Threading.Tasks;
 using System.Linq;
 
@@ -64,6 +65,49 @@ namespace CMS.Backend.Controllers
                     detail = ex.Message
                 });
             }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var category = await _context.CategoriesProducts.FindAsync(id);
+            if (category == null) return NotFound();
+            return Ok(category);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(CategoryProduct category)
+        {
+            _context.CategoriesProducts.Add(category);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction(nameof(GetById), new { id = category.Id }, category);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, CategoryProduct category)
+        {
+            if (id != category.Id) return BadRequest();
+            _context.Entry(category).State = EntityState.Modified;
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.CategoriesProducts.Any(e => e.Id == id)) return NotFound();
+                else throw;
+            }
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var category = await _context.CategoriesProducts.FindAsync(id);
+            if (category == null) return NotFound();
+            _context.CategoriesProducts.Remove(category);
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
 
     }

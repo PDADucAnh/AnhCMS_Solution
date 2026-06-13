@@ -8,19 +8,21 @@ const ProductList = ({ products, isLoading, error }) => {
   }
 
   if (error) {
-    return <div className="col-12 alert alert-danger">{error}</div>;
+    return (
+        <div className="p-lg bg-error-container text-error text-label-sm uppercase tracking-widest font-bold text-center border border-error">
+            {error}
+        </div>
+    );
   }
 
   if (!products || products.length === 0) {
-    return <LoadingOrEmpty message="Chưa có sản phẩm nào trong mục này." />;
+    return <LoadingOrEmpty message="The curator has not yet added items to this division." />;
   }
 
   return (
-    <div className="row w-100">
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-gutter">
       {products.map((product) => (
-        <div className="col-xl-4 col-md-6 col-12 mb-4" key={product.id}>
-          <ProductCard item={product} />
-        </div>
+          <ProductCard key={product.id} item={product} />
       ))}
     </div>
   );

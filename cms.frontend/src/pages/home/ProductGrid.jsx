@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import productService from '../../services/productService';
-// IMPORT file thành phần component  CON VÀO ĐỂ SỬ DỤNG
 import ProductCard from '../../components/ProductCard';
-
 
 function ProductGrid({ categoryId }) {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-
 
     useEffect(() => {
         const fetchAllProducts = async () => {
@@ -24,57 +21,43 @@ function ProductGrid({ categoryId }) {
         fetchAllProducts();
     }, []);
 
-
     if (loading) {
         return (
-            <div className="container my-5 text-center">
-                <div className="spinner-border text-primary" role="status"></div>
-                <p className="mt-2 text-muted">Đang tải danh sách trang phục mới nhất...</p>
+            <div className="px-margin my-xl text-center">
+                <div className="animate-pulse flex flex-col items-center">
+                    <div className="size-12 bg-surface-container rounded-full mb-md"></div>
+                    <p className="font-label-sm text-label-sm uppercase tracking-widest text-secondary">Curating Collection...</p>
+                </div>
             </div>
         );
     }
 
-    // Lọc sản phẩm theo CategoryId nếu có
     const displayProducts = categoryId 
         ? products.filter(p => p.categoryProductId === categoryId)
         : products;
 
-
     return (
-        <section className="product-grid-wrapper py-4">
-            <div className="container">
+        <section className="px-margin mb-xl">
+            <div className="flex justify-between items-end mb-lg">
+                <h2 className="font-display-xl text-headline-lg uppercase tracking-tight">Trending Now</h2>
+                <span className="font-label-sm text-label-sm uppercase tracking-widest text-secondary">
+                    Displaying ({displayProducts.length}) Pieces
+                </span>
+            </div>
 
-                <div className="section-heading mb-4 d-flex justify-content-between align-items-center border-bottom pb-2">
-                    <h4 className="font-weight-bold text-uppercase m-0" style={{ color: '#005088' }}>
-                        <i className="fas fa-sparkles mr-2 text-warning"></i> Sản phẩm nổi bật
-                    </h4>
-                    <span className="text-muted" style={{ fontSize: '14px' }}>
-                        Hiển thị ({displayProducts.length}) sản phẩm
-                    </span>
-                </div>
-
-
-                {/* KHUNG LƯỚI GRID SYSTEM */}
-                <div className="row">
-                    {displayProducts.map((product) => (
-                        <div className="col-xl-3 col-lg-4 col-sm-6 col-12 mb-4" key={product.id}>
-                            {/* CHÈN ĐÚNG file thành phần component  CON TẠI ĐÂY VÀ TRUYỀN DỮ LIỆU ĐI */}
-                            <ProductCard item={product} />
-                        </div>
-                    ))}
-                    {displayProducts.length === 0 && (
-                        <div className="col-12 text-center py-5">
-                            <i className="fas fa-box-open fa-3x text-light mb-3"></i>
-                            <p className="text-muted text-uppercase small font-weight-bold">Không tìm thấy sản phẩm nào trong mục này</p>
-                        </div>
-                    )}
-                </div>
-
-
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-gutter">
+                {displayProducts.map((product) => (
+                    <ProductCard key={product.id} item={product} />
+                ))}
+                {displayProducts.length === 0 && (
+                    <div className="col-span-full text-center py-20 bg-surface-container-low border border-dashed border-outline-variant">
+                        <span className="material-symbols-outlined text-4xl text-outline mb-md">inventory_2</span>
+                        <p className="font-label-sm text-label-sm uppercase tracking-widest text-secondary">No pieces found in this collection</p>
+                    </div>
+                )}
             </div>
         </section>
     );
 }
-
 
 export default ProductGrid;

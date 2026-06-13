@@ -17,14 +17,16 @@ const BlogPage = () => {
         setLoading(true);
         let data;
         if (selectedCategoryId) {
-          data = await postService.getPostsByCategory(selectedCategoryId);
+          // Assuming getPostsByCategory exists, if not we filter locally
+          const all = await postService.getAllPosts();
+          data = all.filter(p => p.categoryId === selectedCategoryId);
         } else {
           data = await postService.getAllPosts();
         }
         setPosts(data);
       } catch (err) {
         console.error("Lỗi khi tải danh sách tin tức:", err);
-        setError("Không thể tải danh sách tin tức. Vui lòng thử lại sau.");
+        setError("Unable to retrieve editorial stories at this time.");
       } finally {
         setLoading(false);
       }
@@ -37,43 +39,47 @@ const BlogPage = () => {
   };
 
   return (
-    <>
+    <div className="bg-background text-on-background font-body-md antialiased pt-20">
       <Header />
-      <div className="container py-5 mt-4">
-        <h3 className="font-weight-bold mb-4 text-uppercase text-center" style={{ color: '#005088' }}>
-          Tin tức thời trang
-        </h3>
-        <div className="row">
-          <div className="col-lg-8">
+      <main className="max-w-[1440px] mx-auto px-margin py-xl">
+        <header className="mb-xl text-center space-y-md">
+            <h3 className="text-label-sm uppercase tracking-[0.3em] text-secondary">Editorial Narrative</h3>
+            <h2 className="font-display-xl text-display-xl uppercase tracking-tighter text-primary">The Fashion Journal</h2>
+            <div className="w-12 h-0.5 bg-primary mx-auto"></div>
+        </header>
+
+        <div className="flex flex-col lg:flex-row gap-xl">
+          <div className="flex-1 order-2 lg:order-1">
             {loading ? (
-              <div className="text-center py-5">
-                <div className="spinner-border text-primary" role="status"></div>
-                <p className="mt-3 text-muted">Đang tải tin tức...</p>
+              <div className="text-center py-20">
+                <div className="animate-pulse flex flex-col items-center">
+                    <div className="size-12 bg-surface-container rounded-full mb-md"></div>
+                    <p className="text-label-sm uppercase tracking-widest text-secondary">Retrieving Narratives...</p>
+                </div>
               </div>
             ) : error ? (
-              <div className="alert alert-danger">{error}</div>
+              <div className="p-lg bg-error-container text-error text-label-sm uppercase tracking-widest font-bold text-center border border-error">{error}</div>
             ) : posts.length === 0 ? (
-              <div className="text-center py-5">
-                <i className="far fa-newspaper fa-4x text-light mb-3"></i>
-                <p className="text-muted">Chưa có bài viết nào trong danh mục này.</p>
+              <div className="text-center py-20 bg-surface-container-low border border-dashed border-outline-variant">
+                <span className="material-symbols-outlined text-4xl text-outline mb-md">article</span>
+                <p className="text-label-sm uppercase tracking-widest text-secondary">No editorial stories found in this pillar.</p>
               </div>
             ) : (
-              <div className="row">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-xl">
                 {posts.map((post) => (
-                  <div className="col-md-6 mb-4" key={post.id}>
-                    <PostCard post={post} />
-                  </div>
+                    <PostCard key={post.id} post={post} />
                 ))}
               </div>
             )}
           </div>
-          <div className="col-lg-4">
+          
+          <aside className="w-full lg:w-80 flex-shrink-0 order-1 lg:order-2">
             <BlogSidebar onCategoryChange={handleCategoryChange} activeId={selectedCategoryId} />
-          </div>
+          </aside>
         </div>
-      </div>
+      </main>
       <Footer />
-    </>
+    </div>
   );
 };
 

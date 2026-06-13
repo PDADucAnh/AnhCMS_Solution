@@ -1,98 +1,102 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
-import orderService from '../../services/orderService';
 import CartTable from './CartTable';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 
 const ShoppingCartPage = () => {
   const navigate = useNavigate();
-  const { cartItems, removeFromCart, updateQuantity, cartTotal, clearCart } = useCart();
+  const { cartItems, removeFromCart, updateQuantity, cartTotal } = useCart();
 
-  const handleCheckout = async () => {
+  const handleCheckout = () => {
     navigate('/checkout');
   };
 
   if (cartItems.length === 0) {
     return (
-      <>
+      <div className="bg-background text-on-background font-body-md antialiased pt-20 min-vh-100 flex flex-col">
         <Header />
-        <div className="container py-5 my-5 text-center">
-          <i className="fas fa-shopping-bag fa-5x text-light mb-4"></i>
-          <h2 className="font-weight-bold">Giỏ hàng của bạn đang trống</h2>
-          <p className="text-muted mb-4">Có vẻ như bạn chưa thêm sản phẩm nào vào giỏ hàng.</p>
-          <Link to="/shop" className="btn btn-primary px-5 py-2" style={{ backgroundColor: '#2d6a4f', borderColor: '#2d6a4f' }}>
-            BẮT ĐẦU MUA SẮM
+        <main className="flex-1 flex flex-col items-center justify-center px-margin py-20 text-center space-y-lg">
+          <div className="size-20 bg-surface-container flex items-center justify-center text-outline mb-4 rounded-full">
+            <span className="material-symbols-outlined text-4xl">shopping_bag</span>
+          </div>
+          <div className="space-y-md">
+            <h2 className="font-display-xl text-display-xl-mobile md:text-headline-lg uppercase tracking-tighter">Your Bag is Empty</h2>
+            <p className="text-secondary italic serif max-w-md mx-auto">Discover the latest collection and curate your personal luxury aesthetic.</p>
+          </div>
+          <Link to="/shop" className="bg-primary text-on-primary px-xl py-4 font-label-sm text-label-sm uppercase tracking-[0.3em] font-bold hover:bg-neutral-800 transition-all text-decoration-none">
+            Begin Exploration
           </Link>
-        </div>
+        </main>
         <Footer />
-      </>
+      </div>
     );
   }
 
   return (
-    <>
+    <div className="bg-background text-on-background font-body-md antialiased pt-20">
       <Header />
-      <div className="container py-5 mt-4">
-        <h3 className="font-weight-bold mb-4 text-uppercase" style={{ color: '#005088' }}>
-          <i className="fas fa-shopping-cart mr-2"></i> Giỏ hàng của bạn
-        </h3>
+      <main className="max-w-[1440px] mx-auto px-margin py-xl">
+        <header className="mb-xl text-center space-y-md">
+            <h3 className="text-label-sm uppercase tracking-[0.3em] text-secondary">Aquisition Manifest</h3>
+            <h2 className="font-display-xl text-display-xl uppercase tracking-tighter">Your Shopping Bag</h2>
+            <div className="w-12 h-0.5 bg-primary mx-auto"></div>
+        </header>
 
-        <div className="row">
-          <div className="col-lg-8">
+        <div className="flex flex-col lg:flex-row gap-xl">
+          <div className="flex-1 space-y-lg">
             <CartTable 
               items={cartItems} 
               onUpdateQuantity={updateQuantity} 
               onRemove={removeFromCart} 
             />
             
-            <Link to="/shop" className="btn btn-link text-decoration-none mt-3 p-0" style={{ color: '#2d6a4f' }}>
-              <i className="fas fa-arrow-left mr-2"></i> Tiếp tục mua sắm
+            <Link to="/shop" className="inline-flex items-center gap-2 text-label-sm uppercase tracking-widest font-bold border-b border-primary pb-1 text-primary text-decoration-none hover:text-secondary hover:border-secondary transition-all">
+              <span className="material-symbols-outlined text-lg">arrow_back</span>
+              Continue Exploration
             </Link>
           </div>
 
-          <div className="col-lg-4 mt-4 mt-lg-0">
-            <div className="card shadow-sm border-0 bg-light p-4">
-              <h5 className="font-weight-bold mb-4">Tóm tắt đơn hàng</h5>
-              <div className="d-flex justify-content-between mb-3">
-                <span className="text-muted">Tạm tính</span>
-                <span className="font-weight-bold">{cartTotal.toLocaleString()} ₫</span>
+          <aside className="w-full lg:w-96 flex-shrink-0">
+            <div className="bg-surface-container-low border border-outline-variant p-lg space-y-xl sticky top-32">
+              <h5 className="text-headline-sm uppercase tracking-widest border-b border-outline-variant pb-md">Manifest Summary</h5>
+              
+              <div className="space-y-md">
+                <div className="flex justify-between items-center text-label-sm uppercase tracking-widest">
+                    <span className="text-secondary">Subtotal</span>
+                    <span className="font-bold">{cartTotal.toLocaleString()} ₫</span>
+                </div>
+                <div className="flex justify-between items-center text-label-sm uppercase tracking-widest">
+                    <span className="text-secondary">Delivery Insight</span>
+                    <span className="text-primary font-bold uppercase tracking-widest text-[10px]">Complimentary</span>
+                </div>
               </div>
-              <div className="d-flex justify-content-between mb-3">
-                <span className="text-muted">Phí vận chuyển</span>
-                <span className="text-success font-weight-bold">Miễn phí</span>
-              </div>
-              <hr />
-              <div className="d-flex justify-content-between mb-4">
-                <span className="h5 font-weight-bold">Tổng cộng</span>
-                <span className="h5 font-weight-bold text-danger">
+
+              <div className="border-t border-outline-variant pt-lg flex justify-between items-center">
+                <span className="text-label-sm uppercase tracking-[0.2em] font-bold">Total Acquisition</span>
+                <span className="serif text-2xl font-bold">
                   {cartTotal.toLocaleString()} ₫
                 </span>
               </div>
               
               <button 
-                className="btn btn-primary btn-lg w-100 font-weight-bold"
+                className="w-full bg-primary text-on-primary py-5 text-label-sm uppercase tracking-[0.3em] font-bold hover:bg-neutral-800 transition-all border-0"
                 onClick={handleCheckout}
-                style={{ 
-                  backgroundColor: '#2d6a4f', 
-                  borderColor: '#2d6a4f',
-                  fontSize: '16px'
-                }}
               >
-                TIẾN HÀNH THANH TOÁN
+                Proceed to Checkout
               </button>
               
-              <div className="alert alert-info mt-4 small border-0">
-                <i className="fas fa-info-circle mr-2"></i> 
-                Miễn phí vận chuyển cho đơn hàng từ 500.000 ₫.
+              <div className="bg-white border border-outline-variant p-md flex items-start gap-md">
+                <span className="material-symbols-outlined text-secondary">verified_user</span>
+                <p className="text-[10px] text-secondary uppercase tracking-widest leading-relaxed">Secure transaction portal. Complimentary shipping on all acquisitions over 500.000 ₫.</p>
               </div>
             </div>
-          </div>
+          </aside>
         </div>
-      </div>
+      </main>
       <Footer />
-    </>
+    </div>
   );
 };
 

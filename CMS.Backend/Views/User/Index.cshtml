@@ -1,61 +1,63 @@
-﻿@model IEnumerable<CMS.Data.Entities.User>
+@model IEnumerable<CMS.Data.Entities.User>
 @{
-    ViewData["Title"] = "Index";
-}
-@{
+    ViewData["Title"] = "Admin Users";
     Layout = "_LayoutAdmin";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="text-dark">QUẢN LÝ THÀNH VIÊN</h2>
-    <a asp-action="Create" class="btn btn-success">
-        <i class="bi bi-plus-circle"></i> Thêm thành viên mới
-    </a>
-</div>
+<div class="space-y-lg">
+    <div class="flex justify-between items-center">
+        <div>
+            <h3 class="text-label-sm uppercase tracking-[0.3em] text-secondary">System Administration</h3>
+            <p class="serif text-3xl font-bold">Security Personnel</p>
+        </div>
+        <a asp-action="Create" class="bg-primary text-on-primary px-lg py-3 text-label-sm uppercase tracking-widest flex items-center gap-2 hover:bg-neutral-800 transition-all">
+            <span class="material-symbols-outlined text-lg">person_add</span>
+            New Administrator
+        </a>
+    </div>
 
-
-
-<table class="table table-hover shadow-sm border">
-    <thead class="table-light">
-        <tr>
-            <th>ID</th>
-            <th>Tên Đăng Nhập</th>
-            <th>Họ Và Tên</th>
-            <th>Quyền Hạn</th>
-            <th>Thao Tác</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var user in Model)
-        {
-            <tr>
-                <td>@user.Id</td>
-                <td><strong>@user.Username</strong></td>
-                <td>@user.FullName</td>
-                <td>
-                    @if (user.Role == "Administrator")
+    <div class="bg-surface-container-lowest border border-outline-variant overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="border-b border-outline-variant text-label-sm uppercase text-secondary tracking-widest bg-surface-container-low">
+                        <th class="px-lg py-4">User</th>
+                        <th class="px-lg py-4">Username</th>
+                        <th class="px-lg py-4">Access Level</th>
+                        <th class="px-lg py-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant">
+                    @foreach (var user in Model)
                     {
-                        <span class="badge bg-danger">@user.Role</span>
+                        <tr class="table-row-hover transition-colors">
+                            <td class="px-lg py-5">
+                                <div class="flex items-center gap-3">
+                                    <div class="size-10 bg-surface-container-highest flex items-center justify-center font-bold text-sm">
+                                        @(user.FullName?.Substring(0, 1).ToUpper() ?? "U")
+                                    </div>
+                                    <span class="text-body-md font-bold">@user.FullName</span>
+                                </div>
+                            </td>
+                            <td class="px-lg py-5 text-label-sm tracking-widest uppercase">@user.Username</td>
+                            <td class="px-lg py-5">
+                                @if (user.Role == "Administrator")
+                                {
+                                    <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 bg-primary text-on-primary">@user.Role</span>
+                                }
+                                else
+                                {
+                                    <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 border border-primary text-primary">@user.Role</span>
+                                }
+                            </td>
+                            <td class="px-lg py-5 text-right space-x-4">
+                                <a asp-action="Edit" asp-route-id="@user.Id" class="text-label-sm uppercase tracking-widest font-bold text-secondary hover:text-primary transition-colors">Edit Access</a>
+                                <a asp-action="Delete" asp-route-id="@user.Id" class="text-label-sm uppercase tracking-widest font-bold text-error" onclick="return confirm('Revoke access for this user?')">Revoke</a>
+                            </td>
+                        </tr>
                     }
-                    else
-                    {
-                        <span class="badge bg-info text-dark">@user.Role</span>
-                    }
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-outline-warning">
-                        Sửa
-                    </a>
-                    <a asp-action="Delete" asp-route-id="@user.Id" class="btn btn-outline-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa thành viên này?')">
-                        Xóa
-                    </a>
-
-                </td>
-            </tr>
-
-                
-
-        }
-    </tbody>
-</table>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>

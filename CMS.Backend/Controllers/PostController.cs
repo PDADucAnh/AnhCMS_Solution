@@ -29,19 +29,16 @@ namespace CMS.Backend.Controllers
         }
         public IActionResult Index(int? id)
         {
-            // 1. Kiểm tra nếu không có id truyền vào thì trả về lỗi hoặc toàn bộ bài viết
-            if (id == null)
+            // 1. Lấy danh sách bài viết
+            IQueryable<Post> query = _context.Posts.Include(p => p.Category);
+
+            // 2. Nếu có id (CategoryId) thì lọc theo danh mục
+            if (id != null)
             {
-                return BadRequest("Vui lòng cung cấp mã danh mục.");
+                query = query.Where(p => p.CategoryId == id);
             }
 
-            // 2. Sử dụng LINQ với tham số 'id' linh hoạt
-            var posts = _context.Posts
-                        .Where(p => p.CategoryId == id)
-                        .OrderByDescending(p => p.CreatedDate)
-                        .Include(p => p.Category)
-                        .ToList();
-
+            var posts = query.OrderByDescending(p => p.CreatedDate).ToList();
 
             // 3. Truyền dữ liệu ra View
             return View(posts);

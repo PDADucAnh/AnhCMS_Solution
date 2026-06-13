@@ -1,58 +1,80 @@
 import React from 'react';
 
 const CartTable = ({ items, onUpdateQuantity, onRemove }) => {
+  const IMAGE_BASE_URL = process.env.REACT_APP_API_URL || "https://localhost:7111";
+
   return (
-    <div className="table-responsive">
-      <table className="table table-hover border">
-        <thead className="thead-light">
-          <tr>
-            <th scope="col" className="border-0">Sản phẩm</th>
-            <th scope="col" className="border-0 text-center">Giá</th>
-            <th scope="col" className="border-0 text-center">Số lượng</th>
-            <th scope="col" className="border-0 text-right">Thành tiền</th>
-            <th scope="col" className="border-0"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((item) => (
-            <tr key={item.id}>
-              <td className="align-middle">
-                <div className="d-flex align-items-center">
-                  <img 
-                    src={item.imageUrl || 'https://via.placeholder.com/60x80'} 
-                    alt={item.name} 
-                    className="img-fluid rounded mr-3"
-                    style={{ width: '50px', height: '70px', objectFit: 'cover' }} 
-                  />
-                  <span className="font-weight-bold">{item.name}</span>
-                </div>
-              </td>
-              <td className="align-middle text-center">
-                {item.price.toLocaleString()} ₫
-              </td>
-              <td className="align-middle text-center">
-                <div className="d-flex align-items-center justify-content-center">
-                  <button className="btn btn-sm btn-outline-secondary py-0" onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}>
-                    <i className="fas fa-minus small"></i>
-                  </button>
-                  <span className="mx-3">{item.quantity}</span>
-                  <button className="btn btn-sm btn-outline-secondary py-0" onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}>
-                    <i className="fas fa-plus small"></i>
-                  </button>
-                </div>
-              </td>
-              <td className="align-middle text-right font-weight-bold">
-                {(item.price * item.quantity).toLocaleString()} ₫
-              </td>
-              <td className="align-middle text-right">
-                <button className="btn btn-sm text-danger" onClick={() => onRemove(item.id)}>
-                  <i className="fas fa-trash"></i>
-                </button>
-              </td>
+    <div className="bg-surface-container-lowest border border-outline-variant overflow-hidden">
+      <div className="overflow-x-auto">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="border-b border-outline-variant text-[10px] uppercase text-secondary tracking-[0.2em] bg-surface-container-low font-bold">
+              <th className="px-lg py-4">Item Nomenclature</th>
+              <th className="px-lg py-4 text-center">Acquisition Value</th>
+              <th className="px-lg py-4 text-center">Manifest Quantity</th>
+              <th className="px-lg py-4 text-right">Total</th>
+              <th className="px-lg py-4"></th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-outline-variant">
+            {items.map((item) => {
+              const imageUrl = item.imageUrl?.startsWith('http') ? item.imageUrl : `${IMAGE_BASE_URL}${item.imageUrl}`;
+              return (
+                <tr key={item.id} className="table-row-hover transition-colors">
+                  <td className="px-lg py-6">
+                    <div className="flex items-center gap-lg">
+                      <div className="size-20 flex-shrink-0 bg-surface-container overflow-hidden border border-outline-variant">
+                        <img 
+                          src={imageUrl || 'https://via.placeholder.com/100x125'} 
+                          alt={item.name} 
+                          className="w-full h-full object-cover grayscale"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <span className="text-body-md font-bold uppercase tracking-tight block">
+                            {item.name}
+                        </span>
+                        <span className="text-[10px] text-outline uppercase tracking-widest block">ID: #LX-PRD-{item.id}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-lg py-6 text-center text-body-md serif">
+                    {item.price.toLocaleString()} ₫
+                  </td>
+                  <td className="px-lg py-6">
+                    <div className="flex items-center justify-center gap-md">
+                      <button 
+                        className="size-8 flex items-center justify-center border border-outline-variant bg-transparent text-secondary hover:text-primary hover:border-primary transition-all outline-none" 
+                        onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
+                      >
+                        <span className="material-symbols-outlined text-sm">remove</span>
+                      </button>
+                      <span className="font-bold text-sm w-4 text-center">{item.quantity}</span>
+                      <button 
+                        className="size-8 flex items-center justify-center border border-outline-variant bg-transparent text-secondary hover:text-primary hover:border-primary transition-all outline-none" 
+                        onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+                      >
+                        <span className="material-symbols-outlined text-sm">add</span>
+                      </button>
+                    </div>
+                  </td>
+                  <td className="px-lg py-6 text-right font-bold serif text-lg">
+                    {(item.price * item.quantity).toLocaleString()} ₫
+                  </td>
+                  <td className="px-lg py-6 text-right">
+                    <button 
+                      className="bg-transparent border-0 text-error hover:text-red-800 transition-colors p-2 outline-none" 
+                      onClick={() => onRemove(item.id)}
+                    >
+                      <span className="material-symbols-outlined">delete_outline</span>
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
