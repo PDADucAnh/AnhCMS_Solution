@@ -10,6 +10,8 @@ import Blog from './pages/blog/index';                  // Tự động nạp fi
 import BlogDetail from './pages/blog-detail/index';  // Nạp trang chi tiết bài viết cụ thể
 import Cart from './pages/cart/index';                  // Tự động nạp file pages/cart/index.jsx
 import Checkout from './pages/checkout/index';          // Tự động nạp file pages/checkout/index.jsx
+import Login from './pages/login/index';
+import Register from './pages/register/index';
 
 // 2. IMPORT CONTEXT
 import { CartProvider } from './context/CartContext';
@@ -43,6 +45,9 @@ function App() {
 
                             {/* Cấu hình Trang Điền thông tin thanh toán - Địa chỉ "/checkout" */}
                             <Route path="/checkout" element={<Checkout />} />
+
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/register" element={<Register />} />
 
                             {/* XỬ LÝ KỊCH BẢN TRANG LỖI 404 (Khi sinh viên gõ sai URL) */}
                             <Route path="*" element={
