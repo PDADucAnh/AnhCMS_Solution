@@ -10,7 +10,7 @@ function HeroBanner() {
                     className="w-full h-full object-cover transition-transform duration-[10s] hover:scale-105" 
                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqDI7Mz7K5BTIU02aNjpBEWhHAMWivU705BjuekjOzaWv5Ncq4RVM6FLqCQVDkxlst2xznDkIgv_u3I5fCM_COlDOuu5MLopgMKY7TLultFzoPfCdPyoPYgr1Xh6S2cppro04Fx_Bgmph_P3RLcr61NOUPmk3vn7Agh9O-c6znHdPWdT12btWMVa5SQz4029qFLcomV-MB3IUWQINEZLRJUkU2Vo5Q4dEjSJxTNR04fNUX5G4p8twxUkYYOpTk9KvSPxL0JIJVF3o" 
                 />
-                <div className="absolute inset-0 bg-black/20"></div>
+                <div className="absolute inset-0 bg-black/10"></div>
             </div>
             <div className="relative z-10 text-center px-margin max-w-3xl">
                 <h1 className="font-display-xl text-display-xl md:text-display-xl text-white mb-md tracking-tighter uppercase drop-shadow-md">THE NEW ELEGANCE</h1>

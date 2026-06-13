@@ -1,11 +1,12 @@
 import React from 'react';
 import { useCart } from '../context/CartContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const IMAGE_BASE_URL = process.env.REACT_APP_API_URL || "https://localhost:7224";
 
 function ProductCard({ item }) {
     const { addToCart } = useCart();
+    const navigate = useNavigate();
     
     const formatCurrency = (value) => {
         return new Intl.NumberFormat('vi-VN', {
@@ -18,13 +19,26 @@ function ProductCard({ item }) {
         ? item.imageUrl 
         : `${IMAGE_BASE_URL}${item.imageUrl || ''}`;
 
+    const handleDirectBuy = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        addToCart(item);
+        navigate('/checkout');
+    };
+
+    const handleAddToCart = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        addToCart(item);
+    };
+
     return (
         <div className="group cursor-pointer pb-md flex flex-col h-full">
             <div className="relative aspect-[4/5] bg-surface-container mb-sm overflow-hidden">
                 <Link to={`/product/${item.id}`}>
                     <img 
                         src={imageUrl}
-                        className="w-full h-full object-cover transition-transform duration-700 grayscale group-hover:grayscale-0 group-hover:scale-105" 
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
                         alt={item.name}
                     />
                 </Link>
@@ -35,16 +49,21 @@ function ProductCard({ item }) {
                     </div>
                 )}
 
-                <div className="absolute bottom-0 left-0 w-full p-sm flex gap-xs bg-gradient-to-t from-black/50 to-transparent opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-                    <Link to={`/product/${item.id}`} className="flex-1 bg-surface text-primary py-2 font-label-sm text-[10px] text-center uppercase tracking-widest hover:bg-primary hover:text-white transition-colors border border-transparent hover:border-primary text-decoration-none">Quick View</Link>
+                <div className="absolute bottom-0 left-0 w-full p-sm flex flex-col gap-xs bg-gradient-to-t from-black/50 to-transparent opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                    <div className="flex gap-xs">
+                        <Link to={`/product/${item.id}`} className="flex-1 bg-surface text-primary py-2 font-label-sm text-[10px] text-center uppercase tracking-widest hover:bg-primary hover:text-white transition-colors border border-transparent hover:border-primary text-decoration-none">Quick View</Link>
+                        <button 
+                            className="bg-primary text-on-primary p-2 flex items-center justify-center hover:bg-surface hover:text-primary transition-colors border border-primary outline-none"
+                            onClick={handleAddToCart}
+                        >
+                            <span className="material-symbols-outlined text-[18px]">add_shopping_cart</span>
+                        </button>
+                    </div>
                     <button 
-                        className="bg-primary text-on-primary p-2 flex items-center justify-center hover:bg-surface hover:text-primary transition-colors border border-primary outline-none"
-                        onClick={() => {
-                            addToCart(item);
-                            // We could use a more elegant toast notification here
-                        }}
+                        onClick={handleDirectBuy}
+                        className="w-full bg-white text-black py-2 font-label-sm text-[10px] uppercase tracking-widest hover:bg-black hover:text-white transition-all duration-300 border-0 outline-none"
                     >
-                        <span className="material-symbols-outlined text-[18px]">add_shopping_cart</span>
+                        Direct Buy
                     </button>
                 </div>
             </div>

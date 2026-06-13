@@ -11,10 +11,10 @@ function PostCard({ post }) {
     return (
         <div className="group cursor-pointer flex flex-col h-full">
             <div className="aspect-[4/3] overflow-hidden mb-md bg-surface-container relative">
-                <Link to={`/blog-detail/${post.id}`}>
+                <Link to={`/blog/${post.id}`}>
                     <img 
                         src={imageUrl}
-                        className="w-full h-full object-cover transition-transform duration-700 grayscale group-hover:grayscale-0 group-hover:scale-105" 
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
                         alt={post.title}
                     />
                 </Link>
@@ -24,14 +24,14 @@ function PostCard({ post }) {
                 <span>{post.createdDate ? new Date(post.createdDate).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) : 'New Editorial'}</span>
             </div>
             <h3 className="font-display-xl text-xl mb-sm group-hover:text-secondary transition-colors uppercase tracking-tighter font-bold">
-                <Link to={`/blog-detail/${post.id}`} className="text-primary text-decoration-none hover:text-secondary transition-colors">{post.title}</Link>
+                <Link to={`/blog/${post.id}`} className="text-primary text-decoration-none hover:text-secondary transition-colors">{post.title}</Link>
             </h3>
             <p className="text-secondary text-sm line-clamp-2 mb-md text-justify serif italic leading-relaxed">
                 {post.summary || 'Elevating the everyday through minimalist design and uncompromising quality. Discover the essence of modern fashion.'}
             </p>
             <div className="mt-auto">
                 <Link 
-                    to={`/blog-detail/${post.id}`}
+                    to={`/blog/${post.id}`}
                     className="font-label-sm text-[10px] uppercase tracking-[0.3em] border-b border-primary pb-1 hover:text-secondary transition-colors text-decoration-none text-primary font-bold"
                 >
                     Read Narrative →

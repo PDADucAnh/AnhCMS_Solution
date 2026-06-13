@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { useCart } from '../../context/CartContext';
@@ -24,19 +24,16 @@ const CheckoutPage = () => {
   const handleSubmitOrder = async (e) => {
     e.preventDefault();
     if (cartItems.length === 0) {
-      alert("Giỏ hàng của bạn đang trống!");
+      alert("Your acquisition manifest is empty.");
       return;
     }
 
     try {
       setLoading(true);
       
-      // Prepare data for API
-      // Since we don't have a login system for Customers yet, we'll use a mocked CustomerId (e.g., 1)
-      // In a real app, this would come from the logged-in user state or a guest registration
       const orderData = {
         customerId: 1, // Mocked ID
-        notes: `Giao đến: ${formData.fullname}, SĐT: ${formData.phone}, ĐC: ${formData.address}. Ghi chú: ${formData.notes}`,
+        notes: `Delivery to: ${formData.fullname}, Contact: ${formData.phone}, Location: ${formData.address}. Narrative: ${formData.notes}`,
         items: cartItems.map(item => ({
           productId: item.id,
           quantity: item.quantity,
@@ -47,134 +44,177 @@ const CheckoutPage = () => {
       const result = await orderService.submitOrder(orderData);
       
       if (result) {
-        alert("Chúc mừng! Đơn hàng của bạn đã được tiếp nhận.");
+        alert("Transaction complete. Your acquisition has been recorded.");
         clearCart();
         navigate('/');
       }
     } catch (error) {
       console.error("Lỗi khi đặt hàng:", error);
-      alert("Có lỗi xảy ra khi xử lý đơn hàng. Vui lòng thử lại.");
+      alert("An error occurred during the transaction. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <>
-      <Header />
-      <div className="container py-5 mt-4">
-        <h3 className="font-weight-bold mb-4 text-uppercase" style={{ color: '#005088' }}>
-          <i className="fas fa-credit-card mr-2"></i> Thanh toán đơn hàng
-        </h3>
-        
-        <form onSubmit={handleSubmitOrder}>
-          <div className="row">
-            <div className="col-lg-8">
-              <div className="card shadow-sm border-0 p-4 mb-4">
-                <h5 className="font-weight-bold mb-4 border-bottom pb-2">Thông tin giao hàng</h5>
-                <div className="row">
-                  <div className="col-md-6 mb-3">
-                    <label className="font-weight-bold small text-uppercase">Họ và tên</label>
-                    <input 
-                      type="text" 
-                      name="fullname"
-                      className="form-control" 
-                      placeholder="Nhập họ tên người nhận" 
-                      required
-                      value={formData.fullname}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="col-md-6 mb-3">
-                    <label className="font-weight-bold small text-uppercase">Số điện thoại</label>
-                    <input 
-                      type="text" 
-                      name="phone"
-                      className="form-control" 
-                      placeholder="09xx xxx xxx" 
-                      required
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                </div>
-                <div className="mb-3">
-                  <label className="font-weight-bold small text-uppercase">Địa chỉ nhận hàng</label>
-                  <input 
-                    type="text" 
-                    name="address"
-                    className="form-control" 
-                    placeholder="Số nhà, tên đường..." 
-                    required
-                    value={formData.address}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="mb-0">
-                  <label className="font-weight-bold small text-uppercase">Ghi chú đơn hàng</label>
-                  <textarea 
-                    name="notes"
-                    className="form-control" 
-                    rows="3" 
-                    placeholder="Yêu cầu đặc biệt (ví dụ: giao giờ hành chính)"
-                    value={formData.notes}
-                    onChange={handleInputChange}
-                  ></textarea>
-                </div>
-              </div>
-              
-              <div className="card shadow-sm border-0 p-4">
-                <h5 className="font-weight-bold mb-4 border-bottom pb-2">Phương thức thanh toán</h5>
-                <div className="custom-control custom-radio mb-3">
-                  <input type="radio" id="cod" name="payment" className="custom-control-input" defaultChecked />
-                  <label className="custom-control-label" htmlFor="cod">
-                    <strong>Thanh toán khi nhận hàng (COD)</strong>
-                    <p className="text-muted small m-0">Giao hàng và thu tiền tại nhà</p>
-                  </label>
-                </div>
-              </div>
-            </div>
-            
-            <div className="col-lg-4">
-              <div className="card shadow-sm border-0 bg-light p-4 sticky-top" style={{ top: '100px', zIndex: 1 }}>
-                <h5 className="font-weight-bold mb-4">Tóm tắt đơn hàng</h5>
-                <div className="mb-4">
-                  {cartItems.map(item => (
-                    <div className="d-flex justify-content-between mb-2 small" key={item.id}>
-                      <span className="text-muted">{item.name} x {item.quantity}</span>
-                      <span>{((item.discountPrice || item.price) * item.quantity).toLocaleString()} ₫</span>
-                    </div>
-                  ))}
-                </div>
-                <div className="d-flex justify-content-between mb-2">
-                  <span className="text-muted">Tạm tính</span>
-                  <span className="font-weight-bold">{cartTotal.toLocaleString()} ₫</span>
-                </div>
-                <div className="d-flex justify-content-between mb-2">
-                  <span className="text-muted">Phí vận chuyển</span>
-                  <span className="text-success font-weight-bold">Miễn phí</span>
-                </div>
-                <hr />
-                <div className="d-flex justify-content-between mb-4">
-                  <span className="h5 font-weight-bold">Tổng cộng</span>
-                  <span className="h5 font-weight-bold text-danger">{cartTotal.toLocaleString()} ₫</span>
-                </div>
-                
-                <button 
-                  type="submit"
-                  disabled={loading || cartItems.length === 0}
-                  className="btn btn-primary btn-lg w-100 font-weight-bold text-uppercase py-3" 
-                  style={{ backgroundColor: '#005088', borderColor: '#005088', fontSize: '15px' }}
-                >
-                  {loading ? 'Đang xử lý...' : 'Xác nhận đặt hàng'}
-                </button>
-              </div>
-            </div>
+  if (cartItems.length === 0) {
+    return (
+      <div className="bg-background text-on-background font-body-md antialiased pt-20 min-vh-100 flex flex-col">
+        <Header />
+        <main className="flex-1 flex flex-col items-center justify-center px-margin py-20 text-center space-y-lg">
+          <div className="size-20 bg-surface-container flex items-center justify-center text-outline mb-4 rounded-full">
+            <span className="material-symbols-outlined text-4xl">shopping_bag</span>
           </div>
-        </form>
+          <div className="space-y-md">
+            <h2 className="font-display-xl text-display-xl-mobile md:text-headline-lg uppercase tracking-tighter">Manifest Empty</h2>
+            <p className="text-secondary italic serif max-w-md mx-auto">You cannot proceed to checkout without items in your collection.</p>
+          </div>
+          <Link to="/shop" className="bg-primary text-on-primary px-xl py-4 font-label-sm text-label-sm uppercase tracking-[0.3em] font-bold hover:bg-neutral-800 transition-all text-decoration-none">
+            Return to Boutique
+          </Link>
+        </main>
+        <Footer />
       </div>
+    );
+  }
+
+  return (
+    <div className="bg-background text-on-background font-body-md antialiased pt-20">
+      <Header />
+      
+      <main className="max-w-[1440px] mx-auto px-margin py-xl">
+        <header className="mb-xl text-center space-y-md">
+            <h3 className="text-label-sm uppercase tracking-[0.3em] text-secondary">Secure Portal</h3>
+            <h2 className="font-display-xl text-display-xl uppercase tracking-tighter">Finalize Acquisition</h2>
+            <div className="w-12 h-0.5 bg-primary mx-auto"></div>
+        </header>
+
+        <form onSubmit={handleSubmitOrder} className="flex flex-col lg:flex-row gap-xl">
+            {/* Left: Shipping Info */}
+            <div className="flex-1 space-y-lg">
+                <div className="bg-surface-container-lowest border border-outline-variant p-xl space-y-xl">
+                    <h5 className="font-display-xl text-headline-sm uppercase tracking-widest border-b border-outline-variant pb-md">Delivery Credentials</h5>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
+                        <div className="space-y-sm">
+                            <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Full Identity Name</label>
+                            <input 
+                                type="text" 
+                                name="fullname"
+                                className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm font-semibold tracking-widest uppercase placeholder:text-outline-variant" 
+                                placeholder="Recipient Name" 
+                                required
+                                value={formData.fullname}
+                                onChange={handleInputChange}
+                            />
+                        </div>
+                        <div className="space-y-sm">
+                            <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Telephonic Connection</label>
+                            <input 
+                                type="text" 
+                                name="phone"
+                                className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm font-semibold tracking-widest uppercase placeholder:text-outline-variant" 
+                                placeholder="Contact Number" 
+                                required
+                                value={formData.phone}
+                                onChange={handleInputChange}
+                            />
+                        </div>
+                    </div>
+                    
+                    <div className="space-y-sm">
+                        <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Physical Residence</label>
+                        <input 
+                            type="text" 
+                            name="address"
+                            className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm font-semibold tracking-widest uppercase placeholder:text-outline-variant" 
+                            placeholder="Delivery Address" 
+                            required
+                            value={formData.address}
+                            onChange={handleInputChange}
+                        />
+                    </div>
+                    
+                    <div className="space-y-sm">
+                        <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Narrative Notes</label>
+                        <textarea 
+                            name="notes"
+                            className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-body-md italic leading-relaxed placeholder:text-outline-variant resize-none" 
+                            rows="4" 
+                            placeholder="Special delivery instructions..."
+                            value={formData.notes}
+                            onChange={handleInputChange}
+                        ></textarea>
+                    </div>
+                </div>
+
+                <div className="bg-surface-container-lowest border border-outline-variant p-xl space-y-lg">
+                    <h5 className="font-display-xl text-headline-sm uppercase tracking-widest border-b border-outline-variant pb-md">Transaction Method</h5>
+                    <label className="flex items-start gap-md p-md border border-primary bg-surface-container-low cursor-pointer">
+                        <div className="flex items-center h-6">
+                            <input type="radio" name="payment" defaultChecked className="size-4 text-primary focus:ring-primary border-primary bg-transparent" />
+                        </div>
+                        <div className="space-y-1">
+                            <span className="text-label-sm uppercase tracking-widest font-bold block">Cash on Delivery (COD)</span>
+                            <span className="text-[10px] text-secondary uppercase tracking-widest block">Settle transaction upon receipt of goods.</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            {/* Right: Order Summary */}
+            <aside className="w-full lg:w-96 flex-shrink-0">
+                <div className="bg-surface-container-low border border-outline-variant p-lg space-y-xl sticky top-32">
+                    <h5 className="text-headline-sm uppercase tracking-widest border-b border-outline-variant pb-md">Manifest Overview</h5>
+                    
+                    <div className="space-y-md border-b border-outline-variant pb-md max-h-60 overflow-y-auto no-scrollbar">
+                        {cartItems.map(item => (
+                            <div className="flex justify-between items-start gap-md" key={item.id}>
+                                <div className="flex-1 space-y-1">
+                                    <span className="text-label-sm uppercase tracking-widest font-bold block">{item.name}</span>
+                                    <span className="text-[10px] text-secondary uppercase tracking-widest block">Qty: {item.quantity}</span>
+                                </div>
+                                <span className="font-bold text-sm">{((item.discountPrice || item.price) * item.quantity).toLocaleString()} ₫</span>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="space-y-md">
+                        <div className="flex justify-between items-center text-label-sm uppercase tracking-widest">
+                            <span className="text-secondary">Subtotal</span>
+                            <span className="font-bold">{cartTotal.toLocaleString()} ₫</span>
+                        </div>
+                        <div className="flex justify-between items-center text-label-sm uppercase tracking-widest">
+                            <span className="text-secondary">Delivery Insight</span>
+                            <span className="text-primary font-bold uppercase tracking-widest text-[10px]">Complimentary</span>
+                        </div>
+                    </div>
+
+                    <div className="border-t border-outline-variant pt-lg flex justify-between items-center">
+                        <span className="text-label-sm uppercase tracking-[0.2em] font-bold">Total Acquisition</span>
+                        <span className="serif text-2xl font-bold">
+                            {cartTotal.toLocaleString()} ₫
+                        </span>
+                    </div>
+                    
+                    <button 
+                        type="submit"
+                        disabled={loading || cartItems.length === 0}
+                        className="w-full bg-primary text-on-primary py-5 text-label-sm uppercase tracking-[0.3em] font-bold hover:bg-neutral-800 transition-all border-0 outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {loading ? 'Processing...' : 'Confirm Transaction'}
+                    </button>
+                    
+                    <div className="bg-white border border-outline-variant p-md flex items-start gap-md">
+                        <span className="material-symbols-outlined text-secondary">lock</span>
+                        <p className="text-[10px] text-secondary uppercase tracking-widest leading-relaxed">Secure end-to-end encryption. Your credentials are protected.</p>
+                    </div>
+                </div>
+            </aside>
+        </form>
+      </main>
+
       <Footer />
-    </>
+    </div>
   );
 };
 

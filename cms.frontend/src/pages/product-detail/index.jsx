@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import productService from '../../services/productService';
@@ -7,6 +7,7 @@ import { useCart } from '../../context/CartContext';
 
 const ProductDetailPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { addToCart } = useCart();
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -42,7 +43,14 @@ const ProductDetailPage = () => {
   const handleAddToCart = () => {
     if (product) {
       addToCart(product, quantity);
-      alert(`Đã thêm ${quantity} [${product.name}] vào giỏ hàng!`);
+      alert(`Added ${quantity} [${product.name}] to cart!`);
+    }
+  };
+
+  const handleDirectBuy = () => {
+    if (product) {
+      addToCart(product, quantity);
+      navigate('/checkout');
     }
   };
 
@@ -190,7 +198,10 @@ const ProductDetailPage = () => {
               </button>
             </div>
             {/* Buy Now Ghost Button */}
-            <button className="w-full h-14 bg-transparent text-primary border border-primary font-label-sm text-label-sm uppercase tracking-widest hover:bg-primary hover:text-on-primary transition-colors duration-300">
+            <button 
+                onClick={handleDirectBuy}
+                className="w-full h-14 bg-transparent text-primary border border-primary font-label-sm text-label-sm uppercase tracking-widest hover:bg-primary hover:text-on-primary transition-colors duration-300"
+            >
               Buy Now
             </button>
             {/* Wishlist */}
