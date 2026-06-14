@@ -1,6 +1,7 @@
 using CMS.Data;
 using CMS.Data.Entities;
 using CMS.Backend.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace CMS.Backend.Services
@@ -8,10 +9,12 @@ namespace CMS.Backend.Services
     public class UserService : IUserService
     {
         private readonly ApplicationDbContext _context;
+        private readonly PasswordHasher<User> _passwordHasher;
 
         public UserService(ApplicationDbContext context)
         {
             _context = context;
+            _passwordHasher = new PasswordHasher<User>();
         }
 
         public async Task<IEnumerable<object>> GetAll()
@@ -68,7 +71,7 @@ namespace CMS.Backend.Services
 
             if (!string.IsNullOrEmpty(user.PasswordHash))
             {
-                existingUser.PasswordHash = user.PasswordHash;
+                existingUser.PasswordHash = _passwordHasher.HashPassword(existingUser, user.PasswordHash);
             }
 
             try
@@ -97,8 +100,26 @@ namespace CMS.Backend.Services
 
         public async Task<User?> Login(string username, string password)
         {
-            return await _context.Users
-                .FirstOrDefaultAsync(u => u.Username == username && u.PasswordHash == password);
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Username == username);
+
+            if (user == null)
+                return null;
+
+            var verificationResult = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
+
+            if (verificationResult == PasswordVerificationResult.Failed)
+                return null;
+
+            if (verificationResult == PasswordVerificationResult.SuccessRehashNeeded)
+            {
+                user.PasswordHash = _passwordHasher.HashPassword(user, password);
+                _context.Users.Update(user);
+                await _context.SaveChangesAsync();
+            }
+
+            user.PasswordHash = null;
+            return user;
         }
 
         public async Task<(bool Success, string Message)> Register(string username, string password, string fullName)
@@ -116,6 +137,8 @@ namespace CMS.Backend.Services
                 FullName = fullName,
                 Role = "Customer"
             };
+
+            newUser.PasswordHash = _passwordHasher.HashPassword(newUser, password);
 
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();

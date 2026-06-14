@@ -46,11 +46,25 @@ namespace CMS.Backend.Services
 
                 if (items != null && items.Count > 0)
                 {
-                    newOrder.OrderDetails = items.Select(item => new OrderDetail
+                    var productIds = items.Select(i => i.ProductId).ToList();
+                    var products = await _context.Products
+                        .Where(p => productIds.Contains(p.Id))
+                        .ToListAsync();
+                    var productDict = products.ToDictionary(p => p.Id);
+
+                    newOrder.OrderDetails = items.Select(item =>
                     {
-                        ProductId = item.ProductId,
-                        Quantity = item.Quantity,
-                        UnitPrice = item.UnitPrice
+                        if (!productDict.TryGetValue(item.ProductId, out var product))
+                        {
+                            throw new KeyNotFoundException($"Sản phẩm không tồn tại");
+                        }
+
+                        return new OrderDetail
+                        {
+                            ProductId = item.ProductId,
+                            Quantity = item.Quantity,
+                            UnitPrice = product.Price
+                        };
                     }).ToList();
                 }
 
