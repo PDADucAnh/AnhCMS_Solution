@@ -1,68 +1,34 @@
-﻿/*
-    Họ tên: Phạm Đức Anh
-    Mã SV: 2123110135
-    Ngày tạo: 06/06/2026
-    Mô tả:    1. Truy vấn dữ liệu LINQ CategoriesProducts Controller
-              2. Tạo trang admin hiển thị danh sách danh mục sản phẩm thời trang
-              3. Thiết kế giao diện quản lý danh mục sản phẩm (CRUD) trong CategoriesProductsController
-              4. Sử dụng Entity Framework để kết nối và thao tác với cơ sở dữ liệu SQL Server trong CategoriesProductsController
- */
+﻿using CMS.Data.Entities;
+using CMS.Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using CMS.Data;
-using CMS.Data.Entities;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace CMS.Backend.Controllers
 {
-    // 1. Cấu hình đường dẫn API: api/CategoriesProducts
     [Route("api/[controller]")]
-
-    // 2. Kích hoạt tính năng tự động kiểm tra lỗi dữ liệu (Validation)
     [ApiController]
-
-    // 3. Kế thừa ControllerBase để tối ưu bộ nhớ cho API thuần dữ liệu JSON
     public class CategoriesProductsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ICategoryProductService _categoryProductService;
 
-        // 4. Hàm khởi tạo: Nạp cơ sở dữ liệu SQL Server vào Controller thông qua DI
-        public CategoriesProductsController(ApplicationDbContext context)
+        public CategoriesProductsController(ICategoryProductService categoryProductService)
         {
-            _context = context;
+            _categoryProductService = categoryProductService;
         }
 
-        /// <summary>
-        /// API lấy toàn bộ danh mục sản phẩm thời trang (Giao thức GET)
-        /// Đường dẫn gọi dữ liệu: GET https://localhost:xxxx/api/CategoriesProducts
-        /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             try
             {
-                // Bước A: Quét bảng dữ liệu CategoriesProducts số nhiều dưới SQL Server lên
-                var categories = await _context.CategoriesProducts
-                        .Select(c => new
-                        {
-                            // Bước B: Kỹ thuật gọt tỉa (Projection) - chỉ lấy các trường cần thiết ra FrontEnd
-                            c.Id,
-                            c.Name,
-                            c.Description
-                        })
-                    .ToListAsync(); // Chuyển đổi bất đồng bộ sang dạng danh sách mảng
-
-                // Bước C: Trả về mã thành công HTTP 200 OK đính kèm chuỗi chữ JSON sạch
+                var categories = await _categoryProductService.GetAll();
                 return Ok(categories);
             }
             catch (System.Exception ex)
             {
-                // Bảo vệ hệ thống: Nếu sập kết nối SQL thì trả về lỗi 500 kèm lời nhắn lý do lỗi
                 return StatusCode(500, new
                 {
                     message = "Lỗi kết nối cơ sở dữ liệu hệ thống",
-                    detail = ex.Message
+                    detail = ex.InnerException?.Message ?? ex.Message
                 });
             }
         }
@@ -70,45 +36,43 @@ namespace CMS.Backend.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var category = await _context.CategoriesProducts.FindAsync(id);
-            if (category == null) return NotFound();
+            var category = await _categoryProductService.GetById(id);
+            if (category == null)
+                return NotFound();
+
             return Ok(category);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(CategoryProduct category)
         {
-            _context.CategoriesProducts.Add(category);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetById), new { id = category.Id }, category);
+            var created = await _categoryProductService.Create(category);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, CategoryProduct category)
         {
-            if (id != category.Id) return BadRequest();
-            _context.Entry(category).State = EntityState.Modified;
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_context.CategoriesProducts.Any(e => e.Id == id)) return NotFound();
-                else throw;
-            }
+            if (id != category.Id)
+                return BadRequest();
+
+            var updated = await _categoryProductService.Update(id, category);
+
+            if (!updated)
+                return NotFound();
+
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var category = await _context.CategoriesProducts.FindAsync(id);
-            if (category == null) return NotFound();
-            _context.CategoriesProducts.Remove(category);
-            await _context.SaveChangesAsync();
+            var deleted = await _categoryProductService.Delete(id);
+
+            if (!deleted)
+                return NotFound();
+
             return NoContent();
         }
-
     }
 }

@@ -11,6 +11,8 @@
  *          7. Sử dụng Swagger để tạo tài liệu API tự động cho các endpoint trong hệ thống CMS, giúp cho việc phát triển và tích hợp với frontend trở nên dễ dàng hơn
  *          8. Tối ưu hiệu suất: Sử dụng các kỹ thuật như caching, pagination, và tối ưu hóa truy vấn để cải thiện hiệu suất của hệ thống CMS khi xử lý lượng lớn dữ liệu hoặc nhiều yêu cầu đồng thời
  */
+using CMS.Backend.Services;
+using CMS.Backend.Services.Interfaces;
 using CMS.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +39,8 @@ builder.Services.AddCors(options => {
 
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddScoped<IPostService, PostService>();
+
 // Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -45,6 +49,15 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IPostService, CMS.Backend.Services.PostService>();
+builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IProductService, CMS.Backend.Services.ProductService>();
+builder.Services.AddScoped<CMS.Backend.Services.Interfaces.ICategoryService, CMS.Backend.Services.CategoryService>();
+builder.Services.AddScoped<CMS.Backend.Services.Interfaces.ICategoryProductService, CMS.Backend.Services.CategoryProductService>();
+builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IUserService, CMS.Backend.Services.UserService>();
+builder.Services.AddScoped<CMS.Backend.Services.Interfaces.ICustomerService, CMS.Backend.Services.CustomerService>();
+builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IOrderService, CMS.Backend.Services.OrderService>();
+builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IOrderDetailService, CMS.Backend.Services.OrderDetailService>();
 
 // ---- CẤU HÌNH CORS (THÊM VÀO TRƯỚC builder.Build()) ----
 builder.Services.AddCors(options =>

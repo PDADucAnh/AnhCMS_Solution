@@ -1,7 +1,6 @@
-using CMS.Data;
 using CMS.Data.Entities;
+using CMS.Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace CMS.Backend.Controllers
 {
@@ -9,69 +8,66 @@ namespace CMS.Backend.Controllers
     [ApiController]
     public class OrderDetailsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IOrderDetailService _orderDetailService;
 
-        public OrderDetailsController(ApplicationDbContext context)
+        public OrderDetailsController(IOrderDetailService orderDetailService)
         {
-            _context = context;
+            _orderDetailService = orderDetailService;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var orderDetails = await _context.OrderDetails.ToListAsync();
+            var orderDetails = await _orderDetailService.GetAll();
             return Ok(orderDetails);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var orderDetail = await _context.OrderDetails.FindAsync(id);
-            if (orderDetail == null) return NotFound();
+            var orderDetail = await _orderDetailService.GetById(id);
+            if (orderDetail == null)
+                return NotFound();
+
             return Ok(orderDetail);
         }
 
         [HttpGet("order/{orderId}")]
         public async Task<IActionResult> GetByOrderId(int orderId)
         {
-            var orderDetails = await _context.OrderDetails
-                .Where(od => od.OrderId == orderId)
-                .ToListAsync();
+            var orderDetails = await _orderDetailService.GetByOrderId(orderId);
             return Ok(orderDetails);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(OrderDetail orderDetail)
         {
-            _context.OrderDetails.Add(orderDetail);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetById), new { id = orderDetail.Id }, orderDetail);
+            var created = await _orderDetailService.Create(orderDetail);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, OrderDetail orderDetail)
         {
-            if (id != orderDetail.Id) return BadRequest();
-            _context.Entry(orderDetail).State = EntityState.Modified;
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_context.OrderDetails.Any(e => e.Id == id)) return NotFound();
-                else throw;
-            }
+            if (id != orderDetail.Id)
+                return BadRequest();
+
+            var updated = await _orderDetailService.Update(id, orderDetail);
+
+            if (!updated)
+                return NotFound();
+
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var orderDetail = await _context.OrderDetails.FindAsync(id);
-            if (orderDetail == null) return NotFound();
-            _context.OrderDetails.Remove(orderDetail);
-            await _context.SaveChangesAsync();
+            var deleted = await _orderDetailService.Delete(id);
+
+            if (!deleted)
+                return NotFound();
+
             return NoContent();
         }
     }

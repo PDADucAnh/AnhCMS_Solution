@@ -1,10 +1,5 @@
-using CMS.Data;
+using CMS.Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using System.Security.Claims;
-using Microsoft.EntityFrameworkCore;
-using CMS.Data.Entities;
 
 namespace CMS.Backend.Controllers
 {
@@ -12,22 +7,20 @@ namespace CMS.Backend.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IUserService _userService;
 
-        public AuthController(ApplicationDbContext context)
+        public AuthController(IUserService userService)
         {
-            _context = context;
+            _userService = userService;
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest login)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == login.Username && u.PasswordHash == login.Password);
+            var user = await _userService.Login(login.Username, login.Password);
 
             if (user != null)
             {
-                // Note: For a real SPA, you'd typically use JWT. 
-                // But since the project is already using Cookie Auth, we'll return user info.
                 return Ok(new
                 {
                     username = user.Username,
@@ -43,24 +36,13 @@ namespace CMS.Backend.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest register)
         {
-            var checkExist = await _context.Users.AnyAsync(u => u.Username == register.Username);
-            if (checkExist)
-            {
-                return BadRequest(new { message = "Tên đăng nhập này đã tồn tại!" });
-            }
+            var (success, message) = await _userService.Register(
+                register.Username, register.Password, register.FullName);
 
-            var newUser = new User
-            {
-                Username = register.Username,
-                PasswordHash = register.Password, // Should be hashed in production
-                FullName = register.FullName,
-                Role = "Customer" // Default role for web users
-            };
+            if (!success)
+                return BadRequest(new { message });
 
-            _context.Users.Add(newUser);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { message = "Đăng ký thành công!" });
+            return Ok(new { message });
         }
     }
 
