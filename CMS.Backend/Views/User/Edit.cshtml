@@ -1,4 +1,4 @@
-@model CMS.Data.Entities.User
+@model UpdateUserDTO
 @{
     ViewData["Title"] = "Adjust Access Authority";
     Layout = "_LayoutAdmin";
@@ -42,7 +42,7 @@
 
         <div class="space-y-md">
             <label class="text-label-sm uppercase tracking-widest text-secondary font-bold">Rotate Security Token (New Password)</label>
-            <input type="password" name="NewPassword" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-black px-md py-3" placeholder="Enter only to update security token..." />
+            <input asp-for="Password" type="password" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-black px-md py-3" placeholder="Enter only to update security token..." />
             <p class="text-[10px] text-outline uppercase tracking-widest italic">Leave empty to preserve existing security token.</p>
         </div>
 

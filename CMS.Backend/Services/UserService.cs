@@ -4,6 +4,9 @@ using CMS.Backend.Services.Interfaces;
 using CMS.Backend.Models.DTOs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CMS.Backend.Services
 {
@@ -42,38 +45,7 @@ namespace CMS.Backend.Services
             return user.ToDTO();
         }
 
-        public async Task<bool> Update(int id, User user)
-        {
-            if (id != user.Id)
-                return false;
-
-            var existingUser = await _context.Users.FindAsync(id);
-            if (existingUser == null)
-                return false;
-
-            existingUser.Username = user.Username;
-            existingUser.FullName = user.FullName;
-            existingUser.Role = user.Role;
-
-            if (!string.IsNullOrEmpty(user.PasswordHash))
-            {
-                existingUser.PasswordHash = _passwordHasher.HashPassword(existingUser, user.PasswordHash);
-            }
-
-            try
-            {
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!await _context.Users.AnyAsync(e => e.Id == id))
-                    return false;
-                throw;
-            }
-        }
-
-        public async Task<bool> UpdateDTO(int id, UpdateUserDTO dto)
+        public async Task<bool> Update(int id, UpdateUserDTO dto)
         {
             if (id != dto.Id)
                 return false;
@@ -114,8 +86,6 @@ namespace CMS.Backend.Services
             await _context.SaveChangesAsync();
             return true;
         }
-
-
 
         public async Task<IEnumerable<User>> GetUsersAsync()
         {

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using CMS.Data.Entities;
 using CMS.Backend.Models.DTOs;
 
@@ -38,7 +39,8 @@ namespace CMS.Backend.Models.DTOs
             {
                 Id = category.Id,
                 Name = category.Name,
-                Description = category.Description
+                Description = category.Description,
+                Posts = category.Posts?.Select(p => p.ToDTO()).ToList()
             };
         }
 
@@ -190,6 +192,7 @@ namespace CMS.Backend.Models.DTOs
                 OrderDate = order.OrderDate,
                 CustomerId = order.CustomerId,
                 CustomerName = order.Customer?.FullName,
+                CustomerEmail = order.Customer?.Email,
                 Status = order.Status,
                 Notes = order.Notes,
                 OrderDetails = details
@@ -206,6 +209,7 @@ namespace CMS.Backend.Models.DTOs
                 ProductId = detail.ProductId,
                 ProductName = detail.Product?.Name,
                 ProductImageUrl = detail.Product?.ImageUrl,
+                CustomerName = detail.Order?.Customer?.FullName,
                 Quantity = detail.Quantity,
                 UnitPrice = detail.UnitPrice
             };
@@ -214,8 +218,47 @@ namespace CMS.Backend.Models.DTOs
         public static void UpdateEntity(this UpdateOrderDTO dto, Order entity)
         {
             if (dto == null || entity == null) return;
+            entity.CustomerId = dto.CustomerId;
+            entity.OrderDate = dto.OrderDate;
             entity.Status = dto.Status;
             entity.Notes = dto.Notes;
+        }
+
+        // === Post Mapping ===
+        public static PostDTO ToDTO(this Post post)
+        {
+            if (post == null) return null;
+            return new PostDTO
+            {
+                Id = post.Id,
+                Title = post.Title,
+                Content = post.Content,
+                ImageUrl = post.ImageUrl,
+                CreatedDate = post.CreatedDate,
+                CategoryId = post.CategoryId,
+                CategoryName = post.Category?.Name
+            };
+        }
+
+        public static Post ToEntity(this CreatePostDTO dto)
+        {
+            if (dto == null) return null;
+            return new Post
+            {
+                Title = dto.Title,
+                Content = dto.Content,
+                ImageUrl = dto.ImageUrl,
+                CategoryId = dto.CategoryId
+            };
+        }
+
+        public static void UpdateEntity(this UpdatePostDTO dto, Post entity)
+        {
+            if (dto == null || entity == null) return;
+            entity.Title = dto.Title;
+            entity.Content = dto.Content;
+            entity.ImageUrl = dto.ImageUrl;
+            entity.CategoryId = dto.CategoryId;
         }
     }
 }

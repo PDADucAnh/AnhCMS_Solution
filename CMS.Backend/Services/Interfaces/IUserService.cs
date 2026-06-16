@@ -1,5 +1,7 @@
-using CMS.Data.Entities;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using CMS.Backend.Models.DTOs;
+using CMS.Data.Entities;
 
 namespace CMS.Backend.Services.Interfaces
 {
@@ -8,11 +10,10 @@ namespace CMS.Backend.Services.Interfaces
         Task<IEnumerable<UserDTO>> GetAll();
         Task<UserDTO?> GetById(int id);
         Task<UserDTO> Create(CreateUserDTO dto);
-        Task<bool> Update(int id, User user);
-        Task<bool> UpdateDTO(int id, UpdateUserDTO dto);
+        Task<bool> Update(int id, UpdateUserDTO dto);
         Task<bool> Delete(int id);
         
-        // Các phương thức bổ sung cho MVC Controller
+        // Helper queries needed strictly for username checks or internal fetches
         Task<IEnumerable<User>> GetUsersAsync();
         Task<User?> GetUserByIdAsync(int id);
         Task<bool> UserExistsAsync(string username);

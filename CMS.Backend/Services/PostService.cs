@@ -1,7 +1,12 @@
 using CMS.Data;
 using CMS.Data.Entities;
 using CMS.Backend.Services.Interfaces;
+using CMS.Backend.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System;
 
 namespace CMS.Backend.Services
 {
@@ -14,55 +19,46 @@ namespace CMS.Backend.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<object>> GetAll()
+        public async Task<IEnumerable<PostDTO>> GetAll()
         {
-            return await _context.Posts
+            var list = await _context.Posts
+                .Include(p => p.Category)
                 .OrderByDescending(p => p.Id)
-                .Select(p => new
-                {
-                    p.Id,
-                    p.Title,
-                    p.ImageUrl,
-                    p.CreatedDate,
-                    CategoryName = p.Category.Name
-                })
                 .ToListAsync();
+            return list.Select(p => p.ToDTO());
         }
 
-        public async Task<IEnumerable<object>> GetByCategory(int categoryId)
+        public async Task<PostDTO?> GetById(int id)
         {
-            return await _context.Posts
-                .Where(p => p.CategoryId == categoryId)
-                .Select(p => new
-                {
-                    p.Id,
-                    p.Title,
-                    p.ImageUrl,
-                    p.CreatedDate
-                })
-                .ToListAsync();
-        }
-
-        public async Task<Post?> GetDetail(int id)
-        {
-            return await _context.Posts
+            var post = await _context.Posts
+                .Include(p => p.Category)
                 .FirstOrDefaultAsync(p => p.Id == id);
+            return post?.ToDTO();
         }
 
-        public async Task<Post> Create(Post post)
+        public async Task<PostDTO> Create(CreatePostDTO dto)
         {
+            var post = dto.ToEntity();
             post.CreatedDate = DateTime.Now;
             _context.Posts.Add(post);
             await _context.SaveChangesAsync();
-            return post;
+            
+            // Re-fetch category for ToDTO to work correctly
+            await _context.Entry(post).Reference(p => p.Category).LoadAsync();
+            
+            return post.ToDTO();
         }
 
-        public async Task<bool> Update(int id, Post post)
+        public async Task<bool> Update(int id, UpdatePostDTO dto)
         {
-            if (id != post.Id)
+            if (id != dto.Id)
                 return false;
 
-            _context.Entry(post).State = EntityState.Modified;
+            var post = await _context.Posts.FindAsync(id);
+            if (post == null)
+                return false;
+
+            dto.UpdateEntity(post);
 
             try
             {
@@ -86,23 +82,6 @@ namespace CMS.Backend.Services
             _context.Posts.Remove(post);
             await _context.SaveChangesAsync();
             return true;
-        }
-
-        public async Task<IEnumerable<Post>> GetPostsAsync(int? categoryId)
-        {
-            IQueryable<Post> query = _context.Posts.Include(p => p.Category);
-            if (categoryId != null)
-            {
-                query = query.Where(p => p.CategoryId == categoryId);
-            }
-            return await query.OrderByDescending(p => p.CreatedDate).ToListAsync();
-        }
-
-        public async Task<Post?> GetPostByIdAsync(int id)
-        {
-            return await _context.Posts
-                .Include(p => p.Category)
-                .FirstOrDefaultAsync(p => p.Id == id);
         }
     }
 }

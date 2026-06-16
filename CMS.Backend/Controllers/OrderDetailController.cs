@@ -1,14 +1,4 @@
-/*
-    Tên: Phạm Đức Anh
-    Mã SV: 2123110135
-    Ngày tạo: 06/06/2026
-    Mô tả:    1. Truy vấn dữ liệu LINQ OrderDetail Controller
-              2. Tạo trang admin hiển thị danh sách chi tiết đơn hàng
-              3. Thiết kế giao diện quản lý chi tiết đơn hàng (CRUD) trong OrderDetailController
-              4. Sử dụng Entity Framework để kết nối và thao tác với cơ sở dữ liệu SQL Server trong OrderDetailController
-              5. Áp dụng phân quyền truy cập cho các chức năng quản lý chi tiết đơn hàng trong OrderDetailController (chỉ Admin mới được phép xóa, Editor chỉ được phép xem và sửa) trong OrderDetailController
- */
-using CMS.Data.Entities;
+using CMS.Backend.Models.DTOs;
 using CMS.Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -22,7 +12,6 @@ namespace CMS.Backend.Controllers
         private readonly IOrderService _orderService;
         private readonly IProductService _productService;
 
-        // Constructor injection
         public OrderDetailController(IOrderDetailService orderDetailService, IOrderService orderService, IProductService productService)
         {
             _orderDetailService = orderDetailService;
@@ -30,7 +19,6 @@ namespace CMS.Backend.Controllers
             _productService = productService;
         }
 
-        // Hiển thị danh sách chi tiết đơn hàng (kèm thông tin Order và Product)
         public async Task<IActionResult> Index()
         {
             var orderDetails = await _orderDetailService.GetAll();
@@ -48,8 +36,17 @@ namespace CMS.Backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(OrderDetail model)
+        public async Task<IActionResult> Create(OrderDetailDTO model)
         {
+            if (!ModelState.IsValid)
+            {
+                var orders = await _orderService.GetAll();
+                var products = await _productService.GetAll();
+                ViewBag.OrderList = new SelectList(orders, "Id", "Id", model.OrderId);
+                ViewBag.ProductList = new SelectList(products, "Id", "Name", model.ProductId);
+                return View(model);
+            }
+
             await _orderDetailService.Create(model);
             return RedirectToAction("Index");
         }
@@ -75,8 +72,17 @@ namespace CMS.Backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(OrderDetail model)
+        public async Task<IActionResult> Edit(OrderDetailDTO model)
         {
+            if (!ModelState.IsValid)
+            {
+                var orders = await _orderService.GetAll();
+                var products = await _productService.GetAll();
+                ViewBag.OrderList = new SelectList(orders, "Id", "Id", model.OrderId);
+                ViewBag.ProductList = new SelectList(products, "Id", "Name", model.ProductId);
+                return View(model);
+            }
+
             await _orderDetailService.Update(model.Id, model);
             return RedirectToAction("Index");
         }

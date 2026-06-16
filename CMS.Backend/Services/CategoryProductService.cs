@@ -1,8 +1,10 @@
 using CMS.Data;
-using CMS.Data.Entities;
 using CMS.Backend.Services.Interfaces;
 using CMS.Backend.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CMS.Backend.Services
 {
@@ -15,25 +17,36 @@ namespace CMS.Backend.Services
             _context = context;
         }
 
-        // === Entity methods (MVC) ===
-        public async Task<CategoryProduct?> GetById(int id)
+        public async Task<IEnumerable<CategoryProductDTO>> GetAll()
         {
-            return await _context.CategoriesProducts.FindAsync(id);
+            var list = await _context.CategoriesProducts.ToListAsync();
+            return list.Select(c => c.ToDTO());
         }
 
-        public async Task<CategoryProduct> Create(CategoryProduct category)
+        public async Task<CategoryProductDTO?> GetById(int id)
         {
+            var category = await _context.CategoriesProducts.FindAsync(id);
+            return category?.ToDTO();
+        }
+
+        public async Task<CategoryProductDTO> Create(CreateCategoryProductDTO dto)
+        {
+            var category = dto.ToEntity();
             _context.CategoriesProducts.Add(category);
             await _context.SaveChangesAsync();
-            return category;
+            return category.ToDTO();
         }
 
-        public async Task<bool> Update(int id, CategoryProduct category)
+        public async Task<bool> Update(int id, UpdateCategoryProductDTO dto)
         {
-            if (id != category.Id)
+            if (id != dto.Id)
                 return false;
 
-            _context.Entry(category).State = EntityState.Modified;
+            var category = await _context.CategoriesProducts.FindAsync(id);
+            if (category == null)
+                return false;
+
+            dto.UpdateEntity(category);
 
             try
             {
@@ -57,56 +70,6 @@ namespace CMS.Backend.Services
             _context.CategoriesProducts.Remove(category);
             await _context.SaveChangesAsync();
             return true;
-        }
-
-        public async Task<IEnumerable<CategoryProduct>> GetCategoriesProductsAsync()
-        {
-            return await _context.CategoriesProducts.ToListAsync();
-        }
-
-        // === DTO methods (API) ===
-        public async Task<IEnumerable<CategoryProductDTO>> GetAllDTO()
-        {
-            var list = await _context.CategoriesProducts.ToListAsync();
-            return list.Select(c => c.ToDTO());
-        }
-
-        public async Task<CategoryProductDTO?> GetByIdDTO(int id)
-        {
-            var category = await _context.CategoriesProducts.FindAsync(id);
-            return category?.ToDTO();
-        }
-
-        public async Task<CategoryProductDTO> CreateDTO(CreateCategoryProductDTO dto)
-        {
-            var category = dto.ToEntity();
-            _context.CategoriesProducts.Add(category);
-            await _context.SaveChangesAsync();
-            return category.ToDTO();
-        }
-
-        public async Task<bool> UpdateDTO(int id, UpdateCategoryProductDTO dto)
-        {
-            if (id != dto.Id)
-                return false;
-
-            var category = await _context.CategoriesProducts.FindAsync(id);
-            if (category == null)
-                return false;
-
-            dto.UpdateEntity(category);
-
-            try
-            {
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!await _context.CategoriesProducts.AnyAsync(e => e.Id == id))
-                    return false;
-                throw;
-            }
         }
     }
 }

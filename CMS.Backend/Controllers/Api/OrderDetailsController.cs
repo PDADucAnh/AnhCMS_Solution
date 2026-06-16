@@ -1,6 +1,8 @@
-using CMS.Data.Entities;
 using CMS.Backend.Services.Interfaces;
+using CMS.Backend.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CMS.Backend.Controllers.Api
 {
@@ -35,24 +37,25 @@ namespace CMS.Backend.Controllers.Api
         [HttpGet("order/{orderId}")]
         public async Task<IActionResult> GetByOrderId(int orderId)
         {
-            var orderDetails = await _orderDetailService.GetByOrderId(orderId);
+            var all = await _orderDetailService.GetAll();
+            var orderDetails = all.Where(od => od.OrderId == orderId);
             return Ok(orderDetails);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(OrderDetail orderDetail)
+        public async Task<IActionResult> Create(OrderDetailDTO dto)
         {
-            var created = await _orderDetailService.Create(orderDetail);
+            var created = await _orderDetailService.Create(dto);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, OrderDetail orderDetail)
+        public async Task<IActionResult> Update(int id, OrderDetailDTO dto)
         {
-            if (id != orderDetail.Id)
+            if (id != dto.Id)
                 return BadRequest();
 
-            var updated = await _orderDetailService.Update(id, orderDetail);
+            var updated = await _orderDetailService.Update(id, dto);
 
             if (!updated)
                 return NotFound();

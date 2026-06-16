@@ -1,6 +1,8 @@
-using CMS.Data.Entities;
 using CMS.Backend.Services.Interfaces;
+using CMS.Backend.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CMS.Backend.Controllers.Api
 {
@@ -25,14 +27,15 @@ namespace CMS.Backend.Controllers.Api
         [HttpGet("category/{categoryId}")]
         public async Task<IActionResult> GetByCategory(int categoryId)
         {
-            var posts = await _postService.GetByCategory(categoryId);
-            return Ok(posts);
+            var posts = await _postService.GetAll();
+            var filtered = posts.Where(p => p.CategoryId == categoryId);
+            return Ok(filtered);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDetail(int id)
         {
-            var post = await _postService.GetDetail(id);
+            var post = await _postService.GetById(id);
 
             if (post == null)
             {
@@ -43,19 +46,25 @@ namespace CMS.Backend.Controllers.Api
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Post post)
+        public async Task<IActionResult> Create(CreatePostDTO dto)
         {
-            var created = await _postService.Create(post);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var created = await _postService.Create(dto);
             return CreatedAtAction(nameof(GetDetail), new { id = created.Id }, created);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, Post post)
+        public async Task<IActionResult> Update(int id, UpdatePostDTO dto)
         {
-            if (id != post.Id)
+            if (id != dto.Id)
                 return BadRequest();
 
-            var updated = await _postService.Update(id, post);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var updated = await _postService.Update(id, dto);
 
             if (!updated)
                 return NotFound();

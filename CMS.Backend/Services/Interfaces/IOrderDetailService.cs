@@ -1,14 +1,15 @@
-using CMS.Data.Entities;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using CMS.Backend.Models.DTOs;
 
 namespace CMS.Backend.Services.Interfaces
 {
     public interface IOrderDetailService
     {
-        Task<IEnumerable<OrderDetail>> GetAll();
-        Task<OrderDetail?> GetById(int id);
-        Task<IEnumerable<OrderDetail>> GetByOrderId(int orderId);
-        Task<OrderDetail> Create(OrderDetail orderDetail);
-        Task<bool> Update(int id, OrderDetail orderDetail);
+        Task<IEnumerable<OrderDetailDTO>> GetAll();
+        Task<OrderDetailDTO?> GetById(int id);
+        Task<OrderDetailDTO> Create(OrderDetailDTO dto);
+        Task<bool> Update(int id, OrderDetailDTO dto);
         Task<bool> Delete(int id);
     }
 }

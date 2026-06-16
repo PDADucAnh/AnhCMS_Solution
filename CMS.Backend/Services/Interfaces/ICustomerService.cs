@@ -1,21 +1,15 @@
-using CMS.Data.Entities;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using CMS.Backend.Models.DTOs;
 
 namespace CMS.Backend.Services.Interfaces
 {
     public interface ICustomerService
     {
-        // Entity methods (for MVC)
-        Task<IEnumerable<Customer>> GetAll();
-        Task<Customer?> GetById(int id);
-        Task<Customer> Create(Customer customer);
-        Task<bool> Update(int id, Customer customer);
+        Task<IEnumerable<CustomerDTO>> GetAll();
+        Task<CustomerDTO?> GetById(int id);
+        Task<CustomerDTO> Create(CreateCustomerDTO dto);
+        Task<bool> Update(int id, UpdateCustomerDTO dto);
         Task<bool> Delete(int id);
-
-        // DTO methods (for API)
-        Task<IEnumerable<CustomerDTO>> GetAllDTO();
-        Task<CustomerDTO?> GetByIdDTO(int id);
-        Task<CustomerDTO> CreateDTO(CreateCustomerDTO dto);
-        Task<bool> UpdateDTO(int id, UpdateCustomerDTO dto);
     }
 }

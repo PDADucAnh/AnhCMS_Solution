@@ -1,6 +1,7 @@
 using CMS.Backend.Services.Interfaces;
 using CMS.Backend.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace CMS.Backend.Controllers.Api
 {
@@ -20,7 +21,7 @@ namespace CMS.Backend.Controllers.Api
         {
             try
             {
-                var categories = await _categoryProductService.GetAllDTO();
+                var categories = await _categoryProductService.GetAll();
                 return Ok(categories);
             }
             catch (System.Exception ex)
@@ -36,7 +37,7 @@ namespace CMS.Backend.Controllers.Api
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var category = await _categoryProductService.GetByIdDTO(id);
+            var category = await _categoryProductService.GetById(id);
             if (category == null)
                 return NotFound();
 
@@ -49,7 +50,7 @@ namespace CMS.Backend.Controllers.Api
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var created = await _categoryProductService.CreateDTO(dto);
+            var created = await _categoryProductService.Create(dto);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
@@ -62,7 +63,7 @@ namespace CMS.Backend.Controllers.Api
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var updated = await _categoryProductService.UpdateDTO(id, dto);
+            var updated = await _categoryProductService.Update(id, dto);
 
             if (!updated)
                 return NotFound();

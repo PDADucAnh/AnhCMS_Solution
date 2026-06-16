@@ -1,23 +1,16 @@
-using CMS.Data.Entities;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using CMS.Backend.Models.DTOs;
 
 namespace CMS.Backend.Services.Interfaces
 {
     public interface IProductService
     {
-        // Entity methods (for MVC)
-        Task<IEnumerable<Product>> GetAll();
-        Task<IEnumerable<Product>> GetByCategoryProduct(int categoryProductId);
-        Task<Product?> GetDetail(int id);
-        Task<Product> Create(Product product);
-        Task<bool> Update(int id, Product product);
+        Task<IEnumerable<ProductDTO>> GetAll();
+        Task<IEnumerable<ProductDTO>> GetByCategoryProduct(int categoryProductId);
+        Task<ProductDTO?> GetDetail(int id);
+        Task<ProductDTO> Create(CreateProductDTO dto);
+        Task<bool> Update(int id, UpdateProductDTO dto);
         Task<bool> Delete(int id);
-
-        // DTO methods (for API)
-        Task<IEnumerable<ProductDTO>> GetAllDTO();
-        Task<IEnumerable<ProductDTO>> GetByCategoryProductDTO(int categoryProductId);
-        Task<ProductDTO?> GetDetailDTO(int id);
-        Task<ProductDTO> CreateDTO(CreateProductDTO dto);
-        Task<bool> UpdateDTO(int id, UpdateProductDTO dto);
     }
 }

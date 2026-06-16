@@ -1,4 +1,4 @@
-@model CMS.Data.Entities.Order
+@model OrderDTO
 @{
     ViewData["Title"] = "Order Manifest";
     Layout = "_LayoutAdmin";
@@ -40,7 +40,7 @@
                                 {
                                     <tr class="table-row-hover transition-colors">
                                         <td class="py-5">
-                                            <span class="text-body-md font-bold uppercase tracking-widest">@(detail.Product?.Name ?? "N/A")</span>
+                                            <span class="text-body-md font-bold uppercase tracking-widest">@(detail.ProductName ?? "N/A")</span>
                                         </td>
                                         <td class="py-5 text-center text-body-md">@detail.Quantity</td>
                                         <td class="py-5 text-right text-body-md">@detail.UnitPrice.ToString("N0") đ</td>
@@ -59,11 +59,11 @@
                 <h4 class="text-headline-sm uppercase tracking-widest mb-md border-b border-outline-variant pb-md">Client Profile</h4>
                 <div class="space-y-xs">
                     <p class="text-label-sm text-secondary uppercase tracking-widest">Name</p>
-                    <p class="text-body-lg font-bold">@(Model.Customer?.FullName ?? "Unknown Client")</p>
+                    <p class="text-body-lg font-bold">@(Model.CustomerName ?? "Unknown Client")</p>
                 </div>
                 <div class="space-y-xs">
                     <p class="text-label-sm text-secondary uppercase tracking-widest">Email Insight</p>
-                    <p class="text-body-md">@(Model.Customer?.Email ?? "N/A")</p>
+                    <p class="text-body-md">@(Model.CustomerEmail ?? "N/A")</p>
                 </div>
                 <div class="space-y-xs pt-4 border-t border-outline-variant">
                     <p class="text-label-sm text-secondary uppercase tracking-widest">Status</p>

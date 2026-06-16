@@ -1,6 +1,9 @@
 using CMS.Backend.Services.Interfaces;
 using CMS.Backend.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CMS.Backend.Controllers.Api
 {
@@ -51,14 +54,14 @@ namespace CMS.Backend.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var orders = await _orderService.GetAllDTO();
+            var orders = await _orderService.GetAll();
             return Ok(orders);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDetail(int id)
         {
-            var order = await _orderService.GetDetailDTO(id);
+            var order = await _orderService.GetDetail(id);
 
             if (order == null)
                 return NotFound();
@@ -75,7 +78,7 @@ namespace CMS.Backend.Controllers.Api
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var updated = await _orderService.UpdateDTO(id, dto);
+            var updated = await _orderService.Update(id, dto);
 
             if (!updated)
                 return NotFound();

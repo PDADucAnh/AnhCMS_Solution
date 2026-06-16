@@ -1,7 +1,11 @@
 using CMS.Data;
 using CMS.Data.Entities;
 using CMS.Backend.Services.Interfaces;
+using CMS.Backend.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CMS.Backend.Services
 {
@@ -14,46 +18,55 @@ namespace CMS.Backend.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<OrderDetail>> GetAll()
+        public async Task<IEnumerable<OrderDetailDTO>> GetAll()
         {
-            return await _context.OrderDetails
+            var list = await _context.OrderDetails
                 .Include(od => od.Order)
                     .ThenInclude(o => o.Customer)
                 .Include(od => od.Product)
                     .ThenInclude(p => p.CategoryProduct)
                 .ToListAsync();
+            return list.Select(od => od.ToDTO());
         }
 
-        public async Task<OrderDetail?> GetById(int id)
+        public async Task<OrderDetailDTO?> GetById(int id)
         {
-            return await _context.OrderDetails
+            var detail = await _context.OrderDetails
                 .Include(od => od.Order)
                     .ThenInclude(o => o.Customer)
                 .Include(od => od.Product)
                     .ThenInclude(p => p.CategoryProduct)
                 .FirstOrDefaultAsync(od => od.Id == id);
+            return detail?.ToDTO();
         }
 
-        public async Task<IEnumerable<OrderDetail>> GetByOrderId(int orderId)
+        public async Task<OrderDetailDTO> Create(OrderDetailDTO dto)
         {
-            return await _context.OrderDetails
-                .Where(od => od.OrderId == orderId)
-                .ToListAsync();
-        }
-
-        public async Task<OrderDetail> Create(OrderDetail orderDetail)
-        {
+            var orderDetail = new OrderDetail
+            {
+                OrderId = dto.OrderId,
+                ProductId = dto.ProductId,
+                Quantity = dto.Quantity,
+                UnitPrice = dto.UnitPrice
+            };
             _context.OrderDetails.Add(orderDetail);
             await _context.SaveChangesAsync();
-            return orderDetail;
+            return orderDetail.ToDTO();
         }
 
-        public async Task<bool> Update(int id, OrderDetail orderDetail)
+        public async Task<bool> Update(int id, OrderDetailDTO dto)
         {
-            if (id != orderDetail.Id)
+            if (id != dto.Id)
                 return false;
 
-            _context.Entry(orderDetail).State = EntityState.Modified;
+            var orderDetail = await _context.OrderDetails.FindAsync(id);
+            if (orderDetail == null)
+                return false;
+
+            orderDetail.OrderId = dto.OrderId;
+            orderDetail.ProductId = dto.ProductId;
+            orderDetail.Quantity = dto.Quantity;
+            orderDetail.UnitPrice = dto.UnitPrice;
 
             try
             {

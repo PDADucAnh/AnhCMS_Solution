@@ -1,21 +1,15 @@
-using CMS.Data.Entities;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using CMS.Backend.Models.DTOs;
 
 namespace CMS.Backend.Services.Interfaces
 {
     public interface ICategoryService
     {
-        // Entity methods (for MVC)
-        Task<IEnumerable<Category>> GetAll();
-        Task<Category?> GetById(int id);
-        Task<Category> Create(Category category);
-        Task<bool> Update(int id, Category category);
+        Task<IEnumerable<CategoryDTO>> GetAll();
+        Task<CategoryDTO?> GetById(int id);
+        Task<CategoryDTO> Create(CreateCategoryDTO dto);
+        Task<bool> Update(int id, UpdateCategoryDTO dto);
         Task<bool> Delete(int id);
-
-        // DTO methods (for API)
-        Task<IEnumerable<CategoryDTO>> GetAllDTO();
-        Task<CategoryDTO?> GetByIdDTO(int id);
-        Task<CategoryDTO> CreateDTO(CreateCategoryDTO dto);
-        Task<bool> UpdateDTO(int id, UpdateCategoryDTO dto);
     }
 }

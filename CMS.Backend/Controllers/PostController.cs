@@ -1,19 +1,12 @@
-/* Họ tên: Phạm Đức Anh
- * Mã SV: 2123110135
- * Lớp: CCQ2311D
- * Ngày tạo: 05/06/2026
- * Mô tả: 1.Truy vấn dữ liệu LINQ Post Controller
-          2. Tạo trang admin hiển thị danh sách bài viết theo từng danh mục
-          3. Thiết kế giao diện quản lý bài viết (CRUD) trong PostController
-          4. Sử dụng Entity Framework để kết nối và thao tác với cơ sở dữ liệu SQL Server trong PostController
- * Mô tả: 5. Áp dụng phân quyền truy cập cho các chức năng quản lý bài viết trong PostController */
-using CMS.Data.Entities;
+using CMS.Backend.Models.DTOs;
 using CMS.Backend.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CMS.Backend.Controllers
@@ -24,7 +17,6 @@ namespace CMS.Backend.Controllers
         private readonly IPostService _postService;
         private readonly ICategoryService _categoryService;
 
-        // Constructor injection
         public PostController(IPostService postService, ICategoryService categoryService)
         {
             _postService = postService;
@@ -33,14 +25,17 @@ namespace CMS.Backend.Controllers
 
         public async Task<IActionResult> Index(int? id)
         {
-            var posts = await _postService.GetPostsAsync(id);
+            var posts = await _postService.GetAll();
+            if (id != null)
+            {
+                posts = posts.Where(p => p.CategoryId == id.Value);
+            }
             return View(posts);
         }
 
-        // GET: Post/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var post = await _postService.GetPostByIdAsync(id);
+            var post = await _postService.GetById(id);
             if (post == null)
             {
                 return NotFound();
@@ -48,7 +43,6 @@ namespace CMS.Backend.Controllers
             return View(post);
         }
 
-        // GET: Post/Create
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -58,7 +52,7 @@ namespace CMS.Backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Post model, IFormFile uploadImage)
+        public async Task<IActionResult> Create(CreatePostDTO model, IFormFile uploadImage)
         {
             if (uploadImage != null && uploadImage.Length > 0)
             {
@@ -76,6 +70,13 @@ namespace CMS.Backend.Controllers
                 model.ImageUrl = "/uploads/" + fileName;
             }
 
+            if (!ModelState.IsValid)
+            {
+                var categories = await _categoryService.GetAll();
+                ViewBag.CategoryList = new SelectList(categories, "Id", "Name", model.CategoryId);
+                return View(model);
+            }
+
             await _postService.Create(model);
             return RedirectToAction("Index");
         }
@@ -86,21 +87,29 @@ namespace CMS.Backend.Controllers
             return RedirectToAction("Index");
         }
 
-        // GET: Hiển thị form kèm dữ liệu cũ
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var post = await _postService.GetPostByIdAsync(id);
+            var post = await _postService.GetById(id);
             if (post == null) return NotFound();
 
             var categories = await _categoryService.GetAll();
             ViewBag.CategoryList = new SelectList(categories, "Id", "Name", post.CategoryId);
-            return View(post);
+
+            var model = new UpdatePostDTO
+            {
+                Id = post.Id,
+                Title = post.Title,
+                Content = post.Content,
+                ImageUrl = post.ImageUrl,
+                CategoryId = post.CategoryId
+            };
+
+            return View(model);
         }
 
-        // POST: Thực hiện cập nhật
         [HttpPost]
-        public async Task<IActionResult> Edit(Post model, IFormFile uploadImage)
+        public async Task<IActionResult> Edit(UpdatePostDTO model, IFormFile uploadImage)
         {
             if (uploadImage != null && uploadImage.Length > 0)
             {
@@ -119,12 +128,20 @@ namespace CMS.Backend.Controllers
             }
             else
             {
-                var oldPost = await _postService.GetPostByIdAsync(model.Id);
+                var oldPost = await _postService.GetById(model.Id);
                 if (oldPost != null && string.IsNullOrEmpty(model.ImageUrl))
                 {
                     model.ImageUrl = oldPost.ImageUrl;
                 }
             }
+
+            if (!ModelState.IsValid)
+            {
+                var categories = await _categoryService.GetAll();
+                ViewBag.CategoryList = new SelectList(categories, "Id", "Name", model.CategoryId);
+                return View(model);
+            }
+
             await _postService.Update(model.Id, model);
             return RedirectToAction("Index");
         }

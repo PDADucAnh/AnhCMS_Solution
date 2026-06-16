@@ -1,4 +1,4 @@
-@model CMS.Data.Entities.Post
+@model UpdatePostDTO
 @{
     ViewData["Title"] = "Refine Narrative";
     Layout = "_LayoutAdmin";
@@ -19,7 +19,6 @@
     <form asp-action="Edit" method="post" enctype="multipart/form-data" class="bg-surface-container-lowest border border-outline-variant p-xl space-y-xl">
         <input type="hidden" asp-for="Id" />
         <input type="hidden" asp-for="ImageUrl" />
-        <input type="hidden" asp-for="CreatedDate" />
 
         <div class="space-y-md">
             <label class="text-label-sm uppercase tracking-widest text-secondary font-bold">Story Title</label>

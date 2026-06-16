@@ -1,7 +1,8 @@
-using CMS.Data.Entities;
+using CMS.Backend.Models.DTOs;
 using CMS.Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace CMS.Backend.Controllers
@@ -11,14 +12,12 @@ namespace CMS.Backend.Controllers
         private readonly IOrderService _orderService;
         private readonly ICustomerService _customerService;
 
-        // Constructor injection
         public OrderController(IOrderService orderService, ICustomerService customerService)
         {
             _orderService = orderService;
             _customerService = customerService;
         }
 
-        // Hiển thị danh sách đơn hàng (kèm tên khách hàng)
         public async Task<IActionResult> Index()
         {
             var orders = await _orderService.GetAll();
@@ -34,9 +33,28 @@ namespace CMS.Backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Order model)
+        public async Task<IActionResult> Create(CreateOrderDTO model)
         {
-            await _orderService.Create(model);
+            if (!ModelState.IsValid)
+            {
+                var customers = await _customerService.GetAll();
+                ViewBag.CustomerList = new SelectList(customers, "Id", "FullName", model.CustomerId);
+                return View(model);
+            }
+
+            var (success, message, orderId) = await _orderService.CreateOrder(
+                model.CustomerId, model.Notes, new List<OrderItemInput>());
+
+            if (success && model.Status != 0)
+            {
+                await _orderService.Update(orderId, new UpdateOrderDTO
+                {
+                    Id = orderId,
+                    Status = model.Status,
+                    Notes = model.Notes
+                });
+            }
+
             return RedirectToAction("Index");
         }
 
@@ -51,24 +69,41 @@ namespace CMS.Backend.Controllers
         {
             var order = await _orderService.GetDetail(id);
             if (order == null) return NotFound();
+
             var customers = await _customerService.GetAll();
             ViewBag.CustomerList = new SelectList(customers, "Id", "FullName", order.CustomerId);
-            return View(order);
+
+            var model = new UpdateOrderDTO
+            {
+                Id = order.Id,
+                CustomerId = order.CustomerId,
+                OrderDate = order.OrderDate,
+                Status = order.Status,
+                Notes = order.Notes
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(UpdateOrderDTO model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var customers = await _customerService.GetAll();
+                ViewBag.CustomerList = new SelectList(customers, "Id", "FullName", model.CustomerId);
+                return View(model);
+            }
+
+            await _orderService.Update(model.Id, model);
+            return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Details(int id)
         {
             var order = await _orderService.GetDetail(id);
-
             if (order == null) return NotFound();
             return View(order);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Edit(Order model)
-        {
-            await _orderService.Update(model.Id, model);
-            return RedirectToAction("Index");
         }
     }
 }

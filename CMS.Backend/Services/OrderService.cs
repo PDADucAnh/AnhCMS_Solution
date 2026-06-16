@@ -19,22 +19,27 @@ namespace CMS.Backend.Services
             _context = context;
         }
 
-        // === Entity methods (MVC) ===
-        public async Task<IEnumerable<Order>> GetAll()
+        public async Task<IEnumerable<OrderDTO>> GetAll()
         {
-            return await _context.Orders
+            var orders = await _context.Orders
                 .Include(o => o.Customer)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Product)
                 .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
+
+            return orders.Select(o => o.ToDTO());
         }
 
-        public async Task<Order?> GetDetail(int id)
+        public async Task<OrderDTO?> GetDetail(int id)
         {
-            return await _context.Orders
+            var order = await _context.Orders
                 .Include(o => o.Customer)
                 .Include(o => o.OrderDetails)
                     .ThenInclude(od => od.Product)
                 .FirstOrDefaultAsync(o => o.Id == id);
+
+            return order?.ToDTO();
         }
 
         public async Task<(bool Success, string Message, int OrderId)> CreateOrder(
@@ -85,12 +90,16 @@ namespace CMS.Backend.Services
             }
         }
 
-        public async Task<bool> Update(int id, Order order)
+        public async Task<bool> Update(int id, UpdateOrderDTO dto)
         {
-            if (id != order.Id)
+            if (id != dto.Id)
                 return false;
 
-            _context.Entry(order).State = EntityState.Modified;
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null)
+                return false;
+
+            dto.UpdateEntity(order);
 
             try
             {
@@ -114,61 +123,6 @@ namespace CMS.Backend.Services
             _context.Orders.Remove(order);
             await _context.SaveChangesAsync();
             return true;
-        }
-
-        public async Task<Order> Create(Order order)
-        {
-            _context.Orders.Add(order);
-            await _context.SaveChangesAsync();
-            return order;
-        }
-
-        // === DTO methods (API) ===
-        public async Task<IEnumerable<OrderDTO>> GetAllDTO()
-        {
-            var orders = await _context.Orders
-                .Include(o => o.Customer)
-                .Include(o => o.OrderDetails)
-                    .ThenInclude(od => od.Product)
-                .OrderByDescending(o => o.OrderDate)
-                .ToListAsync();
-
-            return orders.Select(o => o.ToDTO());
-        }
-
-        public async Task<OrderDTO?> GetDetailDTO(int id)
-        {
-            var order = await _context.Orders
-                .Include(o => o.Customer)
-                .Include(o => o.OrderDetails)
-                    .ThenInclude(od => od.Product)
-                .FirstOrDefaultAsync(o => o.Id == id);
-
-            return order?.ToDTO();
-        }
-
-        public async Task<bool> UpdateDTO(int id, UpdateOrderDTO dto)
-        {
-            if (id != dto.Id)
-                return false;
-
-            var order = await _context.Orders.FindAsync(id);
-            if (order == null)
-                return false;
-
-            dto.UpdateEntity(order);
-
-            try
-            {
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!await _context.Orders.AnyAsync(e => e.Id == id))
-                    return false;
-                throw;
-            }
         }
     }
 }

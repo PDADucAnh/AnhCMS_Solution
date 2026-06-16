@@ -1,4 +1,4 @@
-@model CMS.Data.Entities.Product
+@model ProductDTO
 @{
     ViewData["Title"] = "Product Details";
     Layout = "_LayoutAdmin";
@@ -57,7 +57,7 @@
             <div class="pt-xl space-y-md">
                 <p class="text-label-sm text-secondary uppercase tracking-widest">Taxonomy Information</p>
                 <div class="flex gap-md">
-                    <span class="px-lg py-2 border border-outline text-label-sm uppercase tracking-widest">Division: @(Model.CategoryProduct?.Name ?? "General")</span>
+                    <span class="px-lg py-2 border border-outline text-label-sm uppercase tracking-widest">Division: @(Model.CategoryProductName ?? "General")</span>
                     <span class="px-lg py-2 border border-outline text-label-sm uppercase tracking-widest">ID: #LX-PRD-@Model.Id</span>
                 </div>
             </div>

@@ -1,6 +1,7 @@
 using CMS.Backend.Services.Interfaces;
 using CMS.Backend.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace CMS.Backend.Controllers.Api
 {
@@ -51,7 +52,7 @@ namespace CMS.Backend.Controllers.Api
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var updated = await _userService.UpdateDTO(id, dto);
+            var updated = await _userService.Update(id, dto);
 
             if (!updated)
                 return NotFound();

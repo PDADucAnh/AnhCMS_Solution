@@ -1,6 +1,7 @@
 using CMS.Backend.Services.Interfaces;
 using CMS.Backend.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace CMS.Backend.Controllers.Api
 {
@@ -18,14 +19,14 @@ namespace CMS.Backend.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var customers = await _customerService.GetAllDTO();
+            var customers = await _customerService.GetAll();
             return Ok(customers);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var customer = await _customerService.GetByIdDTO(id);
+            var customer = await _customerService.GetById(id);
             if (customer == null)
                 return NotFound();
 
@@ -38,7 +39,7 @@ namespace CMS.Backend.Controllers.Api
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var created = await _customerService.CreateDTO(dto);
+            var created = await _customerService.Create(dto);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
@@ -51,7 +52,7 @@ namespace CMS.Backend.Controllers.Api
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var updated = await _customerService.UpdateDTO(id, dto);
+            var updated = await _customerService.Update(id, dto);
 
             if (!updated)
                 return NotFound();

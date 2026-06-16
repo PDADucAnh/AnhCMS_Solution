@@ -1,4 +1,4 @@
-using CMS.Data.Entities;
+using CMS.Backend.Models.DTOs;
 using CMS.Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -9,13 +9,11 @@ namespace CMS.Backend.Controllers
     {
         private readonly ICustomerService _customerService;
 
-        // Constructor injection
         public CustomerController(ICustomerService customerService)
         {
             _customerService = customerService;
         }
 
-        // Hiển thị danh sách khách hàng
         public async Task<IActionResult> Index()
         {
             var customers = await _customerService.GetAll();
@@ -29,8 +27,11 @@ namespace CMS.Backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Customer model)
+        public async Task<IActionResult> Create(CreateCustomerDTO model)
         {
+            if (!ModelState.IsValid)
+                return View(model);
+
             await _customerService.Create(model);
             return RedirectToAction("Index");
         }
@@ -46,12 +47,25 @@ namespace CMS.Backend.Controllers
         {
             var customer = await _customerService.GetById(id);
             if (customer == null) return NotFound();
-            return View(customer);
+
+            var model = new UpdateCustomerDTO
+            {
+                Id = customer.Id,
+                FullName = customer.FullName,
+                Email = customer.Email,
+                Phone = customer.Phone,
+                Address = customer.Address
+            };
+
+            return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(Customer model)
+        public async Task<IActionResult> Edit(UpdateCustomerDTO model)
         {
+            if (!ModelState.IsValid)
+                return View(model);
+
             await _customerService.Update(model.Id, model);
             return RedirectToAction("Index");
         }

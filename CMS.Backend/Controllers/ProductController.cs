@@ -1,5 +1,6 @@
-using CMS.Data.Entities;
+using CMS.Backend.Models.DTOs;
 using CMS.Backend.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
@@ -13,14 +14,12 @@ namespace CMS.Backend.Controllers
         private readonly IProductService _productService;
         private readonly ICategoryProductService _categoryProductService;
 
-        // Constructor injection
         public ProductController(IProductService productService, ICategoryProductService categoryProductService)
         {
             _productService = productService;
             _categoryProductService = categoryProductService;
         }
 
-        // Hiển thị danh sách sản phẩm (kèm tên danh mục)
         public async Task<IActionResult> Index()
         {
             var products = await _productService.GetAll();
@@ -30,13 +29,13 @@ namespace CMS.Backend.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            var categories = await _categoryProductService.GetCategoriesProductsAsync();
+            var categories = await _categoryProductService.GetAll();
             ViewBag.CategoryProductList = new SelectList(categories, "Id", "Name");
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Product model, IFormFile uploadImage)
+        public async Task<IActionResult> Create(CreateProductDTO model, IFormFile uploadImage)
         {
             if (uploadImage != null && uploadImage.Length > 0)
             {
@@ -52,6 +51,13 @@ namespace CMS.Backend.Controllers
                 }
 
                 model.ImageUrl = "/uploads/products/" + fileName;
+            }
+
+            if (!ModelState.IsValid)
+            {
+                var categories = await _categoryProductService.GetAll();
+                ViewBag.CategoryProductList = new SelectList(categories, "Id", "Name", model.CategoryProductId);
+                return View(model);
             }
 
             await _productService.Create(model);
@@ -70,9 +76,21 @@ namespace CMS.Backend.Controllers
             var product = await _productService.GetDetail(id);
             if (product == null) return NotFound();
 
-            var categories = await _categoryProductService.GetCategoriesProductsAsync();
+            var categories = await _categoryProductService.GetAll();
             ViewBag.CategoryProductList = new SelectList(categories, "Id", "Name", product.CategoryProductId);
-            return View(product);
+
+            var model = new UpdateProductDTO
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                StockQuantity = product.StockQuantity,
+                ImageUrl = product.ImageUrl ?? string.Empty,
+                CategoryProductId = product.CategoryProductId
+            };
+
+            return View(model);
         }
 
         public async Task<IActionResult> Details(int id)
@@ -83,7 +101,7 @@ namespace CMS.Backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(Product model, IFormFile uploadImage)
+        public async Task<IActionResult> Edit(UpdateProductDTO model, IFormFile uploadImage)
         {
             if (uploadImage != null && uploadImage.Length > 0)
             {
@@ -105,8 +123,15 @@ namespace CMS.Backend.Controllers
                 var oldProduct = await _productService.GetDetail(model.Id);
                 if (oldProduct != null && string.IsNullOrEmpty(model.ImageUrl))
                 {
-                    model.ImageUrl = oldProduct.ImageUrl;
+                    model.ImageUrl = oldProduct.ImageUrl ?? string.Empty;
                 }
+            }
+
+            if (!ModelState.IsValid)
+            {
+                var categories = await _categoryProductService.GetAll();
+                ViewBag.CategoryProductList = new SelectList(categories, "Id", "Name", model.CategoryProductId);
+                return View(model);
             }
 
             await _productService.Update(model.Id, model);

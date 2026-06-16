@@ -1,4 +1,4 @@
-@model IEnumerable<CMS.Data.Entities.OrderDetail>
+@model IEnumerable<OrderDetailDTO>
 @{
     ViewData["Title"] = "Order Details";
     Layout = "_LayoutAdmin";
@@ -37,8 +37,8 @@
                             <td class="px-lg py-5 text-label-sm tracking-widest uppercase">#LX-ORD-@od.OrderId</td>
                             <td class="px-lg py-5">
                                 <div class="flex flex-col">
-                                    <span class="text-body-md font-bold">@(od.Product?.Name ?? "N/A")</span>
-                                    <span class="text-[10px] text-secondary uppercase tracking-widest">Client: @(od.Order?.Customer?.FullName ?? "N/A")</span>
+                                    <span class="text-body-md font-bold">@(od.ProductName ?? "N/A")</span>
+                                    <span class="text-[10px] text-secondary uppercase tracking-widest">Client: @(od.CustomerName ?? "N/A")</span>
                                 </div>
                             </td>
                             <td class="px-lg py-5 text-body-md">@od.Quantity units</td>

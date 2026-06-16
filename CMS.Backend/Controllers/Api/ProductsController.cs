@@ -1,6 +1,7 @@
 using CMS.Backend.Services.Interfaces;
 using CMS.Backend.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace CMS.Backend.Controllers.Api
 {
@@ -18,21 +19,21 @@ namespace CMS.Backend.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var products = await _productService.GetAllDTO();
+            var products = await _productService.GetAll();
             return Ok(products);
         }
 
         [HttpGet("categoryproduct/{categoryProductId}")]
         public async Task<IActionResult> GetByCategoryProduct(int categoryProductId)
         {
-            var products = await _productService.GetByCategoryProductDTO(categoryProductId);
+            var products = await _productService.GetByCategoryProduct(categoryProductId);
             return Ok(products);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDetail(int id)
         {
-            var product = await _productService.GetDetailDTO(id);
+            var product = await _productService.GetDetail(id);
 
             if (product == null)
             {
@@ -48,7 +49,7 @@ namespace CMS.Backend.Controllers.Api
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var created = await _productService.CreateDTO(dto);
+            var created = await _productService.Create(dto);
             return CreatedAtAction(nameof(GetDetail), new { id = created.Id }, created);
         }
 
@@ -61,7 +62,7 @@ namespace CMS.Backend.Controllers.Api
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var updated = await _productService.UpdateDTO(id, dto);
+            var updated = await _productService.Update(id, dto);
 
             if (!updated)
                 return NotFound();
