@@ -41,7 +41,7 @@
                             </td>
                             <td class="px-lg py-5 text-label-sm tracking-widest uppercase">@user.Username</td>
                             <td class="px-lg py-5">
-                                @if (user.Role == "Administrator")
+                                @if (user.Role == "Admin" || user.Role == "Administrator")
                                 {
                                     <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 bg-primary text-on-primary">@user.Role</span>
                                 }
