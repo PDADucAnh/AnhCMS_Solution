@@ -11,17 +11,17 @@ namespace CMS.Backend.Controllers.Api
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IUserService _userService;
+        private readonly IAuthService _authService;
 
-        public AuthController(IUserService userService)
+        public AuthController(IAuthService authService)
         {
-            _userService = userService;
+            _authService = authService;
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest login)
         {
-            var user = await _userService.Login(login.Username, login.Password);
+            var user = await _authService.Login(login.Username, login.Password);
 
             if (user != null)
             {
@@ -52,7 +52,7 @@ namespace CMS.Backend.Controllers.Api
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest register)
         {
-            var (success, message) = await _userService.Register(
+            var (success, message) = await _authService.Register(
                 register.Username, register.Password, register.FullName);
 
             if (!success)

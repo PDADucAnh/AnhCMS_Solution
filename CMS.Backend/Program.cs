@@ -43,6 +43,7 @@ builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IProductService, CMS.
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.ICategoryService, CMS.Backend.Services.CategoryService>();
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.ICategoryProductService, CMS.Backend.Services.CategoryProductService>();
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IUserService, CMS.Backend.Services.UserService>();
+builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IAuthService, CMS.Backend.Services.AuthService>();
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.ICustomerService, CMS.Backend.Services.CustomerService>();
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IOrderService, CMS.Backend.Services.OrderService>();
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IOrderDetailService, CMS.Backend.Services.OrderDetailService>();

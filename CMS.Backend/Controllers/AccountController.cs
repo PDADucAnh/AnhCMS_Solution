@@ -14,11 +14,11 @@ using System.Collections.Generic;
 
 public class AccountController : Controller
 {
-    private readonly IUserService _userService;
+    private readonly IAuthService _authService;
 
-    public AccountController(IUserService userService)
+    public AccountController(IAuthService authService)
     {
-        _userService = userService;
+        _authService = authService;
     }
 
     [HttpGet]
@@ -30,8 +30,8 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> Login(string username, string password)
     {
-        // 1. Kiểm tra tài khoản trong Database thông qua UserService (hỗ trợ mật khẩu đã băm)
-        var user = await _userService.Login(username, password);
+        // 1. Kiểm tra tài khoản trong Database thông qua AuthService (hỗ trợ mật khẩu đã băm)
+        var user = await _authService.Login(username, password);
 
         if (user != null)
         {

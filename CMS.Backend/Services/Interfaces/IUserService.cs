@@ -11,8 +11,6 @@ namespace CMS.Backend.Services.Interfaces
         Task<bool> Update(int id, User user);
         Task<bool> UpdateDTO(int id, UpdateUserDTO dto);
         Task<bool> Delete(int id);
-        Task<User?> Login(string username, string password);
-        Task<(bool Success, string Message)> Register(string username, string password, string fullName);
         
         // Các phương thức bổ sung cho MVC Controller
         Task<IEnumerable<User>> GetUsersAsync();

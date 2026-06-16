@@ -115,67 +115,7 @@ namespace CMS.Backend.Services
             return true;
         }
 
-        public async Task<User?> Login(string username, string password)
-        {
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Username == username);
 
-            if (user == null)
-                return null;
-
-            PasswordVerificationResult verificationResult;
-            try
-            {
-                verificationResult = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
-            }
-            catch (FormatException)
-            {
-                if (user.PasswordHash == password)
-                {
-                    verificationResult = PasswordVerificationResult.SuccessRehashNeeded;
-                }
-                else
-                {
-                    verificationResult = PasswordVerificationResult.Failed;
-                }
-            }
-
-            if (verificationResult == PasswordVerificationResult.Failed)
-                return null;
-
-            if (verificationResult == PasswordVerificationResult.SuccessRehashNeeded)
-            {
-                user.PasswordHash = _passwordHasher.HashPassword(user, password);
-                _context.Users.Update(user);
-                await _context.SaveChangesAsync();
-            }
-
-            user.PasswordHash = null;
-            return user;
-        }
-
-        public async Task<(bool Success, string Message)> Register(string username, string password, string fullName)
-        {
-            var checkExist = await _context.Users.AnyAsync(u => u.Username == username);
-            if (checkExist)
-            {
-                return (false, "Tên đăng nhập này đã tồn tại!");
-            }
-
-            var newUser = new User
-            {
-                Username = username,
-                FullName = fullName,
-                Role = "Customer"
-            };
-
-            newUser.PasswordHash = _passwordHasher.HashPassword(newUser, password);
-
-            _context.Users.Add(newUser);
-            await _context.SaveChangesAsync();
-
-            return (true, "Đăng ký thành công!");
-        }
 
         public async Task<IEnumerable<User>> GetUsersAsync()
         {
