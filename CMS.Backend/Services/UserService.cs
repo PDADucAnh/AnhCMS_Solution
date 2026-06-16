@@ -9,10 +9,10 @@ namespace CMS.Backend.Services
 {
     public class UserService : IUserService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly PasswordHasher<User> _passwordHasher;
 
-        public UserService(ApplicationDbContext context)
+        public UserService(IApplicationDbContext context)
         {
             _context = context;
             _passwordHasher = new PasswordHasher<User>();

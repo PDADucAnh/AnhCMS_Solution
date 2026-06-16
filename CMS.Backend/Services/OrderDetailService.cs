@@ -7,9 +7,9 @@ namespace CMS.Backend.Services
 {
     public class OrderDetailService : IOrderDetailService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public OrderDetailService(ApplicationDbContext context)
+        public OrderDetailService(IApplicationDbContext context)
         {
             _context = context;
         }

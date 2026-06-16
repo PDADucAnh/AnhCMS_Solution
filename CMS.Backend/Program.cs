@@ -36,6 +36,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
+
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IPostService, CMS.Backend.Services.PostService>();
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IProductService, CMS.Backend.Services.ProductService>();
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.ICategoryService, CMS.Backend.Services.CategoryService>();

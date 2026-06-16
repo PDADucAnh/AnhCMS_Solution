@@ -8,9 +8,9 @@ namespace CMS.Backend.Services
 {
     public class CategoryService : ICategoryService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public CategoryService(ApplicationDbContext context)
+        public CategoryService(IApplicationDbContext context)
         {
             _context = context;
         }

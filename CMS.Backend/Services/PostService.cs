@@ -7,9 +7,9 @@ namespace CMS.Backend.Services
 {
     public class PostService : IPostService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public PostService(ApplicationDbContext context)
+        public PostService(IApplicationDbContext context)
         {
             _context = context;
         }

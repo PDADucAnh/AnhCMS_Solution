@@ -8,9 +8,9 @@ namespace CMS.Backend.Services
 {
     public class ProductService : IProductService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public ProductService(ApplicationDbContext context)
+        public ProductService(IApplicationDbContext context)
         {
             _context = context;
         }
