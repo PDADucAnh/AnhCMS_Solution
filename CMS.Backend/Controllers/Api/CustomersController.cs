@@ -1,8 +1,8 @@
-using CMS.Data.Entities;
 using CMS.Backend.Services.Interfaces;
+using CMS.Backend.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CMS.Backend.Controllers
+namespace CMS.Backend.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -18,14 +18,14 @@ namespace CMS.Backend.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var customers = await _customerService.GetAll();
+            var customers = await _customerService.GetAllDTO();
             return Ok(customers);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var customer = await _customerService.GetById(id);
+            var customer = await _customerService.GetByIdDTO(id);
             if (customer == null)
                 return NotFound();
 
@@ -33,19 +33,25 @@ namespace CMS.Backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Customer customer)
+        public async Task<IActionResult> Create(CreateCustomerDTO dto)
         {
-            var created = await _customerService.Create(customer);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var created = await _customerService.CreateDTO(dto);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, Customer customer)
+        public async Task<IActionResult> Update(int id, UpdateCustomerDTO dto)
         {
-            if (id != customer.Id)
+            if (id != dto.Id)
                 return BadRequest();
 
-            var updated = await _customerService.Update(id, customer);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var updated = await _customerService.UpdateDTO(id, dto);
 
             if (!updated)
                 return NotFound();

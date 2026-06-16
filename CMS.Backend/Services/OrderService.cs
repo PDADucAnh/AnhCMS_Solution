@@ -1,7 +1,12 @@
 using CMS.Data;
 using CMS.Data.Entities;
 using CMS.Backend.Services.Interfaces;
+using CMS.Backend.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System;
 
 namespace CMS.Backend.Services
 {
@@ -14,6 +19,7 @@ namespace CMS.Backend.Services
             _context = context;
         }
 
+        // === Entity methods (MVC) ===
         public async Task<IEnumerable<Order>> GetAll()
         {
             return await _context.Orders
@@ -108,6 +114,61 @@ namespace CMS.Backend.Services
             _context.Orders.Remove(order);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<Order> Create(Order order)
+        {
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
+            return order;
+        }
+
+        // === DTO methods (API) ===
+        public async Task<IEnumerable<OrderDTO>> GetAllDTO()
+        {
+            var orders = await _context.Orders
+                .Include(o => o.Customer)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Product)
+                .OrderByDescending(o => o.OrderDate)
+                .ToListAsync();
+
+            return orders.Select(o => o.ToDTO());
+        }
+
+        public async Task<OrderDTO?> GetDetailDTO(int id)
+        {
+            var order = await _context.Orders
+                .Include(o => o.Customer)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Product)
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            return order?.ToDTO();
+        }
+
+        public async Task<bool> UpdateDTO(int id, UpdateOrderDTO dto)
+        {
+            if (id != dto.Id)
+                return false;
+
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null)
+                return false;
+
+            dto.UpdateEntity(order);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await _context.Orders.AnyAsync(e => e.Id == id))
+                    return false;
+                throw;
+            }
         }
     }
 }

@@ -1,8 +1,8 @@
-using CMS.Data.Entities;
 using CMS.Backend.Services.Interfaces;
+using CMS.Backend.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CMS.Backend.Controllers
+namespace CMS.Backend.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -18,14 +18,14 @@ namespace CMS.Backend.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var categories = await _categoryService.GetAll();
+            var categories = await _categoryService.GetAllDTO();
             return Ok(categories);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var category = await _categoryService.GetById(id);
+            var category = await _categoryService.GetByIdDTO(id);
             if (category == null)
                 return NotFound();
 
@@ -33,19 +33,25 @@ namespace CMS.Backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Category category)
+        public async Task<IActionResult> Create(CreateCategoryDTO dto)
         {
-            var created = await _categoryService.Create(category);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var created = await _categoryService.CreateDTO(dto);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, Category category)
+        public async Task<IActionResult> Update(int id, UpdateCategoryDTO dto)
         {
-            if (id != category.Id)
+            if (id != dto.Id)
                 return BadRequest();
 
-            var updated = await _categoryService.Update(id, category);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var updated = await _categoryService.UpdateDTO(id, dto);
 
             if (!updated)
                 return NotFound();

@@ -87,5 +87,22 @@ namespace CMS.Backend.Services
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<IEnumerable<Post>> GetPostsAsync(int? categoryId)
+        {
+            IQueryable<Post> query = _context.Posts.Include(p => p.Category);
+            if (categoryId != null)
+            {
+                query = query.Where(p => p.CategoryId == categoryId);
+            }
+            return await query.OrderByDescending(p => p.CreatedDate).ToListAsync();
+        }
+
+        public async Task<Post?> GetPostByIdAsync(int id)
+        {
+            return await _context.Posts
+                .Include(p => p.Category)
+                .FirstOrDefaultAsync(p => p.Id == id);
+        }
     }
 }

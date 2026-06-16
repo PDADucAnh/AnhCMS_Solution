@@ -1,8 +1,8 @@
-﻿using CMS.Data.Entities;
+using CMS.Data.Entities;
 using CMS.Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CMS.Backend.Controllers
+namespace CMS.Backend.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]

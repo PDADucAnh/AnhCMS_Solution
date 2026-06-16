@@ -1,4 +1,4 @@
-﻿/*
+/*
     Tên: Phạm Đức Anh
     Mã SV: 2123110135
     Ngày tạo: 06/06/2026
@@ -8,78 +8,76 @@
               4. Sử dụng Entity Framework để kết nối và thao tác với cơ sở dữ liệu SQL Server trong OrderDetailController
               5. Áp dụng phân quyền truy cập cho các chức năng quản lý chi tiết đơn hàng trong OrderDetailController (chỉ Admin mới được phép xóa, Editor chỉ được phép xem và sửa) trong OrderDetailController
  */
-using CMS.Data;
 using CMS.Data.Entities;
+using CMS.Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace CMS.Backend.Controllers
 {
     public class OrderDetailController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IOrderDetailService _orderDetailService;
+        private readonly IOrderService _orderService;
+        private readonly IProductService _productService;
 
         // Constructor injection
-        public OrderDetailController(ApplicationDbContext context)
+        public OrderDetailController(IOrderDetailService orderDetailService, IOrderService orderService, IProductService productService)
         {
-            _context = context;
+            _orderDetailService = orderDetailService;
+            _orderService = orderService;
+            _productService = productService;
         }
 
         // Hiển thị danh sách chi tiết đơn hàng (kèm thông tin Order và Product)
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var orderDetails = _context.OrderDetails
-                .Include(od => od.Order)
-                    .ThenInclude(o => o.Customer)   // Lấy tên khách hàng qua Order
-                .Include(od => od.Product)
-                    .ThenInclude(p => p.CategoryProduct) // Lấy tên danh mục sản phẩm (nếu muốn)
-                .ToList();
+            var orderDetails = await _orderDetailService.GetAll();
             return View(orderDetails);
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewBag.OrderList = new SelectList(_context.Orders, "Id", "Id");
-            ViewBag.ProductList = new SelectList(_context.Products, "Id", "Name");
+            var orders = await _orderService.GetAll();
+            var products = await _productService.GetAll();
+            ViewBag.OrderList = new SelectList(orders, "Id", "Id");
+            ViewBag.ProductList = new SelectList(products, "Id", "Name");
             return View();
         }
 
         [HttpPost]
-        public IActionResult Create(OrderDetail model)
+        public async Task<IActionResult> Create(OrderDetail model)
         {
-            _context.OrderDetails.Add(model);
-            _context.SaveChanges();
+            await _orderDetailService.Create(model);
             return RedirectToAction("Index");
         }
 
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var orderDetail = _context.OrderDetails.Find(id);
-            if (orderDetail != null)
-            {
-                _context.OrderDetails.Remove(orderDetail);
-                _context.SaveChanges();
-            }
+            await _orderDetailService.Delete(id);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var orderDetail = _context.OrderDetails.Find(id);
+            var orderDetail = await _orderDetailService.GetById(id);
             if (orderDetail == null) return NotFound();
-            ViewBag.OrderList = new SelectList(_context.Orders, "Id", "Id", orderDetail.OrderId);
-            ViewBag.ProductList = new SelectList(_context.Products, "Id", "Name", orderDetail.ProductId);
+
+            var orders = await _orderService.GetAll();
+            var products = await _productService.GetAll();
+
+            ViewBag.OrderList = new SelectList(orders, "Id", "Id", orderDetail.OrderId);
+            ViewBag.ProductList = new SelectList(products, "Id", "Name", orderDetail.ProductId);
             return View(orderDetail);
         }
 
         [HttpPost]
-        public IActionResult Edit(OrderDetail model)
+        public async Task<IActionResult> Edit(OrderDetail model)
         {
-            _context.OrderDetails.Update(model);
-            _context.SaveChanges();
+            await _orderDetailService.Update(model.Id, model);
             return RedirectToAction("Index");
         }
     }

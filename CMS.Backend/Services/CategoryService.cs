@@ -1,6 +1,7 @@
 using CMS.Data;
 using CMS.Data.Entities;
 using CMS.Backend.Services.Interfaces;
+using CMS.Backend.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
 
 namespace CMS.Backend.Services
@@ -14,6 +15,7 @@ namespace CMS.Backend.Services
             _context = context;
         }
 
+        // === Entity methods (MVC) ===
         public async Task<IEnumerable<Category>> GetAll()
         {
             return await _context.Categories.ToListAsync();
@@ -21,7 +23,9 @@ namespace CMS.Backend.Services
 
         public async Task<Category?> GetById(int id)
         {
-            return await _context.Categories.FindAsync(id);
+            return await _context.Categories
+                .Include(c => c.Posts)
+                .FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task<Category> Create(Category category)
@@ -60,6 +64,51 @@ namespace CMS.Backend.Services
             _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        // === DTO methods (API) ===
+        public async Task<IEnumerable<CategoryDTO>> GetAllDTO()
+        {
+            var categories = await _context.Categories.ToListAsync();
+            return categories.Select(c => c.ToDTO());
+        }
+
+        public async Task<CategoryDTO?> GetByIdDTO(int id)
+        {
+            var category = await _context.Categories.FindAsync(id);
+            return category?.ToDTO();
+        }
+
+        public async Task<CategoryDTO> CreateDTO(CreateCategoryDTO dto)
+        {
+            var category = dto.ToEntity();
+            _context.Categories.Add(category);
+            await _context.SaveChangesAsync();
+            return category.ToDTO();
+        }
+
+        public async Task<bool> UpdateDTO(int id, UpdateCategoryDTO dto)
+        {
+            if (id != dto.Id)
+                return false;
+
+            var category = await _context.Categories.FindAsync(id);
+            if (category == null)
+                return false;
+
+            dto.UpdateEntity(category);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await _context.Categories.AnyAsync(e => e.Id == id))
+                    return false;
+                throw;
+            }
         }
     }
 }

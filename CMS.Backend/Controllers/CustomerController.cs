@@ -1,24 +1,24 @@
-﻿using CMS.Data;
 using CMS.Data.Entities;
+using CMS.Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace CMS.Backend.Controllers
 {
     public class CustomerController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ICustomerService _customerService;
 
         // Constructor injection
-        public CustomerController(ApplicationDbContext context)
+        public CustomerController(ICustomerService customerService)
         {
-            _context = context;
+            _customerService = customerService;
         }
 
-        // Hiển thị danh sách khách hàng (không hiển thị mật khẩu)
-        public IActionResult Index()
+        // Hiển thị danh sách khách hàng
+        public async Task<IActionResult> Index()
         {
-            var customers = _context.Customers.ToList();
+            var customers = await _customerService.GetAll();
             return View(customers);
         }
 
@@ -29,37 +29,30 @@ namespace CMS.Backend.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Customer model)
+        public async Task<IActionResult> Create(Customer model)
         {
-            _context.Customers.Add(model);
-            _context.SaveChanges();
+            await _customerService.Create(model);
             return RedirectToAction("Index");
         }
 
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var customer = _context.Customers.Find(id);
-            if (customer != null)
-            {
-                _context.Customers.Remove(customer);
-                _context.SaveChanges();
-            }
+            await _customerService.Delete(id);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var customer = _context.Customers.Find(id);
+            var customer = await _customerService.GetById(id);
             if (customer == null) return NotFound();
             return View(customer);
         }
 
         [HttpPost]
-        public IActionResult Edit(Customer model)
+        public async Task<IActionResult> Edit(Customer model)
         {
-            _context.Customers.Update(model);
-            _context.SaveChanges();
+            await _customerService.Update(model.Id, model);
             return RedirectToAction("Index");
         }
     }

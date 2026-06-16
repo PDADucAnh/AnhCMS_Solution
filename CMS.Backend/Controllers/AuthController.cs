@@ -1,4 +1,5 @@
 using CMS.Backend.Services.Interfaces;
+using CMS.Backend.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CMS.Backend.Controllers
@@ -44,18 +45,5 @@ namespace CMS.Backend.Controllers
 
             return Ok(new { message });
         }
-    }
-
-    public class LoginRequest
-    {
-        public string Username { get; set; }
-        public string Password { get; set; }
-    }
-
-    public class RegisterRequest
-    {
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public string FullName { get; set; }
     }
 }

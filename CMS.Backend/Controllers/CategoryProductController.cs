@@ -1,24 +1,24 @@
-﻿using CMS.Data;
 using CMS.Data.Entities;
+using CMS.Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace CMS.Backend.Controllers
 {
     public class CategoryProductController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ICategoryProductService _categoryProductService;
 
-        // Constructor injection - tiêm DbContext
-        public CategoryProductController(ApplicationDbContext context)
+        // Constructor injection - tiêm Service
+        public CategoryProductController(ICategoryProductService categoryProductService)
         {
-            _context = context;
+            _categoryProductService = categoryProductService;
         }
 
         // Hiển thị danh sách danh mục sản phẩm
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var categories = _context.CategoriesProducts.ToList();
+            var categories = await _categoryProductService.GetCategoriesProductsAsync();
             return View(categories);
         }
 
@@ -31,40 +31,33 @@ namespace CMS.Backend.Controllers
 
         // 2. Hàm POST: Dùng để đón dữ liệu từ Form gửi lên và lưu vào SQL
         [HttpPost]
-        public IActionResult Create(CategoryProduct model)
+        public async Task<IActionResult> Create(CategoryProduct model)
         {
-            _context.CategoriesProducts.Add(model);
-            _context.SaveChanges();
+            await _categoryProductService.Create(model);
             return RedirectToAction("Index");
         }
 
         // Action nhận vào Id của danh mục cần xóa
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var category = _context.CategoriesProducts.Find(id);
-            if (category != null)
-            {
-                _context.CategoriesProducts.Remove(category);
-                _context.SaveChanges();
-            }
+            await _categoryProductService.Delete(id);
             return RedirectToAction("Index");
         }
 
         // 1. Hàm GET: Tìm dữ liệu cũ và đổ lên Form
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var category = _context.CategoriesProducts.Find(id);
+            var category = await _categoryProductService.GetById(id);
             if (category == null) return NotFound();
             return View(category);
         }
 
         // 2. Hàm POST: Nhận dữ liệu mới từ người dùng và lưu lại
         [HttpPost]
-        public IActionResult Edit(CategoryProduct model)
+        public async Task<IActionResult> Edit(CategoryProduct model)
         {
-            _context.CategoriesProducts.Update(model);
-            _context.SaveChanges();
+            await _categoryProductService.Update(model.Id, model);
             return RedirectToAction("Index");
         }
     }

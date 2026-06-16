@@ -25,21 +25,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LoginPath = "/Account/Login";
         options.AccessDeniedPath = "/Account/AccessDenied";
     });
-// 1. Khai báo chính sách CORS
-builder.Services.AddCors(options => {
-    options.AddPolicy("AllowAll", policy => {
-        // Cho phép mọi nguồn (Origin), mọi phương thức (GET, POST...), mọi tiêu đề (Header)
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
-
-});
-
-
 builder.Services.AddControllersWithViews();
-
-builder.Services.AddScoped<IPostService, PostService>();
 
 // Swagger
 builder.Services.AddControllers();

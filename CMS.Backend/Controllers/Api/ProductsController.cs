@@ -1,8 +1,8 @@
-﻿using CMS.Data.Entities;
 using CMS.Backend.Services.Interfaces;
+using CMS.Backend.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CMS.Backend.Controllers
+namespace CMS.Backend.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -18,21 +18,21 @@ namespace CMS.Backend.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var products = await _productService.GetAll();
+            var products = await _productService.GetAllDTO();
             return Ok(products);
         }
 
         [HttpGet("categoryproduct/{categoryProductId}")]
         public async Task<IActionResult> GetByCategoryProduct(int categoryProductId)
         {
-            var products = await _productService.GetByCategoryProduct(categoryProductId);
+            var products = await _productService.GetByCategoryProductDTO(categoryProductId);
             return Ok(products);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDetail(int id)
         {
-            var product = await _productService.GetDetail(id);
+            var product = await _productService.GetDetailDTO(id);
 
             if (product == null)
             {
@@ -43,19 +43,25 @@ namespace CMS.Backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Product product)
+        public async Task<IActionResult> Create(CreateProductDTO dto)
         {
-            var created = await _productService.Create(product);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var created = await _productService.CreateDTO(dto);
             return CreatedAtAction(nameof(GetDetail), new { id = created.Id }, created);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, Product product)
+        public async Task<IActionResult> Update(int id, UpdateProductDTO dto)
         {
-            if (id != product.Id)
+            if (id != dto.Id)
                 return BadRequest();
 
-            var updated = await _productService.Update(id, product);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var updated = await _productService.UpdateDTO(id, dto);
 
             if (!updated)
                 return NotFound();

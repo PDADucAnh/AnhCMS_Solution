@@ -1,4 +1,4 @@
-﻿/* Họ tên: Phạm Đức Anh
+/* Họ tên: Phạm Đức Anh
  * Mã SV: 2123110135
  * Lớp: CCQ2311D
  * Ngày tạo: 05/06/2026
@@ -8,44 +8,42 @@
  *        4. Áp dụng phân quyền truy cập cho các chức năng quản lý danh mục trong CategoryController (chỉ Admin mới được phép xóa, Editor chỉ được phép xem và sửa) trong CategoryController
  */
 
-using CMS.Data;
-using CMS.Data.Entities;// Kết nối tới lớp dữ liệu vừa tạo
+using CMS.Data.Entities;
+using CMS.Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace CMS.Backend.Controllers
 {
     [Authorize]
     public class CategoryController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ICategoryService _categoryService;
 
-        // "Tiêm" kết nối vào Controller
-        public CategoryController(ApplicationDbContext context)
+        // "Tiêm" Service vào Controller
+        public CategoryController(ICategoryService categoryService)
         {
-            _context = context;
+            _categoryService = categoryService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            // Lấy dữ liệu THẬT từ bảng Categories trong SQL
-            var data = _context.Categories.ToList();
+            // Lấy dữ liệu từ Service
+            var data = await _categoryService.GetAll();
             return View(data);
         }
 
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            var category = _context.Categories
-                .Include(c => c.Posts)
-                .FirstOrDefault(c => c.Id == id);
+            var category = await _categoryService.GetById(id);
 
             if (category == null) return NotFound();
 
             return View(category);
         }
 
-        // 1. Hàm GET: Dùng để hiển thị giao diện Form cho  nhập
+        // 1. Hàm GET: Dùng để hiển thị giao diện Form cho nhập
         [HttpGet]
         public IActionResult Create()
         {
@@ -54,42 +52,24 @@ namespace CMS.Backend.Controllers
 
         // 2. Hàm POST: Dùng để đón dữ liệu từ Form gửi lên và lưu vào SQL
         [HttpPost]
-        public IActionResult Create(Category model)
+        public async Task<IActionResult> Create(Category model)
         {
-            // BƯỚC 1: Thêm dữ liệu vào bộ nhớ tạm của Entity Framework
-            _context.Categories.Add(model);
-
-            // BƯỚC 2: Ra lệnh cho hệ thống ghi dữ liệu thật sự vào SQL Server
-            _context.SaveChanges();
-
-            // Sau khi lưu thành công, tự động quay về trang danh sách
+            await _categoryService.Create(model);
             return RedirectToAction("Index");
         }
+
         // Action nhận vào Id của danh mục cần xóa
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            // Bước 1: Tìm đối tượng danh mục trong Database bằng Id
-            var category = _context.Categories.Find(id);
-
-            // Kiểm tra nếu tìm thấy thì mới xóa
-            if (category != null)
-            {
-                // Bước 2: Lệnh xóa khỏi bộ nhớ tạm (Tracking)
-                _context.Categories.Remove(category);
-
-                // Bước 3: Chốt phiên làm việc, xóa thực sự trong SQL Server
-                _context.SaveChanges();
-            }
-
-            // Sau khi xóa xong, quay lại trang danh sách để cập nhật giao diện
+            await _categoryService.Delete(id);
             return RedirectToAction("Index");
         }
+
         // 1. Hàm GET: Tìm dữ liệu cũ và đổ lên Form
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            // Tìm danh mục trong Database theo Id
-            var category = _context.Categories.Find(id);
+            var category = await _categoryService.GetById(id);
 
             if (category == null) return NotFound();
 
@@ -98,15 +78,9 @@ namespace CMS.Backend.Controllers
 
         // 2. Hàm POST: Nhận dữ liệu mới từ người dùng và lưu lại
         [HttpPost]
-        public IActionResult Edit(Category model)
+        public async Task<IActionResult> Edit(Category model)
         {
-            // Lệnh cập nhật đối tượng vào bộ nhớ tạm
-            _context.Categories.Update(model);
-
-            // Lưu thay đổi thực sự xuống SQL Server 
-            _context.SaveChanges();
-
-            // Quay lại trang danh sách để xem kết quả
+            await _categoryService.Update(model.Id, model);
             return RedirectToAction("Index");
         }
     }

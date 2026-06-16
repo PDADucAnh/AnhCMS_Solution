@@ -1,8 +1,8 @@
-﻿using CMS.Data.Entities;
 using CMS.Backend.Services.Interfaces;
+using CMS.Backend.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CMS.Backend.Controllers
+namespace CMS.Backend.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -22,6 +22,9 @@ namespace CMS.Backend.Controllers
             {
                 return BadRequest(new { message = "Dữ liệu đơn hàng không hợp lệ" });
             }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
             var items = input.Items?.Select(i => new OrderItemInput
             {
@@ -48,14 +51,14 @@ namespace CMS.Backend.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var orders = await _orderService.GetAll();
+            var orders = await _orderService.GetAllDTO();
             return Ok(orders);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDetail(int id)
         {
-            var order = await _orderService.GetDetail(id);
+            var order = await _orderService.GetDetailDTO(id);
 
             if (order == null)
                 return NotFound();
@@ -64,12 +67,15 @@ namespace CMS.Backend.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, Order order)
+        public async Task<IActionResult> Update(int id, UpdateOrderDTO dto)
         {
-            if (id != order.Id)
+            if (id != dto.Id)
                 return BadRequest();
 
-            var updated = await _orderService.Update(id, order);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var updated = await _orderService.UpdateDTO(id, dto);
 
             if (!updated)
                 return NotFound();
@@ -86,20 +92,6 @@ namespace CMS.Backend.Controllers
                 return NotFound();
 
             return NoContent();
-        }
-
-        public class OrderInputDTO
-        {
-            public int CustomerId { get; set; }
-            public string Notes { get; set; }
-            public List<OrderItemDTO> Items { get; set; }
-        }
-
-        public class OrderItemDTO
-        {
-            public int ProductId { get; set; }
-            public int Quantity { get; set; }
-            public decimal UnitPrice { get; set; }
         }
     }
 }

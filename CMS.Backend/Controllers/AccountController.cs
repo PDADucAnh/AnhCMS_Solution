@@ -1,4 +1,4 @@
-﻿/* Họ tên: Phạm Đức Anh
+/* Họ tên: Phạm Đức Anh
  * Mã SV: 2123110135
  * Lớp: CCQ2311D
  * Ngày tạo: 05/06/2026
@@ -8,15 +8,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
-using CMS.Data; // Thay bằng Namespace của project Data
+using System.Threading.Tasks;
+using CMS.Backend.Services.Interfaces;
+using System.Collections.Generic;
 
 public class AccountController : Controller
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IUserService _userService;
 
-    public AccountController(ApplicationDbContext context)
+    public AccountController(IUserService userService)
     {
-        _context = context;
+        _userService = userService;
     }
 
     [HttpGet]
@@ -24,21 +26,22 @@ public class AccountController : Controller
     {
         return View();
     }
+
     [HttpPost]
     public async Task<IActionResult> Login(string username, string password)
     {
-        // 1. Kiểm tra tài khoản trong Database
-        var user = _context.Users.FirstOrDefault(u => u.Username == username && u.PasswordHash == password);
+        // 1. Kiểm tra tài khoản trong Database thông qua UserService (hỗ trợ mật khẩu đã băm)
+        var user = await _userService.Login(username, password);
 
         if (user != null)
         {
             // 2. Thiết lập danh tính (Claims)
             var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Role, user.Role), // Lưu vai trò: Admin/Editor
-            new Claim("FullName", user.FullName)
-        };
+            {
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, user.Role), // Lưu vai trò: Admin/Editor
+                new Claim("FullName", user.FullName)
+            };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
@@ -59,10 +62,10 @@ public class AccountController : Controller
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return RedirectToAction("Login");
     }
+
     [HttpGet]
     public IActionResult AccessDenied()
     {
         return View();
     }
-
 }

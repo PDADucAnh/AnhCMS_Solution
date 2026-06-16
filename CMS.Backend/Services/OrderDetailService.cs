@@ -16,12 +16,22 @@ namespace CMS.Backend.Services
 
         public async Task<IEnumerable<OrderDetail>> GetAll()
         {
-            return await _context.OrderDetails.ToListAsync();
+            return await _context.OrderDetails
+                .Include(od => od.Order)
+                    .ThenInclude(o => o.Customer)
+                .Include(od => od.Product)
+                    .ThenInclude(p => p.CategoryProduct)
+                .ToListAsync();
         }
 
         public async Task<OrderDetail?> GetById(int id)
         {
-            return await _context.OrderDetails.FindAsync(id);
+            return await _context.OrderDetails
+                .Include(od => od.Order)
+                    .ThenInclude(o => o.Customer)
+                .Include(od => od.Product)
+                    .ThenInclude(p => p.CategoryProduct)
+                .FirstOrDefaultAsync(od => od.Id == id);
         }
 
         public async Task<IEnumerable<OrderDetail>> GetByOrderId(int orderId)

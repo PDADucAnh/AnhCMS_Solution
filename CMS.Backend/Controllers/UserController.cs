@@ -1,4 +1,4 @@
-﻿/* Họ tên: Phạm Đức Anh
+/* Họ tên: Phạm Đức Anh
  * Mã SV: 2123110135
  * Lớp: CCQ2311D
  * Ngày tạo: 04/06/2026
@@ -10,29 +10,29 @@
  *        6. Xử lý bảo mật: Không hiển thị mật khẩu trong danh sách thành viên, và có chức năng đổi mật khẩu riêng biệt trong UserController
  */
 
-using CMS.Data;
 using CMS.Data.Entities;
+using CMS.Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace CMS.Backend.Controllers
 {
     [Authorize(Roles = "Admin")] // Chỉ tài khoản có Role là Admin mới được phép vào
     public class UserController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IUserService _userService;
 
         // Constructor injection
-        public UserController(ApplicationDbContext context)
+        public UserController(IUserService userService)
         {
-            _context = context;
+            _userService = userService;
         }
 
         // Hiển thị danh sách thành viên (không hiển thị mật khẩu)
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var users = _context.Users.ToList(); // Lấy tất cả user
+            var users = await _userService.GetUsersAsync(); // Lấy tất cả user thông qua Service
             return View(users);
         }
 
@@ -43,28 +43,27 @@ namespace CMS.Backend.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(User model)
+        public async Task<IActionResult> Create(User model)
         {
             // Kiểm tra xem tên đăng nhập đã tồn tại chưa
-            var checkExist = _context.Users.Any(u => u.Username == model.Username);
+            var checkExist = await _userService.UserExistsAsync(model.Username);
             if (checkExist)
             {
                 ModelState.AddModelError("Username", "Tên đăng nhập này đã có người dùng!");
                 return View(model);
             }
 
-            // Lưu User mới vào Database
-            _context.Users.Add(model);
-            _context.SaveChanges();
+            // Lưu User mới vào Database thông qua Service (tự động mã hóa mật khẩu)
+            await _userService.CreateUserAsync(model);
 
             return RedirectToAction("Index");
         }
 
         // GET: Hiển thị form kèm dữ liệu cũ của User
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var user = _context.Users.Find(id);
+            var user = await _userService.GetUserByIdAsync(id);
             if (user == null) return NotFound();
 
             return View(user);
@@ -72,44 +71,29 @@ namespace CMS.Backend.Controllers
 
         // POST: Thực hiện lưu thay đổi
         [HttpPost]
-        public IActionResult Edit(User model, string NewPassword)
+        public async Task<IActionResult> Edit(User model, string NewPassword)
         {
-            // 1. Tìm User gốc trong Database để lấy lại mật khẩu cũ nếu cần
-            var existingUser = _context.Users.AsNoTracking().FirstOrDefault(u => u.Id == model.Id);
-
-            if (existingUser == null) return NotFound();
-
-            // 2. Xử lý mật khẩu: Nếu nhập mới thì lấy cái mới, nếu trống thì lấy cái cũ
+            // Xử lý mật khẩu mới nếu được nhập
             if (!string.IsNullOrEmpty(NewPassword))
             {
-                model.PasswordHash = NewPassword; // Sau này sẽ mã hóa tại đây
+                model.PasswordHash = NewPassword;
             }
             else
             {
-                model.PasswordHash = existingUser.PasswordHash;
+                model.PasswordHash = null; // Sẽ giữ nguyên mật khẩu cũ trong Service.Update
             }
 
-            // 3. Cập nhật vào Database
-            _context.Users.Update(model);
-            _context.SaveChanges();
+            // Cập nhật vào Database qua Service
+            var success = await _userService.Update(model.Id, model);
+            if (!success) return NotFound();
 
             return RedirectToAction("Index");
         }
 
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var user = _context.Users.Find(id);
-            if (user != null)
-            {
-                _context.Users.Remove(user);
-                _context.SaveChanges();
-            }
+            await _userService.Delete(id);
             return RedirectToAction("Index");
-        }
-
-        private bool UserExists(int id)
-        {
-            return _context.Users.Any(e => e.Id == id);
         }
     }
 }

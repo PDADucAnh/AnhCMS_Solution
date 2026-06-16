@@ -1,8 +1,8 @@
-using CMS.Data.Entities;
 using CMS.Backend.Services.Interfaces;
+using CMS.Backend.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CMS.Backend.Controllers
+namespace CMS.Backend.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -33,19 +33,25 @@ namespace CMS.Backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(User user)
+        public async Task<IActionResult> Create(CreateUserDTO dto)
         {
-            var created = await _userService.Create(user);
-            return CreatedAtAction(nameof(GetById), new { id = ((dynamic)created).Id }, created);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var created = await _userService.Create(dto);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, User user)
+        public async Task<IActionResult> Update(int id, UpdateUserDTO dto)
         {
-            if (id != user.Id)
+            if (id != dto.Id)
                 return BadRequest();
 
-            var updated = await _userService.Update(id, user);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var updated = await _userService.UpdateDTO(id, dto);
 
             if (!updated)
                 return NotFound();

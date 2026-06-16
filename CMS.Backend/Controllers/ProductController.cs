@@ -1,39 +1,42 @@
-﻿using CMS.Data;
 using CMS.Data.Entities;
+using CMS.Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace CMS.Backend.Controllers
 {
     public class ProductController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IProductService _productService;
+        private readonly ICategoryProductService _categoryProductService;
 
-        // Constructor injection - tiêm DbContext
-        public ProductController(ApplicationDbContext context)
+        // Constructor injection
+        public ProductController(IProductService productService, ICategoryProductService categoryProductService)
         {
-            _context = context;
+            _productService = productService;
+            _categoryProductService = categoryProductService;
         }
 
         // Hiển thị danh sách sản phẩm (kèm tên danh mục)
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var products = _context.Products
-                .Include(p => p.CategoryProduct)   // Lấy thêm thông tin danh mục
-                .ToList();
+            var products = await _productService.GetAll();
             return View(products);
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewBag.CategoryProductList = new SelectList(_context.CategoriesProducts, "Id", "Name");
+            var categories = await _categoryProductService.GetCategoriesProductsAsync();
+            ViewBag.CategoryProductList = new SelectList(categories, "Id", "Name");
             return View();
         }
 
         [HttpPost]
-        public IActionResult Create(Product model, IFormFile uploadImage)
+        public async Task<IActionResult> Create(Product model, IFormFile uploadImage)
         {
             if (uploadImage != null && uploadImage.Length > 0)
             {
@@ -45,49 +48,42 @@ namespace CMS.Backend.Controllers
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    uploadImage.CopyTo(stream);
+                    await uploadImage.CopyToAsync(stream);
                 }
 
                 model.ImageUrl = "/uploads/products/" + fileName;
             }
 
-            _context.Products.Add(model);
-            _context.SaveChanges();
+            await _productService.Create(model);
             return RedirectToAction("Index");
         }
 
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var product = _context.Products.Find(id);
-            if (product != null)
-            {
-                _context.Products.Remove(product);
-                _context.SaveChanges();
-            }
+            await _productService.Delete(id);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var product = _context.Products.Find(id);
+            var product = await _productService.GetDetail(id);
             if (product == null) return NotFound();
-            ViewBag.CategoryProductList = new SelectList(_context.CategoriesProducts, "Id", "Name", product.CategoryProductId);
+
+            var categories = await _categoryProductService.GetCategoriesProductsAsync();
+            ViewBag.CategoryProductList = new SelectList(categories, "Id", "Name", product.CategoryProductId);
             return View(product);
         }
 
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            var product = _context.Products
-                .Include(p => p.CategoryProduct)
-                .FirstOrDefault(p => p.Id == id);
-
+            var product = await _productService.GetDetail(id);
             if (product == null) return NotFound();
             return View(product);
         }
 
         [HttpPost]
-        public IActionResult Edit(Product model, IFormFile uploadImage)
+        public async Task<IActionResult> Edit(Product model, IFormFile uploadImage)
         {
             if (uploadImage != null && uploadImage.Length > 0)
             {
@@ -99,22 +95,21 @@ namespace CMS.Backend.Controllers
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    uploadImage.CopyTo(stream);
+                    await uploadImage.CopyToAsync(stream);
                 }
 
                 model.ImageUrl = "/uploads/products/" + fileName;
             }
             else
             {
-                var oldProduct = _context.Products.AsNoTracking().FirstOrDefault(p => p.Id == model.Id);
+                var oldProduct = await _productService.GetDetail(model.Id);
                 if (oldProduct != null && string.IsNullOrEmpty(model.ImageUrl))
                 {
                     model.ImageUrl = oldProduct.ImageUrl;
                 }
             }
 
-            _context.Products.Update(model);
-            _context.SaveChanges();
+            await _productService.Update(model.Id, model);
             return RedirectToAction("Index");
         }
     }

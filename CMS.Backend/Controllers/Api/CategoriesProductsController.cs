@@ -1,8 +1,8 @@
-﻿using CMS.Data.Entities;
 using CMS.Backend.Services.Interfaces;
+using CMS.Backend.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CMS.Backend.Controllers
+namespace CMS.Backend.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -20,7 +20,7 @@ namespace CMS.Backend.Controllers
         {
             try
             {
-                var categories = await _categoryProductService.GetAll();
+                var categories = await _categoryProductService.GetAllDTO();
                 return Ok(categories);
             }
             catch (System.Exception ex)
@@ -36,7 +36,7 @@ namespace CMS.Backend.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var category = await _categoryProductService.GetById(id);
+            var category = await _categoryProductService.GetByIdDTO(id);
             if (category == null)
                 return NotFound();
 
@@ -44,19 +44,25 @@ namespace CMS.Backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CategoryProduct category)
+        public async Task<IActionResult> Create(CreateCategoryProductDTO dto)
         {
-            var created = await _categoryProductService.Create(category);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var created = await _categoryProductService.CreateDTO(dto);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, CategoryProduct category)
+        public async Task<IActionResult> Update(int id, UpdateCategoryProductDTO dto)
         {
-            if (id != category.Id)
+            if (id != dto.Id)
                 return BadRequest();
 
-            var updated = await _categoryProductService.Update(id, category);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var updated = await _categoryProductService.UpdateDTO(id, dto);
 
             if (!updated)
                 return NotFound();

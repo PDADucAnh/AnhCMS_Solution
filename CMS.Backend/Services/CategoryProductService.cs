@@ -1,6 +1,7 @@
 using CMS.Data;
 using CMS.Data.Entities;
 using CMS.Backend.Services.Interfaces;
+using CMS.Backend.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
 
 namespace CMS.Backend.Services
@@ -14,25 +15,7 @@ namespace CMS.Backend.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<object>> GetAll()
-        {
-            try
-            {
-                return await _context.CategoriesProducts
-                    .Select(c => new
-                    {
-                        c.Id,
-                        c.Name,
-                        c.Description
-                    })
-                    .ToListAsync();
-            }
-            catch (System.Exception ex)
-            {
-                throw new Exception("Lỗi kết nối cơ sở dữ liệu hệ thống", ex);
-            }
-        }
-
+        // === Entity methods (MVC) ===
         public async Task<CategoryProduct?> GetById(int id)
         {
             return await _context.CategoriesProducts.FindAsync(id);
@@ -74,6 +57,56 @@ namespace CMS.Backend.Services
             _context.CategoriesProducts.Remove(category);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<IEnumerable<CategoryProduct>> GetCategoriesProductsAsync()
+        {
+            return await _context.CategoriesProducts.ToListAsync();
+        }
+
+        // === DTO methods (API) ===
+        public async Task<IEnumerable<CategoryProductDTO>> GetAllDTO()
+        {
+            var list = await _context.CategoriesProducts.ToListAsync();
+            return list.Select(c => c.ToDTO());
+        }
+
+        public async Task<CategoryProductDTO?> GetByIdDTO(int id)
+        {
+            var category = await _context.CategoriesProducts.FindAsync(id);
+            return category?.ToDTO();
+        }
+
+        public async Task<CategoryProductDTO> CreateDTO(CreateCategoryProductDTO dto)
+        {
+            var category = dto.ToEntity();
+            _context.CategoriesProducts.Add(category);
+            await _context.SaveChangesAsync();
+            return category.ToDTO();
+        }
+
+        public async Task<bool> UpdateDTO(int id, UpdateCategoryProductDTO dto)
+        {
+            if (id != dto.Id)
+                return false;
+
+            var category = await _context.CategoriesProducts.FindAsync(id);
+            if (category == null)
+                return false;
+
+            dto.UpdateEntity(category);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await _context.CategoriesProducts.AnyAsync(e => e.Id == id))
+                    return false;
+                throw;
+            }
         }
     }
 }

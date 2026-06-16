@@ -1,6 +1,7 @@
 using CMS.Data;
 using CMS.Data.Entities;
 using CMS.Backend.Services.Interfaces;
+using CMS.Backend.Models.DTOs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,43 +18,28 @@ namespace CMS.Backend.Services
             _passwordHasher = new PasswordHasher<User>();
         }
 
-        public async Task<IEnumerable<object>> GetAll()
+        public async Task<IEnumerable<UserDTO>> GetAll()
         {
-            return await _context.Users
-                .Select(u => new
-                {
-                    u.Id,
-                    u.Username,
-                    u.FullName,
-                    u.Role
-                })
-                .ToListAsync();
+            var users = await _context.Users.ToListAsync();
+            return users.Select(u => u.ToDTO());
         }
 
-        public async Task<object?> GetById(int id)
+        public async Task<UserDTO?> GetById(int id)
         {
-            return await _context.Users
-                .Select(u => new
-                {
-                    u.Id,
-                    u.Username,
-                    u.FullName,
-                    u.Role
-                })
-                .FirstOrDefaultAsync(u => u.Id == id);
+            var user = await _context.Users.FindAsync(id);
+            return user?.ToDTO();
         }
 
-        public async Task<object> Create(User user)
+        public async Task<UserDTO> Create(CreateUserDTO dto)
         {
+            var user = dto.ToEntity();
+            
+            // Hash password
+            user.PasswordHash = _passwordHasher.HashPassword(user, dto.Password);
+
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
-            return new
-            {
-                user.Id,
-                user.Username,
-                user.FullName,
-                user.Role
-            };
+            return user.ToDTO();
         }
 
         public async Task<bool> Update(int id, User user)
@@ -72,6 +58,37 @@ namespace CMS.Backend.Services
             if (!string.IsNullOrEmpty(user.PasswordHash))
             {
                 existingUser.PasswordHash = _passwordHasher.HashPassword(existingUser, user.PasswordHash);
+            }
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await _context.Users.AnyAsync(e => e.Id == id))
+                    return false;
+                throw;
+            }
+        }
+
+        public async Task<bool> UpdateDTO(int id, UpdateUserDTO dto)
+        {
+            if (id != dto.Id)
+                return false;
+
+            var existingUser = await _context.Users.FindAsync(id);
+            if (existingUser == null)
+                return false;
+
+            existingUser.Username = dto.Username;
+            existingUser.FullName = dto.FullName;
+            existingUser.Role = dto.Role;
+
+            if (!string.IsNullOrEmpty(dto.Password))
+            {
+                existingUser.PasswordHash = _passwordHasher.HashPassword(existingUser, dto.Password);
             }
 
             try
@@ -106,7 +123,22 @@ namespace CMS.Backend.Services
             if (user == null)
                 return null;
 
-            var verificationResult = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
+            PasswordVerificationResult verificationResult;
+            try
+            {
+                verificationResult = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
+            }
+            catch (FormatException)
+            {
+                if (user.PasswordHash == password)
+                {
+                    verificationResult = PasswordVerificationResult.SuccessRehashNeeded;
+                }
+                else
+                {
+                    verificationResult = PasswordVerificationResult.Failed;
+                }
+            }
 
             if (verificationResult == PasswordVerificationResult.Failed)
                 return null;
@@ -133,7 +165,6 @@ namespace CMS.Backend.Services
             var newUser = new User
             {
                 Username = username,
-                PasswordHash = password,
                 FullName = fullName,
                 Role = "Customer"
             };
@@ -144,6 +175,31 @@ namespace CMS.Backend.Services
             await _context.SaveChangesAsync();
 
             return (true, "Đăng ký thành công!");
+        }
+
+        public async Task<IEnumerable<User>> GetUsersAsync()
+        {
+            return await _context.Users.ToListAsync();
+        }
+
+        public async Task<User?> GetUserByIdAsync(int id)
+        {
+            return await _context.Users.FindAsync(id);
+        }
+
+        public async Task<bool> UserExistsAsync(string username)
+        {
+            return await _context.Users.AnyAsync(u => u.Username == username);
+        }
+
+        public async Task<bool> CreateUserAsync(User user)
+        {
+            if (!string.IsNullOrEmpty(user.PasswordHash))
+            {
+                user.PasswordHash = _passwordHasher.HashPassword(user, user.PasswordHash);
+            }
+            _context.Users.Add(user);
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }
