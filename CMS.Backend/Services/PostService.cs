@@ -36,6 +36,16 @@ namespace CMS.Backend.Services
             return post?.ToDTO();
         }
 
+        public async Task<IEnumerable<PostDTO>> GetByCategory(int categoryId)
+        {
+            var posts = await _context.Posts
+                .Where(p => p.CategoryId == categoryId)
+                .Include(p => p.Category)
+                .OrderByDescending(p => p.Id)
+                .ToListAsync();
+            return posts.Select(p => p.ToDTO());
+        }
+
         public async Task<PostDTO> Create(CreatePostDTO dto)
         {
             var post = dto.ToEntity();

@@ -2,7 +2,6 @@ using CMS.Backend.Services.Interfaces;
 using CMS.Backend.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace CMS.Backend.Controllers.Api
@@ -39,8 +38,7 @@ namespace CMS.Backend.Controllers.Api
         [HttpGet("order/{orderId}")]
         public async Task<IActionResult> GetByOrderId(int orderId)
         {
-            var all = await _orderDetailService.GetAll();
-            var orderDetails = all.Where(od => od.OrderId == orderId);
+            var orderDetails = await _orderDetailService.GetByOrderId(orderId);
             return Ok(orderDetails);
         }
 

@@ -40,6 +40,18 @@ namespace CMS.Backend.Services
             return detail?.ToDTO();
         }
 
+        public async Task<IEnumerable<OrderDetailDTO>> GetByOrderId(int orderId)
+        {
+            var list = await _context.OrderDetails
+                .Where(od => od.OrderId == orderId)
+                .Include(od => od.Order)
+                    .ThenInclude(o => o.Customer)
+                .Include(od => od.Product)
+                    .ThenInclude(p => p.CategoryProduct)
+                .ToListAsync();
+            return list.Select(od => od.ToDTO());
+        }
+
         public async Task<OrderDetailDTO> Create(OrderDetailDTO dto)
         {
             var orderDetail = new OrderDetail

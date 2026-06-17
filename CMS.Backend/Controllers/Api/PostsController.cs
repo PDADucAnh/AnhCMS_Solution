@@ -2,7 +2,6 @@ using CMS.Backend.Services.Interfaces;
 using CMS.Backend.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace CMS.Backend.Controllers.Api
@@ -31,9 +30,8 @@ namespace CMS.Backend.Controllers.Api
         [HttpGet("category/{categoryId}")]
         public async Task<IActionResult> GetByCategory(int categoryId)
         {
-            var posts = await _postService.GetAll();
-            var filtered = posts.Where(p => p.CategoryId == categoryId);
-            return Ok(filtered);
+            var posts = await _postService.GetByCategory(categoryId);
+            return Ok(posts);
         }
 
         [AllowAnonymous]

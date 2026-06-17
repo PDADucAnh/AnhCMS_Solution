@@ -11,5 +11,6 @@ namespace CMS.Backend.Services.Interfaces
         Task<PostDTO> Create(CreatePostDTO dto);
         Task<bool> Update(int id, UpdatePostDTO dto);
         Task<bool> Delete(int id);
+        Task<IEnumerable<PostDTO>> GetByCategory(int categoryId);
     }
 }
