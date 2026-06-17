@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CMS.Data.Entities;
 
 namespace CMS.Backend.Models.DTOs
 {
@@ -10,7 +11,7 @@ namespace CMS.Backend.Models.DTOs
         public int CustomerId { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerEmail { get; set; }
-        public int Status { get; set; }
+        public OrderStatus Status { get; set; }
         public string? Notes { get; set; }
         public List<OrderDetailDTO>? OrderDetails { get; set; }
     }
@@ -32,7 +33,7 @@ namespace CMS.Backend.Models.DTOs
         public int Id { get; set; }
         public int CustomerId { get; set; }
         public DateTime OrderDate { get; set; }
-        public int Status { get; set; }
+        public OrderStatus Status { get; set; }
         public string? Notes { get; set; }
     }
 
@@ -47,7 +48,7 @@ namespace CMS.Backend.Models.DTOs
     {
         public DateTime OrderDate { get; set; } = DateTime.Now;
         public int CustomerId { get; set; }
-        public int Status { get; set; }
+        public OrderStatus Status { get; set; }
         public string? Notes { get; set; }
     }
 }

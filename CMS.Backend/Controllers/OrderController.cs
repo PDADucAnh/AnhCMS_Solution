@@ -1,4 +1,5 @@
 using CMS.Backend.Models.DTOs;
+using CMS.Data.Entities;
 using CMS.Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -46,7 +47,7 @@ namespace CMS.Backend.Controllers
             var (success, message, orderId) = await _orderService.CreateOrder(
                 model.CustomerId, model.Notes, new List<OrderItemInput>());
 
-            if (success && model.Status != 0)
+            if (success && model.Status != OrderStatus.Pending)
             {
                 await _orderService.Update(orderId, new UpdateOrderDTO
                 {

@@ -15,6 +15,13 @@ using System.Threading.Tasks;
 
 namespace CMS.Data.Entities
 {
+    public enum OrderStatus
+    {
+        Pending = 0,
+        Shipping = 1,
+        Completed = 2
+    }
+
     public class Order
     {
         [Key]
@@ -24,7 +31,7 @@ namespace CMS.Data.Entities
 
         public int CustomerId { get; set; }
 
-        public int Status { get; set; } // 0: Chờ duyệt, 1: Đang giao, 2: Đã xong
+        public OrderStatus Status { get; set; } = OrderStatus.Pending;
 
         public string? Notes { get; set; }
 

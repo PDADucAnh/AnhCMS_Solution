@@ -1,3 +1,4 @@
+@using CMS.Data.Entities
 @model IEnumerable<OrderDTO>
 @{
     ViewData["Title"] = "Orders";
@@ -45,13 +46,13 @@
                             <td class="px-lg py-5">
                                 @switch (order.Status)
                                 {
-                                    case 0:
+                                    case OrderStatus.Pending:
                                         <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 border border-outline bg-surface-container-low text-secondary">Processing</span>
                                         break;
-                                    case 1:
+                                    case OrderStatus.Shipping:
                                         <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 border border-primary text-primary">Shipped</span>
                                         break;
-                                    case 2:
+                                    case OrderStatus.Completed:
                                         <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 bg-primary text-on-primary">Completed</span>
                                         break;
                                     default:

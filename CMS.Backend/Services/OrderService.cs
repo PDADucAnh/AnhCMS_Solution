@@ -51,7 +51,7 @@ namespace CMS.Backend.Services
                 {
                     OrderDate = DateTime.Now,
                     CustomerId = customerId,
-                    Status = 0,
+                    Status = OrderStatus.Pending,
                     Notes = notes
                 };
 
