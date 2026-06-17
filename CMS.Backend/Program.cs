@@ -117,7 +117,7 @@ app.Use(async (context, next) =>
         {
             await next();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             context.Response.StatusCode = 500;
             context.Response.ContentType = "application/json";
