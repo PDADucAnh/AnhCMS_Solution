@@ -1,7 +1,7 @@
 import React from 'react';
 
 const CartTable = ({ items, onUpdateQuantity, onRemove }) => {
-  const IMAGE_BASE_URL = process.env.REACT_APP_API_URL || "https://localhost:7111";
+  const IMAGE_BASE_URL = process.env.REACT_APP_API_URL || "https://localhost:7224";
 
   return (
     <div className="bg-surface-container-lowest border border-outline-variant overflow-hidden">
