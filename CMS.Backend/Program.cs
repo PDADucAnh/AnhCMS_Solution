@@ -11,19 +11,40 @@
  *          7. Sử dụng Swagger để tạo tài liệu API tự động cho các endpoint trong hệ thống CMS, giúp cho việc phát triển và tích hợp với frontend trở nên dễ dàng hơn
  *          8. Tối ưu hiệu suất: Sử dụng các kỹ thuật như caching, pagination, và tối ưu hóa truy vấn để cải thiện hiệu suất của hệ thống CMS khi xử lý lượng lớn dữ liệu hoặc nhiều yêu cầu đồng thời
  */
+using CMS.Backend.Models;
 using CMS.Backend.Services;
 using CMS.Backend.Services.Interfaces;
 using CMS.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var jwtSettings = builder.Configuration.GetSection("Jwt");
+var secretKey = jwtSettings["SecretKey"]!;
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         options.LoginPath = "/Account/Login";
         options.AccessDeniedPath = "/Account/AccessDenied";
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidAudience = jwtSettings["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+        };
     });
 builder.Services.AddControllersWithViews();
 
@@ -60,6 +81,14 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireRole("Admin", "Administrator"));
+    options.AddPolicy("StaffOnly", policy =>
+        policy.RequireRole("Admin", "Administrator", "Editor"));
+});
+
 var app = builder.Build();
 
 
@@ -79,6 +108,33 @@ app.UseStaticFiles();
 
 app.UseRouting();
 app.UseCors("AllowReactApp");
+
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.StartsWithSegments("/api"))
+    {
+        try
+        {
+            await next();
+        }
+        catch (Exception ex)
+        {
+            context.Response.StatusCode = 500;
+            context.Response.ContentType = "application/json";
+            var error = new ApiErrorResponse
+            {
+                Code = "INTERNAL_ERROR",
+                Message = "An internal error occurred"
+            };
+            await context.Response.WriteAsync(JsonSerializer.Serialize(error));
+        }
+    }
+    else
+    {
+        await next();
+    }
+});
+
 app.UseAuthentication();
 app.UseAuthorization();
 
