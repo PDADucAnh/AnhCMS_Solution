@@ -53,6 +53,8 @@ namespace CMS.Backend.Models.DTOs
         [Required]
         [Range(1, 10000)]
         public int Quantity { get; set; }
+        [Required]
+        [Range(0, double.MaxValue)]
         public decimal UnitPrice { get; set; }
     }
 
