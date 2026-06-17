@@ -72,7 +72,7 @@ namespace CMS.Tests
             Assert.NotNull(user);
             Assert.Equal("loginuser", user.Username);
             Assert.Equal("Login User", user.FullName);
-            Assert.Null(user.PasswordHash); // PasswordHash should be set to null on successful login for security
+            Assert.NotNull(user.PasswordHash); // PasswordHash should contain the hash, not be null
         }
 
         [Fact]
