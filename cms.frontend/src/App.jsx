@@ -1,6 +1,7 @@
 import React, { lazy, Suspense } from 'react';
 // Import các thành phần lõi của thư viện điều hướng đường dẫn
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import ProtectedRoute from './components/ProtectedRoute';
 // 2. IMPORT CONTEXT
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
@@ -58,7 +59,11 @@ function App() {
                                 <Route path="/cart" element={<Cart />} />
 
                                 {/* Cấu hình Trang Điền thông tin thanh toán - Địa chỉ "/checkout" */}
-                                <Route path="/checkout" element={<Checkout />} />
+                                <Route path="/checkout" element={
+                                    <ProtectedRoute>
+                                        <Checkout />
+                                    </ProtectedRoute>
+                                } />
 
                                 <Route path="/login" element={<Login />} />
                                 <Route path="/register" element={<Register />} />
