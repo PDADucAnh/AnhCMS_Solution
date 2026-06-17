@@ -23,6 +23,14 @@ namespace CMS.Backend.Controllers.Api
             _configuration = configuration;
         }
 
+        private static Claim[] BuildUserClaims(Data.Entities.User user) => new[]
+        {
+            new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.Role, user.Role),
+            new Claim("FullName", user.FullName),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest login)
         {
@@ -30,40 +38,31 @@ namespace CMS.Backend.Controllers.Api
 
             if (user != null)
             {
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, user.Username),
-                    new Claim(ClaimTypes.Role, user.Role),
-                    new Claim("FullName", user.FullName)
-                };
-
-                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var claimsIdentity = new ClaimsIdentity(
+                    BuildUserClaims(user), CookieAuthenticationDefaults.AuthenticationScheme);
 
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity));
 
                 // Generate JWT
-                var jwtKey = _configuration["Jwt:SecretKey"]!;
-                var issuer = _configuration["Jwt:Issuer"]!;
-                var audience = _configuration["Jwt:Audience"]!;
+                var jwtKey = _configuration["Jwt:SecretKey"]
+                    ?? throw new InvalidOperationException("Jwt:SecretKey is not configured.");
+                var issuer = _configuration["Jwt:Issuer"];
+                var audience = _configuration["Jwt:Audience"];
                 var expiryMinutes = int.Parse(_configuration["Jwt:ExpiryMinutes"] ?? "60");
 
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var key = Encoding.UTF8.GetBytes(jwtKey);
+                var expiration = DateTime.UtcNow.AddMinutes(expiryMinutes);
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
-                    Subject = new ClaimsIdentity(new[]
-                    {
-                        new Claim(ClaimTypes.Name, user.Username),
-                        new Claim(ClaimTypes.Role, user.Role),
-                        new Claim("FullName", user.FullName)
-                    }),
-                    Expires = DateTime.UtcNow.AddMinutes(expiryMinutes),
+                    Subject = new ClaimsIdentity(BuildUserClaims(user)),
+                    Expires = expiration,
                     Issuer = issuer,
                     Audience = audience,
                     SigningCredentials = new SigningCredentials(
                         new SymmetricSecurityKey(key),
-                        SecurityAlgorithms.HmacSha256Signature)
+                        SecurityAlgorithms.HmacSha256)
                 };
                 var token = tokenHandler.CreateToken(tokenDescriptor);
                 var tokenString = tokenHandler.WriteToken(token);
@@ -71,7 +70,7 @@ namespace CMS.Backend.Controllers.Api
                 return Ok(new
                 {
                     token = tokenString,
-                    expiresAt = tokenDescriptor.Expires,
+                    expiresAt = new DateTimeOffset(expiration).ToUnixTimeSeconds(),
                     username = user.Username,
                     fullName = user.FullName,
                     role = user.Role,
