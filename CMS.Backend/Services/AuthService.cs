@@ -53,7 +53,6 @@ namespace CMS.Backend.Services
                 await _context.SaveChangesAsync();
             }
 
-            user.PasswordHash = null;
             return user;
         }
 
