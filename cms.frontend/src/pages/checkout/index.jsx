@@ -3,11 +3,13 @@ import { useNavigate, Link } from 'react-router-dom';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 import orderService from '../../services/orderService';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const { cartItems, cartTotal, clearCart } = useCart();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullname: '',
@@ -32,7 +34,7 @@ const CheckoutPage = () => {
       setLoading(true);
       
       const orderData = {
-        customerId: 1, // Mocked ID
+        customerId: user?.id || 0,
         notes: `Delivery to: ${formData.fullname}, Contact: ${formData.phone}, Location: ${formData.address}. Narrative: ${formData.notes}`,
         items: cartItems.map(item => ({
           productId: item.id,

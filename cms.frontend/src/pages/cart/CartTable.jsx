@@ -1,8 +1,7 @@
 import React from 'react';
+import { getImageUrl } from '../../utils/apiUtils';
 
 const CartTable = ({ items, onUpdateQuantity, onRemove }) => {
-  const IMAGE_BASE_URL = process.env.REACT_APP_API_URL || "https://localhost:7224";
-
   return (
     <div className="bg-surface-container-lowest border border-outline-variant overflow-hidden">
       <div className="overflow-x-auto">
@@ -18,7 +17,7 @@ const CartTable = ({ items, onUpdateQuantity, onRemove }) => {
           </thead>
           <tbody className="divide-y divide-outline-variant">
             {items.map((item) => {
-              const imageUrl = item.imageUrl?.startsWith('http') ? item.imageUrl : `${IMAGE_BASE_URL}${item.imageUrl}`;
+              const imageUrl = getImageUrl(item.imageUrl);
               return (
                 <tr key={item.id} className="table-row-hover transition-colors">
                   <td className="px-lg py-6">
@@ -39,7 +38,7 @@ const CartTable = ({ items, onUpdateQuantity, onRemove }) => {
                     </div>
                   </td>
                   <td className="px-lg py-6 text-center text-body-md serif">
-                    {item.price.toLocaleString()} ₫
+                    {(item.discountPrice || item.price).toLocaleString()} ₫
                   </td>
                   <td className="px-lg py-6">
                     <div className="flex items-center justify-center gap-md">
@@ -59,7 +58,7 @@ const CartTable = ({ items, onUpdateQuantity, onRemove }) => {
                     </div>
                   </td>
                   <td className="px-lg py-6 text-right font-bold serif text-lg">
-                    {(item.price * item.quantity).toLocaleString()} ₫
+                    {((item.discountPrice || item.price) * item.quantity).toLocaleString()} ₫
                   </td>
                   <td className="px-lg py-6 text-right">
                     <button 

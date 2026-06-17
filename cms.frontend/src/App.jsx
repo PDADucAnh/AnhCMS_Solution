@@ -1,10 +1,9 @@
-import React, { lazy, Suspense } from 'react';
-// Import các thành phần lõi của thư viện điều hướng đường dẫn
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { lazy, Suspense, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate, Link } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
-// 2. IMPORT CONTEXT
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { authEvents } from './utils/eventEmitter';
 
 // 1. IMPORT CÁC TRANG CHỨC NĂNG (LAZY LOADING ĐỂ TỐI ƯU HÓA BUNDLE SIZE)
 const Home = lazy(() => import('./pages/home/index'));
@@ -29,12 +28,22 @@ const PageLoader = () => (
     </div>
 );
 
+function AuthRedirectHandler() {
+    const navigate = useNavigate();
+    useEffect(() => {
+        const unsubscribe = authEvents.on('unauthorized', () => navigate('/login'));
+        return unsubscribe;
+    }, [navigate]);
+    return null;
+}
+
 function App() {
     return (
         <AuthProvider>
         <CartProvider>
             {/* Khởi tạo bộ định tuyến bao bọc toàn bộ ứng dụng Web */}
             <Router>
+                <AuthRedirectHandler />
                 <div className="d-flex flex-column min-vh-100 bg-light">
                     {/* KHU VỰC NỘI DUNG ĐỘNG (Bọc trong Suspense để hỗ trợ trì hoãn tải) */}
                     <main className="flex-grow-1">
@@ -79,7 +88,7 @@ function App() {
                                         />
                                         <h2 className="fw-bold text-secondary">404 - KHÔNG TÌM THẤY TRANG</h2>
                                         <p className="text-muted">Đường dẫn bạn truy cập không tồn tại trên hệ thống AnhCMS.</p>
-                                        <a href="/" className="btn btn-dark btn-sm mt-2 text-decoration-none">Quay lại Trang Chủ</a>
+                                        <Link to="/" className="btn btn-dark btn-sm mt-2 text-decoration-none">Quay lại Trang Chủ</Link>
                                     </div>
                                 } />
                             </Routes>

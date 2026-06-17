@@ -1,8 +1,10 @@
 import axios from 'axios';
 import tokenService from '../services/tokenService';
+import { API_BASE_URL } from '../utils/apiUtils';
+import { authEvents } from '../utils/eventEmitter';
 
 const axiosClient = axios.create({
-    baseURL: process.env.REACT_APP_API_URL ? `${process.env.REACT_APP_API_URL}/api` : 'https://localhost:7224/api',
+    baseURL: `${API_BASE_URL}/api`,
     headers: {
         'Content-Type': 'application/json',
     },
@@ -26,7 +28,7 @@ axiosClient.interceptors.response.use(
     (error) => {
         if (error.response?.status === 401) {
             tokenService.removeToken();
-            window.location.href = '/login';
+            authEvents.emit('unauthorized');
         }
         console.error('API Error:', error.response || error.message);
         return Promise.reject(error);

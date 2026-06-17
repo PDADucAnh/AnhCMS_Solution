@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import authService from '../../services/authService';
+import { useAuth } from '../../context/AuthContext';
 
 const LoginPage = () => {
     const [username, setUsername] = useState('');
@@ -10,6 +10,7 @@ const LoginPage = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -17,14 +18,10 @@ const LoginPage = () => {
         setLoading(true);
 
         try {
-            const success = await authService.login(username, password);
-            if (success) {
-                navigate('/');
-            } else {
-                setError('Authentication failed. Please verify your credentials.');
-            }
+            await login(username, password);
+            navigate('/');
         } catch (err) {
-            setError('An error occurred during authentication.');
+            setError('Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.');
         } finally {
             setLoading(false);
         }

@@ -4,12 +4,10 @@ import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import productService from '../../services/productService';
 import { useCart } from '../../context/CartContext';
-
-const IMAGE_BASE_URL = process.env.REACT_APP_API_URL || "https://localhost:7224";
+import { getImageUrl } from '../../utils/apiUtils';
 
 const formatImageUrl = (url, fallback) => {
-  if (!url) return fallback;
-  return url.startsWith('http') ? url : `${IMAGE_BASE_URL}${url}`;
+  return getImageUrl(url) || fallback;
 };
 
 const ProductDetailPage = () => {
@@ -101,7 +99,7 @@ const ProductDetailPage = () => {
           <span className="text-primary truncate">{product.name}</span>
         </div>
 
-        {/* Left: Image Gallery */}
+        {/* Left: Product Image */}
         <div className="md:col-span-7 lg:col-span-8 flex flex-col gap-gutter">
           <div className="w-full aspect-[4/5] bg-surface-container relative group overflow-hidden">
             <img 
@@ -109,22 +107,6 @@ const ProductDetailPage = () => {
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
               src={formatImageUrl(product.imageUrl, "https://via.placeholder.com/800x1000")} 
             />
-          </div>
-          <div className="grid grid-cols-2 gap-gutter">
-            <div className="w-full aspect-[4/5] bg-surface-container relative group overflow-hidden">
-              <img 
-                alt="Product detail 1" 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                src={formatImageUrl(product.imageUrl, "https://via.placeholder.com/400x500")} 
-              />
-            </div>
-            <div className="w-full aspect-[4/5] bg-surface-container relative group overflow-hidden">
-              <img 
-                alt="Product detail 2" 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                src={formatImageUrl(product.imageUrl, "https://via.placeholder.com/400x500")} 
-              />
-            </div>
           </div>
         </div>
 
@@ -286,7 +268,10 @@ const ProductDetailPage = () => {
                     src={formatImageUrl(rp.imageUrl, "https://via.placeholder.com/400x500")} 
                   />
                   <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <button className="w-10 h-10 bg-primary text-on-primary rounded-full flex items-center justify-center hover:scale-110 transition-transform border-0">
+                    <button
+                      className="w-10 h-10 bg-primary text-on-primary rounded-full flex items-center justify-center hover:scale-110 transition-transform border-0"
+                      onClick={(e) => { e.preventDefault(); addToCart(rp); }}
+                    >
                       <span className="material-symbols-outlined text-sm">shopping_bag</span>
                     </button>
                   </div>

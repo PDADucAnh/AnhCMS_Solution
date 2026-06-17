@@ -11,7 +11,7 @@ function LatestBlog() {
             try {
                 setLoading(true);
                 const data = await blogService.getAllPosts();
-                const topThreePosts = data.sort((a, b) => b.id - a.id).slice(0, 3);
+                const topThreePosts = [...data].sort((a, b) => b.id - a.id).slice(0, 3);
                 setPosts(topThreePosts);
             } catch (error) {
                 console.error("Lỗi hệ thống khi tải tin tức thời trang:", error);

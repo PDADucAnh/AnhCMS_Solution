@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const Footer = () => {
+  const [email, setEmail] = useState('');
   return (
     <footer className="w-full py-xl px-margin grid grid-cols-1 md:grid-cols-4 gap-gutter bg-surface-container dark:bg-tertiary-container text-primary dark:text-inverse-primary font-body-md text-body-md border-t border-secondary-container dark:border-outline-variant flat no shadows mt-xl">
       <div className="col-span-1 md:col-span-1 flex flex-col items-start opacity-80 hover:opacity-100 transition-opacity">
@@ -18,8 +19,17 @@ const Footer = () => {
       <div className="col-span-1 md:col-span-2 flex flex-col gap-sm opacity-80 hover:opacity-100 transition-opacity">
         <h4 className="font-headline-sm text-sm uppercase tracking-widest mb-xs">Newsletter</h4>
         <p className="text-secondary dark:text-secondary-fixed-dim text-sm mb-xs">Subscribe to receive updates, access to exclusive deals, and more.</p>
-        <form className="flex w-full max-w-md border-b border-outline pb-2 mt-2 group focus-within:border-primary transition-colors">
-          <input className="bg-transparent border-none w-full text-body-md text-primary placeholder:text-secondary focus:ring-0 p-0 font-body-md outline-none" placeholder="Enter your email address" type="email" />
+        <form
+          className="flex w-full max-w-md border-b border-outline pb-2 mt-2 group focus-within:border-primary transition-colors"
+          onSubmit={(e) => { e.preventDefault(); console.log('Newsletter subscribe:', email); setEmail(''); }}
+        >
+          <input
+            className="bg-transparent border-none w-full text-body-md text-primary placeholder:text-secondary focus:ring-0 p-0 font-body-md outline-none"
+            placeholder="Enter your email address"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
           <button className="font-label-sm text-label-sm uppercase tracking-widest text-primary hover:text-secondary transition-colors pl-4 bg-transparent border-0" type="submit">Subscribe</button>
         </form>
       </div>

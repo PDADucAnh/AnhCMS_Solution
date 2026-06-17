@@ -1,8 +1,7 @@
 import React from 'react';
 import { useCart } from '../context/CartContext';
 import { Link, useNavigate } from 'react-router-dom';
-
-const IMAGE_BASE_URL = process.env.REACT_APP_API_URL || "https://localhost:7224";
+import { getImageUrl } from '../utils/apiUtils';
 
 function ProductCard({ item }) {
     const { addToCart } = useCart();
@@ -15,9 +14,7 @@ function ProductCard({ item }) {
         }).format(value);
     };
 
-    const imageUrl = item.imageUrl?.startsWith('http') 
-        ? item.imageUrl 
-        : `${IMAGE_BASE_URL}${item.imageUrl || ''}`;
+    const imageUrl = getImageUrl(item.imageUrl);
 
     const handleDirectBuy = (e) => {
         e.preventDefault();

@@ -5,6 +5,8 @@ import Footer from '../../components/Footer';
 import postService from '../../services/postService';
 import productService from '../../services/productService';
 import { useCart } from '../../context/CartContext';
+import DOMPurify from 'dompurify';
+import { getImageUrl } from '../../utils/apiUtils';
 
 const BlogDetail = () => {
     const { id } = useParams();
@@ -12,8 +14,6 @@ const BlogDetail = () => {
     const [post, setPost] = useState(null);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-
-    const IMAGE_BASE_URL = process.env.REACT_APP_API_URL || "https://localhost:7224";
 
     useEffect(() => {
         const fetchData = async () => {
@@ -59,7 +59,7 @@ const BlogDetail = () => {
         );
     }
 
-    const postImage = post.imageUrl?.startsWith('http') ? post.imageUrl : `${IMAGE_BASE_URL}${post.imageUrl}`;
+    const postImage = getImageUrl(post.imageUrl);
 
     return (
         <div className="bg-background text-on-background antialiased selection:bg-primary selection:text-on-primary font-body-md pt-20">
@@ -111,7 +111,7 @@ const BlogDetail = () => {
                         <div className="prose prose-lg max-w-none">
                             <div 
                                 className="blog-detail-content font-body-lg text-body-lg text-on-surface-variant mb-lg leading-relaxed first-letter:text-5xl first-letter:font-display-xl first-letter:float-left first-letter:mr-3 first-letter:text-primary"
-                                dangerouslySetInnerHTML={{ __html: post.content }}
+                                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
                             ></div>
                         </div>
 
@@ -141,7 +141,7 @@ const BlogDetail = () => {
                                         <img 
                                             alt={p.name} 
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" 
-                                            src={p.imageUrl?.startsWith('http') ? p.imageUrl : `${IMAGE_BASE_URL}${p.imageUrl}`} 
+                                            src={getImageUrl(p.imageUrl)} 
                                         />
                                         <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                     </div>

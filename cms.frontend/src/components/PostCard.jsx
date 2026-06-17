@@ -1,12 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-
-const IMAGE_BASE_URL = process.env.REACT_APP_API_URL || "https://localhost:7224";
+import { getImageUrl } from '../utils/apiUtils';
 
 function PostCard({ post }) {
-    const imageUrl = post.imageUrl?.startsWith('http') 
-        ? post.imageUrl 
-        : `${IMAGE_BASE_URL}${post.imageUrl || ''}`;
+    const imageUrl = getImageUrl(post.imageUrl);
 
     return (
         <div className="group cursor-pointer flex flex-col h-full">
