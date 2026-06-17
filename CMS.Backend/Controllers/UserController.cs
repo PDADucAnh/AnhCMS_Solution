@@ -2,6 +2,7 @@ using CMS.Backend.Models.DTOs;
 using CMS.Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace CMS.Backend.Controllers
@@ -75,6 +76,15 @@ namespace CMS.Backend.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
+            var currentUsername = User.FindFirst(ClaimTypes.Name)?.Value;
+            var targetUser = await _userService.GetById(id);
+            if (targetUser != null && targetUser.Username == currentUsername)
+            {
+                ModelState.AddModelError("", "Bạn không thể tự xóa tài khoản của chính mình");
+                var users = await _userService.GetAll();
+                return View("Index", users);
+            }
+
             await _userService.Delete(id);
             return RedirectToAction("Index");
         }
