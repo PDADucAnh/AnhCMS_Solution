@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from 'react';
 // Import các thành phần lõi của thư viện điều hướng đường dẫn
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 // 2. IMPORT CONTEXT
+import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 
 // 1. IMPORT CÁC TRANG CHỨC NĂNG (LAZY LOADING ĐỂ TỐI ƯU HÓA BUNDLE SIZE)
@@ -29,6 +30,7 @@ const PageLoader = () => (
 
 function App() {
     return (
+        <AuthProvider>
         <CartProvider>
             {/* Khởi tạo bộ định tuyến bao bọc toàn bộ ứng dụng Web */}
             <Router>
@@ -81,6 +83,7 @@ function App() {
                 </div>
             </Router>
         </CartProvider>
+        </AuthProvider>
     );
 }
 
