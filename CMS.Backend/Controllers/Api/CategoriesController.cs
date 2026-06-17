@@ -1,10 +1,12 @@
 using CMS.Backend.Services.Interfaces;
 using CMS.Backend.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 
 namespace CMS.Backend.Controllers.Api
 {
+    [Authorize(Policy = "StaffOnly")]
     [Route("api/[controller]")]
     [ApiController]
     public class CategoriesController : ControllerBase
@@ -16,6 +18,7 @@ namespace CMS.Backend.Controllers.Api
             _categoryService = categoryService;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -23,6 +26,7 @@ namespace CMS.Backend.Controllers.Api
             return Ok(categories);
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
