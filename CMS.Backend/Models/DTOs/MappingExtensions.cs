@@ -155,7 +155,7 @@ namespace CMS.Backend.Models.DTOs
                 Email = dto.Email,
                 Phone = dto.Phone,
                 Address = dto.Address,
-                Password = dto.Password
+                PasswordHash = dto.PasswordHash
             };
         }
 
@@ -166,9 +166,9 @@ namespace CMS.Backend.Models.DTOs
             entity.Email = dto.Email;
             entity.Phone = dto.Phone;
             entity.Address = dto.Address;
-            if (!string.IsNullOrEmpty(dto.Password))
+            if (!string.IsNullOrEmpty(dto.PasswordHash))
             {
-                entity.Password = dto.Password;
+                entity.PasswordHash = dto.PasswordHash;
             }
         }
 

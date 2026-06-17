@@ -36,7 +36,7 @@ namespace CMS.Backend.Services
         public async Task<CustomerDTO> Create(CreateCustomerDTO dto)
         {
             var customer = dto.ToEntity();
-            customer.Password = _passwordHasher.HashPassword(customer, customer.Password);
+            customer.PasswordHash = _passwordHasher.HashPassword(customer, customer.PasswordHash);
             _context.Customers.Add(customer);
             await _context.SaveChangesAsync();
             return customer.ToDTO();
@@ -53,9 +53,9 @@ namespace CMS.Backend.Services
 
             dto.UpdateEntity(customer);
 
-            if (!string.IsNullOrEmpty(dto.Password))
+            if (!string.IsNullOrEmpty(dto.PasswordHash))
             {
-                customer.Password = _passwordHasher.HashPassword(customer, dto.Password);
+                customer.PasswordHash = _passwordHasher.HashPassword(customer, dto.PasswordHash);
             }
 
             try

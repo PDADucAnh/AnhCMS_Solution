@@ -44,8 +44,8 @@
 
         <div class="space-y-md">
             <label class="text-label-sm uppercase tracking-widest text-secondary font-bold">Security Token (Current Password)</label>
-            <input asp-for="Password" type="text" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-lg py-3 text-body-md font-mono" required />
-            <span asp-validation-for="Password" class="text-error text-xs uppercase tracking-widest"></span>
+            <input asp-for="PasswordHash" type="text" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-lg py-3 text-body-md font-mono" required />
+            <span asp-validation-for="PasswordHash" class="text-error text-xs uppercase tracking-widest"></span>
         </div>
 
         <div class="pt-lg border-t border-outline-variant flex gap-md">
