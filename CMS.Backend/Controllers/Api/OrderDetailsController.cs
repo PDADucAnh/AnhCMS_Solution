@@ -45,17 +45,23 @@ namespace CMS.Backend.Controllers.Api
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(OrderDetailDTO dto)
+        public async Task<IActionResult> Create([FromBody] OrderDetailDTO dto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var created = await _orderDetailService.Create(dto);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, OrderDetailDTO dto)
+        public async Task<IActionResult> Update(int id, [FromBody] OrderDetailDTO dto)
         {
             if (id != dto.Id)
                 return BadRequest();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
             var updated = await _orderDetailService.Update(id, dto);
 
