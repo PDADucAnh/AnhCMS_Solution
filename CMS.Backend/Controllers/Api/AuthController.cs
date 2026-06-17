@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
 namespace CMS.Backend.Controllers.Api
 {
@@ -12,10 +15,12 @@ namespace CMS.Backend.Controllers.Api
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly IConfiguration _configuration;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, IConfiguration configuration)
         {
             _authService = authService;
+            _configuration = configuration;
         }
 
         [HttpPost("login")]
@@ -37,8 +42,36 @@ namespace CMS.Backend.Controllers.Api
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity));
 
+                // Generate JWT
+                var jwtKey = _configuration["Jwt:SecretKey"]!;
+                var issuer = _configuration["Jwt:Issuer"]!;
+                var audience = _configuration["Jwt:Audience"]!;
+                var expiryMinutes = int.Parse(_configuration["Jwt:ExpiryMinutes"] ?? "60");
+
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.UTF8.GetBytes(jwtKey);
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(new[]
+                    {
+                        new Claim(ClaimTypes.Name, user.Username),
+                        new Claim(ClaimTypes.Role, user.Role),
+                        new Claim("FullName", user.FullName)
+                    }),
+                    Expires = DateTime.UtcNow.AddMinutes(expiryMinutes),
+                    Issuer = issuer,
+                    Audience = audience,
+                    SigningCredentials = new SigningCredentials(
+                        new SymmetricSecurityKey(key),
+                        SecurityAlgorithms.HmacSha256Signature)
+                };
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+                var tokenString = tokenHandler.WriteToken(token);
+
                 return Ok(new
                 {
+                    token = tokenString,
+                    expiresAt = tokenDescriptor.Expires,
                     username = user.Username,
                     fullName = user.FullName,
                     role = user.Role,
