@@ -1,9 +1,14 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace CMS.Backend.Models.DTOs
 {
     public class CustomerDTO
     {
         public int Id { get; set; }
+        [Required]
         public string FullName { get; set; }
+        [Required]
+        [EmailAddress]
         public string Email { get; set; }
         public string? Phone { get; set; }
         public string? Address { get; set; }
@@ -11,17 +16,25 @@ namespace CMS.Backend.Models.DTOs
 
     public class CreateCustomerDTO
     {
+        [Required]
         public string FullName { get; set; }
+        [Required]
+        [EmailAddress]
         public string Email { get; set; }
         public string? Phone { get; set; }
         public string? Address { get; set; }
+        [Required]
+        [MinLength(6)]
         public string PasswordHash { get; set; }
     }
 
     public class UpdateCustomerDTO
     {
         public int Id { get; set; }
+        [Required]
         public string FullName { get; set; }
+        [Required]
+        [EmailAddress]
         public string Email { get; set; }
         public string? Phone { get; set; }
         public string? Address { get; set; }
