@@ -21,6 +21,7 @@ namespace CMS.Data.Entities
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Tên sản phẩm không được để trống")]
+        [MaxLength(200)]
         public string Name { get; set; }
 
         public string? Description { get; set; }
