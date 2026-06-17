@@ -72,7 +72,7 @@ namespace CMS.Backend.Controllers.Api
                 return Ok(new
                 {
                     token = tokenString,
-                    expiresAt = new DateTimeOffset(expiration).ToUnixTimeSeconds(),
+                    expiresAt = expiration.ToString("o"),
                     username = user.Username,
                     fullName = user.FullName,
                     role = user.Role,
