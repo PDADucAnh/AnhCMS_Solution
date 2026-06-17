@@ -1,36 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ShopSidebar from './ShopSidebar';
 import ShopHeader from './ShopHeader';
 import ProductList from './ProductList';
-import productService from '../../services/productService';
+import { useProducts } from '../../hooks/useProducts';
 
 const ShopPage: React.FC = () => {
-  const [products, setProducts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: products = [], isLoading, error } = useProducts();
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        let data;
-        if (selectedCategoryId) {
-          const all = await productService.getAllProducts();
-          data = all.filter((p: any) => p.categoryProductId === selectedCategoryId);
-        } else {
-          data = await productService.getAllProducts();
-        }
-        setProducts(data);
-      } catch (err) {
-        console.error("Lỗi khi tải danh sách sản phẩm:", err);
-        setError("Unable to curate the collection at this time.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProducts();
-  }, [selectedCategoryId]);
+  const filteredProducts = selectedCategoryId
+    ? products.filter((p: any) => p.categoryProductId === selectedCategoryId)
+    : products;
 
   const handleCategoryChange = (id: number | null) => {
     setSelectedCategoryId(id);
@@ -49,10 +29,10 @@ const ShopPage: React.FC = () => {
           <aside className="w-full lg:w-72 flex-shrink-0">
             <ShopSidebar onCategoryChange={handleCategoryChange} activeId={selectedCategoryId} />
           </aside>
-          
+
           <div className="flex-1 space-y-lg">
-            <ShopHeader count={products.length} />
-            <ProductList products={products} isLoading={loading} error={error} />
+            <ShopHeader count={filteredProducts.length} />
+            <ProductList products={filteredProducts} isLoading={isLoading} error={error ? "Unable to curate the collection at this time." : null} />
           </div>
         </div>
       </main>

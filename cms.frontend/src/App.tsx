@@ -1,11 +1,16 @@
 import React, { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, Link } from 'react-router-dom';
+import { ErrorBoundary } from 'react-error-boundary';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { authEvents } from './utils/eventEmitter';
+import ErrorFallback from './components/ErrorFallback';
+import { Toaster } from 'react-hot-toast';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from './api/queryClient';
 
 const Home = lazy(() => import('./pages/home/index'));
 const Shop = lazy(() => import('./pages/shop/index'));
@@ -53,33 +58,48 @@ const NotFound: React.FC = () => (
 
 const App: React.FC = () => {
   return (
+    <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <CartProvider>
         <Router>
           <AuthRedirectHandler />
-          <div className="d-flex flex-column min-vh-100 bg-light">
-            <Header />
-            <main className="flex-grow-1">
-              <Suspense fallback={<PageLoader />}>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/shop" element={<Shop />} />
-                  <Route path="/product/:id" element={<ProductDetail />} />
-                  <Route path="/blog" element={<Blog />} />
-                  <Route path="/blog/:id" element={<BlogDetail />} />
-                  <Route path="/cart" element={<Cart />} />
-                  <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </Suspense>
-            </main>
-            <Footer />
-          </div>
+          <ErrorBoundary FallbackComponent={ErrorFallback} onError={(error) => console.error('[Global Error]', error)}>
+            <Toaster
+              position="top-right"
+              gutter={12}
+              containerClassName="font-body-md"
+              toastOptions={{
+                duration: 4000,
+                style: { fontFamily: 'Inter', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.1em', background: '#1a1c1c', color: '#f9f9f9' },
+                success: { iconTheme: { primary: '#000', secondary: '#fff' }, style: { background: '#000' } },
+                error: { iconTheme: { primary: '#ba1a1a', secondary: '#fff' }, style: { background: '#ba1a1a' } },
+              }}
+            />
+            <div className="d-flex flex-column min-vh-100 bg-light">
+              <Header />
+              <main className="flex-grow-1">
+                <Suspense fallback={<PageLoader />}>
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/shop" element={<Shop />} />
+                    <Route path="/product/:id" element={<ProductDetail />} />
+                    <Route path="/blog" element={<Blog />} />
+                    <Route path="/blog/:id" element={<BlogDetail />} />
+                    <Route path="/cart" element={<Cart />} />
+                    <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </Suspense>
+              </main>
+              <Footer />
+            </div>
+          </ErrorBoundary>
         </Router>
       </CartProvider>
     </AuthProvider>
+    </QueryClientProvider>
   );
 };
 

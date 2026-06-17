@@ -1,48 +1,37 @@
-import React, { useState, type FormEvent, type ChangeEvent } from 'react';
+import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import authService from '../../services/authService';
+import toast from 'react-hot-toast';
+import { registerSchema, type RegisterFormData } from '../../schemas/registerSchema';
 
 const RegisterPage: React.FC = () => {
-    const [formData, setFormData] = useState({
-        username: '',
-        fullName: '',
-        email: '',
-        password: '',
-        confirmPassword: ''
-    });
-    const [error, setError] = useState<string>('');
-    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = React.useState<string>('');
+    const [loading, setLoading] = React.useState<boolean>(false);
     const navigate = useNavigate();
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
+    const { register, handleSubmit, formState: { errors } } = useForm<RegisterFormData>({
+        resolver: zodResolver(registerSchema),
+    });
 
-    const handleRegister = async (e: FormEvent) => {
-        e.preventDefault();
+    const onSubmit = async (data: RegisterFormData) => {
         setError('');
-        
-        if (formData.password !== formData.confirmPassword) {
-            setError('Security tokens do not match.');
-            return;
-        }
-
         setLoading(true);
         try {
             const success = await authService.register({
-                username: formData.username,
-                fullName: formData.fullName,
-                email: formData.email,
-                password: formData.password
+                username: data.username,
+                fullName: data.fullName,
+                email: data.email,
+                password: data.password,
             });
             if (success) {
-                alert('Account commissioned successfully. Please authenticate.');
+                toast.success('Account commissioned successfully. Please authenticate.');
                 navigate('/login');
             } else {
                 setError('Registration failed. Identity code may already be in use.');
             }
-        } catch (err) {
+        } catch {
             setError('An error occurred during commissioning.');
         } finally {
             setLoading(false);
@@ -63,70 +52,60 @@ const RegisterPage: React.FC = () => {
                         <p className="text-[10px] text-neutral-500 uppercase tracking-[0.4em] font-bold">New Identity Commissioning</p>
                     </div>
 
-                    <form onSubmit={handleRegister} className="bg-white border border-neutral-200 p-lg space-y-lg shadow-sm">
+                    <form onSubmit={handleSubmit(onSubmit)} className="bg-white border border-neutral-200 p-lg space-y-lg shadow-sm">
                         <div className="space-y-sm">
                             <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold">Identity Code (Username)</label>
-                            <input 
-                                type="text" 
-                                name="username"
-                                value={formData.username}
-                                onChange={handleChange}
-                                className="w-full bg-neutral-50 border-none focus:ring-1 focus:ring-black px-md py-4 text-sm font-semibold tracking-widest uppercase placeholder:text-neutral-300" 
-                                placeholder="Username" 
-                                required 
+                            <input
+                                type="text"
+                                {...register('username')}
+                                className="w-full bg-neutral-50 border-none focus:ring-1 focus:ring-black px-md py-4 text-sm font-semibold tracking-widest uppercase placeholder:text-neutral-300"
+                                placeholder="Username"
                             />
+                            {errors.username && <p className="text-red-600 text-[10px] uppercase tracking-widest font-bold mt-1">{errors.username.message}</p>}
                         </div>
 
                         <div className="space-y-sm">
                             <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold">Full Nomenclature</label>
-                            <input 
-                                type="text" 
-                                name="fullName"
-                                value={formData.fullName}
-                                onChange={handleChange}
-                                className="w-full bg-neutral-50 border-none focus:ring-1 focus:ring-black px-md py-4 text-sm font-semibold tracking-widest uppercase placeholder:text-neutral-300" 
-                                placeholder="Full Name" 
-                                required 
+                            <input
+                                type="text"
+                                {...register('fullName')}
+                                className="w-full bg-neutral-50 border-none focus:ring-1 focus:ring-black px-md py-4 text-sm font-semibold tracking-widest uppercase placeholder:text-neutral-300"
+                                placeholder="Full Name"
                             />
+                            {errors.fullName && <p className="text-red-600 text-[10px] uppercase tracking-widest font-bold mt-1">{errors.fullName.message}</p>}
                         </div>
 
                         <div className="space-y-sm">
                             <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold">Electronic Mail</label>
-                            <input 
-                                type="email" 
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                className="w-full bg-neutral-50 border-none focus:ring-1 focus:ring-black px-md py-4 text-sm tracking-widest placeholder:text-neutral-300" 
-                                placeholder="Email" 
-                                required 
+                            <input
+                                type="email"
+                                {...register('email')}
+                                className="w-full bg-neutral-50 border-none focus:ring-1 focus:ring-black px-md py-4 text-sm tracking-widest placeholder:text-neutral-300"
+                                placeholder="Email"
                             />
+                            {errors.email && <p className="text-red-600 text-[10px] uppercase tracking-widest font-bold mt-1">{errors.email.message}</p>}
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
                             <div className="space-y-sm">
                                 <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold">Security Token</label>
-                                <input 
-                                    type="password" 
-                                    name="password"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    className="w-full bg-neutral-50 border-none focus:ring-1 focus:ring-black px-md py-4 text-sm tracking-widest placeholder:text-neutral-300" 
-                                    placeholder="Password" 
-                                    required 
+                                <input
+                                    type="password"
+                                    {...register('password')}
+                                    className="w-full bg-neutral-50 border-none focus:ring-1 focus:ring-black px-md py-4 text-sm tracking-widest placeholder:text-neutral-300"
+                                    placeholder="Password"
                                 />
+                                {errors.password && <p className="text-red-600 text-[10px] uppercase tracking-widest font-bold mt-1">{errors.password.message}</p>}
                             </div>
                             <div className="space-y-sm">
                                 <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold">Verify Token</label>
-                                <input 
-                                    type="password" 
-                                    name="confirmPassword"
-                                    value={formData.confirmPassword}
-                                    onChange={handleChange}
-                                    className="w-full bg-neutral-50 border-none focus:ring-1 focus:ring-black px-md py-4 text-sm tracking-widest placeholder:text-neutral-300" 
-                                    placeholder="Confirm" 
-                                    required 
+                                <input
+                                    type="password"
+                                    {...register('confirmPassword')}
+                                    className="w-full bg-neutral-50 border-none focus:ring-1 focus:ring-black px-md py-4 text-sm tracking-widest placeholder:text-neutral-300"
+                                    placeholder="Confirm"
                                 />
+                                {errors.confirmPassword && <p className="text-red-600 text-[10px] uppercase tracking-widest font-bold mt-1">{errors.confirmPassword.message}</p>}
                             </div>
                         </div>
 
@@ -136,8 +115,8 @@ const RegisterPage: React.FC = () => {
                             </div>
                         )}
 
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             disabled={loading}
                             className="w-full bg-black text-white py-4 text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-neutral-800 transition-all border-0 outline-none"
                         >

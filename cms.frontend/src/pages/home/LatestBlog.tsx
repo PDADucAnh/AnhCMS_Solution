@@ -1,28 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import blogService from '../../services/postService';
+import React from 'react';
+import { usePosts } from '../../hooks/usePosts';
 import PostCard from '../../components/PostCard';
 
 function LatestBlog() {
-    const [posts, setPosts] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { data: posts = [], isLoading } = usePosts();
 
-    useEffect(() => {
-        const fetchLatestPosts = async () => {
-            try {
-                setLoading(true);
-                const data = await blogService.getAllPosts();
-                const topThreePosts = [...data].sort((a: any, b: any) => b.id - a.id).slice(0, 3);
-                setPosts(topThreePosts);
-            } catch (error) {
-                console.error("Lỗi hệ thống khi tải tin tức thời trang:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchLatestPosts();
-    }, []);
+    if (isLoading) return null;
 
-    if (loading) return null;
+    const topThreePosts = [...posts].sort((a: any, b: any) => b.id - a.id).slice(0, 3);
 
     return (
         <section className="px-margin mb-xl py-xl bg-surface">
@@ -33,7 +18,7 @@ function LatestBlog() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
-                {posts.map((item) => (
+                {topThreePosts.map((item) => (
                     <PostCard key={item.id} post={item} />
                 ))}
             </div>

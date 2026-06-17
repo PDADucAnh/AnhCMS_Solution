@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import categoryProductService from '../../services/categoryProductService';
+import React from 'react';
+import { useProductCategories } from '../../hooks/useCategories';
 
 interface ShopSidebarProps {
   onCategoryChange: (id: number | null) => void;
@@ -7,19 +7,7 @@ interface ShopSidebarProps {
 }
 
 const ShopSidebar = ({ onCategoryChange, activeId }: ShopSidebarProps) => {
-  const [categories, setCategories] = useState<any[]>([]);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const data = await categoryProductService.getAllCategoryProducts();
-        setCategories(data as any as any[]);
-      } catch (err) {
-        console.error("Lỗi khi tải danh mục:", err);
-      }
-    };
-    fetchCategories();
-  }, []);
+  const { data: categories = [] } = useProductCategories();
 
   return (
     <div className="space-y-xl">
@@ -27,16 +15,16 @@ const ShopSidebar = ({ onCategoryChange, activeId }: ShopSidebarProps) => {
         <h6 className="text-[10px] uppercase tracking-[0.3em] font-bold text-secondary border-b border-outline-variant pb-2">Division</h6>
         <ul className="space-y-sm list-none p-0">
           <li>
-            <button 
+            <button
               className={`bg-transparent border-0 p-0 text-label-sm uppercase tracking-widest transition-all ${activeId === null ? 'text-primary font-bold' : 'text-secondary hover:text-primary'}`}
               onClick={() => onCategoryChange(null)}
             >
               The Full Collection
             </button>
           </li>
-          {categories.map((cat) => (
+          {(categories as any[]).map((cat: any) => (
             <li key={cat.id}>
-              <button 
+              <button
                 className={`bg-transparent border-0 p-0 text-label-sm uppercase tracking-widest transition-all ${activeId === cat.id ? 'text-primary font-bold' : 'text-secondary hover:text-primary'}`}
                 onClick={() => onCategoryChange(cat.id)}
               >

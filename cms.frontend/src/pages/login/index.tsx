@@ -1,24 +1,27 @@
-import React, { useState, type FormEvent } from 'react';
+import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../../context/AuthContext';
+import { loginSchema, type LoginFormData } from '../../schemas/loginSchema';
 
 const LoginPage: React.FC = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState<string>('');
-    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = React.useState<string>('');
+    const [loading, setLoading] = React.useState<boolean>(false);
     const navigate = useNavigate();
     const { login } = useAuth();
 
-    const handleLogin = async (e: FormEvent) => {
-        e.preventDefault();
+    const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
+        resolver: zodResolver(loginSchema),
+    });
+
+    const onSubmit = async (data: LoginFormData) => {
         setError('');
         setLoading(true);
-
         try {
-            await login(username, password);
+            await login(data.username, data.password);
             navigate('/');
-        } catch (err) {
+        } catch {
             setError('Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.');
         } finally {
             setLoading(false);
@@ -39,29 +42,27 @@ const LoginPage: React.FC = () => {
                         <p className="text-[10px] text-neutral-500 uppercase tracking-[0.4em] font-bold">Secure Personnel Authentication</p>
                     </div>
 
-                    <form onSubmit={handleLogin} className="bg-white border border-neutral-200 p-lg space-y-lg shadow-sm">
+                    <form onSubmit={handleSubmit(onSubmit)} className="bg-white border border-neutral-200 p-lg space-y-lg shadow-sm">
                         <div className="space-y-sm">
                             <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold">Identity Code</label>
-                            <input 
-                                type="text" 
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                className="w-full bg-neutral-50 border-none focus:ring-1 focus:ring-black px-md py-4 text-sm font-semibold tracking-widest uppercase placeholder:text-neutral-300" 
-                                placeholder="Username" 
-                                required 
+                            <input
+                                type="text"
+                                {...register('username')}
+                                className="w-full bg-neutral-50 border-none focus:ring-1 focus:ring-black px-md py-4 text-sm font-semibold tracking-widest uppercase placeholder:text-neutral-300"
+                                placeholder="Username"
                             />
+                            {errors.username && <p className="text-red-600 text-[10px] uppercase tracking-widest font-bold mt-1">{errors.username.message}</p>}
                         </div>
 
                         <div className="space-y-sm">
                             <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold">Security Token</label>
-                            <input 
-                                type="password" 
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-full bg-neutral-50 border-none focus:ring-1 focus:ring-black px-md py-4 text-sm tracking-widest placeholder:text-neutral-300" 
-                                placeholder="Password" 
-                                required 
+                            <input
+                                type="password"
+                                {...register('password')}
+                                className="w-full bg-neutral-50 border-none focus:ring-1 focus:ring-black px-md py-4 text-sm tracking-widest placeholder:text-neutral-300"
+                                placeholder="Password"
                             />
+                            {errors.password && <p className="text-red-600 text-[10px] uppercase tracking-widest font-bold mt-1">{errors.password.message}</p>}
                         </div>
 
                         {error && (
@@ -70,8 +71,8 @@ const LoginPage: React.FC = () => {
                             </div>
                         )}
 
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             disabled={loading}
                             className="w-full bg-black text-white py-4 text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-neutral-800 transition-all border-0 outline-none"
                         >

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import productService from '../../services/productService';
+import React from 'react';
+import { useProducts } from '../../hooks/useProducts';
 import ProductCard from '../../components/ProductCard';
 
 interface ProductGridProps {
@@ -7,25 +7,9 @@ interface ProductGridProps {
 }
 
 function ProductGrid({ categoryId }: ProductGridProps) {
-    const [products, setProducts] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { data: products = [], isLoading } = useProducts();
 
-    useEffect(() => {
-        const fetchAllProducts = async () => {
-            try {
-                setLoading(true);
-                const data = await productService.getAllProducts();
-                setProducts(data);
-            } catch (error) {
-                console.error("Lỗi hệ thống khi tải danh sách sản phẩm:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchAllProducts();
-    }, []);
-
-    if (loading) {
+    if (isLoading) {
         return (
             <div className="px-margin my-xl text-center">
                 <div className="animate-pulse flex flex-col items-center">
@@ -36,8 +20,8 @@ function ProductGrid({ categoryId }: ProductGridProps) {
         );
     }
 
-    const displayProducts = categoryId 
-        ? products.filter(p => p.categoryProductId === categoryId)
+    const displayProducts = categoryId
+        ? products.filter((p: any) => p.categoryProductId === categoryId)
         : products;
 
     return (
@@ -50,7 +34,7 @@ function ProductGrid({ categoryId }: ProductGridProps) {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-gutter">
-                {displayProducts.map((product) => (
+                {displayProducts.map((product: any) => (
                     <ProductCard key={product.id} item={product} />
                 ))}
                 {displayProducts.length === 0 && (

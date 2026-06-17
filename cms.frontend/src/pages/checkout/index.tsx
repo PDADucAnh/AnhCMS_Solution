@@ -1,58 +1,41 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
-import orderService from '../../services/orderService';
+import { useCreateOrder } from '../../hooks/useOrders';
+import { checkoutSchema, type CheckoutFormData } from '../../schemas/checkoutSchema';
 
 const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
   const { cartItems, cartTotal, clearCart } = useCart();
   const { user } = useAuth();
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    fullname: '',
-    phone: '',
-    address: '',
-    notes: ''
+  const createOrder = useCreateOrder();
+
+  const { register, handleSubmit, formState: { errors } } = useForm<CheckoutFormData>({
+    resolver: zodResolver(checkoutSchema),
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+  const onSubmit = async (formData: CheckoutFormData) => {
+    if (cartItems.length === 0) return;
 
-  const handleSubmitOrder = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (cartItems.length === 0) {
-      alert("Your acquisition manifest is empty.");
-      return;
-    }
+    const orderPayload = {
+      customerId: user?.id || 0,
+      notes: `Delivery to: ${formData.fullname}, Contact: ${formData.phone}, Location: ${formData.address}. Narrative: ${formData.notes}`,
+      items: cartItems.map(item => ({
+        productId: item.id,
+        quantity: item.quantity,
+        unitPrice: item.discountPrice || item.price,
+      })),
+    };
 
     try {
-      setLoading(true);
-      
-      const orderData = {
-        customerId: user?.id || 0,
-        notes: `Delivery to: ${formData.fullname}, Contact: ${formData.phone}, Location: ${formData.address}. Narrative: ${formData.notes}`,
-        items: cartItems.map(item => ({
-          productId: item.id,
-          quantity: item.quantity,
-          unitPrice: item.discountPrice || item.price
-        }))
-      };
-
-      const result = await orderService.submitOrder(orderData);
-      
-      if (result) {
-        alert("Transaction complete. Your acquisition has been recorded.");
-        clearCart();
-        navigate('/');
-      }
-    } catch (error) {
-      console.error("Lỗi khi đặt hàng:", error);
-      alert("An error occurred during the transaction. Please try again.");
-    } finally {
-      setLoading(false);
+      await createOrder.mutateAsync(orderPayload);
+      clearCart();
+      navigate('/');
+    } catch {
+      // toast handled by useCreateOrder onError
     }
   };
 
@@ -82,61 +65,52 @@ const CheckoutPage: React.FC = () => {
             <div className="w-12 h-0.5 bg-primary mx-auto"></div>
         </header>
 
-        <form onSubmit={handleSubmitOrder} className="flex flex-col lg:flex-row gap-xl">
-            {/* Left: Shipping Info */}
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col lg:flex-row gap-xl">
             <div className="flex-1 space-y-lg">
                 <div className="bg-surface-container-lowest border border-outline-variant p-xl space-y-xl">
                     <h5 className="font-display-xl text-headline-sm uppercase tracking-widest border-b border-outline-variant pb-md">Delivery Credentials</h5>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
                         <div className="space-y-sm">
                             <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Full Identity Name</label>
-                            <input 
-                                type="text" 
-                                name="fullname"
-                                className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm font-semibold tracking-widest uppercase placeholder:text-outline-variant" 
-                                placeholder="Recipient Name" 
-                                required
-                                value={formData.fullname}
-                                onChange={handleInputChange}
+                            <input
+                                type="text"
+                                {...register('fullname')}
+                                className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm font-semibold tracking-widest uppercase placeholder:text-outline-variant"
+                                placeholder="Recipient Name"
                             />
+                            {errors.fullname && <p className="text-error text-[10px] mt-1">{errors.fullname.message}</p>}
                         </div>
                         <div className="space-y-sm">
                             <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Telephonic Connection</label>
-                            <input 
-                                type="text" 
-                                name="phone"
-                                className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm font-semibold tracking-widest uppercase placeholder:text-outline-variant" 
-                                placeholder="Contact Number" 
-                                required
-                                value={formData.phone}
-                                onChange={handleInputChange}
+                            <input
+                                type="text"
+                                {...register('phone')}
+                                className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm font-semibold tracking-widest uppercase placeholder:text-outline-variant"
+                                placeholder="Contact Number"
                             />
+                            {errors.phone && <p className="text-error text-[10px] mt-1">{errors.phone.message}</p>}
                         </div>
                     </div>
-                    
+
                     <div className="space-y-sm">
                         <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Physical Residence</label>
-                        <input 
-                            type="text" 
-                            name="address"
-                            className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm font-semibold tracking-widest uppercase placeholder:text-outline-variant" 
-                            placeholder="Delivery Address" 
-                            required
-                            value={formData.address}
-                            onChange={handleInputChange}
+                        <input
+                            type="text"
+                            {...register('address')}
+                            className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm font-semibold tracking-widest uppercase placeholder:text-outline-variant"
+                            placeholder="Delivery Address"
                         />
+                        {errors.address && <p className="text-error text-[10px] mt-1">{errors.address.message}</p>}
                     </div>
-                    
+
                     <div className="space-y-sm">
                         <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Narrative Notes</label>
-                        <textarea 
-                            name="notes"
-                            className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-body-md italic leading-relaxed placeholder:text-outline-variant resize-none" 
-                            rows={4} 
+                        <textarea
+                            {...register('notes')}
+                            className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-body-md italic leading-relaxed placeholder:text-outline-variant resize-none"
+                            rows={4}
                             placeholder="Special delivery instructions..."
-                            value={formData.notes}
-                            onChange={handleInputChange}
                         ></textarea>
                     </div>
                 </div>
@@ -155,11 +129,10 @@ const CheckoutPage: React.FC = () => {
                 </div>
             </div>
 
-            {/* Right: Order Summary */}
             <aside className="w-full lg:w-96 flex-shrink-0">
                 <div className="bg-surface-container-low border border-outline-variant p-lg space-y-xl sticky top-32">
                     <h5 className="text-headline-sm uppercase tracking-widest border-b border-outline-variant pb-md">Manifest Overview</h5>
-                    
+
                     <div className="space-y-md border-b border-outline-variant pb-md max-h-60 overflow-y-auto no-scrollbar">
                         {cartItems.map(item => (
                             <div className="flex justify-between items-start gap-md" key={item.id}>
@@ -189,15 +162,15 @@ const CheckoutPage: React.FC = () => {
                             {cartTotal.toLocaleString()} ₫
                         </span>
                     </div>
-                    
-                    <button 
+
+                    <button
                         type="submit"
-                        disabled={loading || cartItems.length === 0}
+                        disabled={createOrder.isPending || cartItems.length === 0}
                         className="w-full bg-primary text-on-primary py-5 text-label-sm uppercase tracking-[0.3em] font-bold hover:bg-neutral-800 transition-all border-0 outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        {loading ? 'Processing...' : 'Confirm Transaction'}
+                        {createOrder.isPending ? 'Processing...' : 'Confirm Transaction'}
                     </button>
-                    
+
                     <div className="bg-white border border-outline-variant p-md flex items-start gap-md">
                         <span className="material-symbols-outlined text-secondary">lock</span>
                         <p className="text-[10px] text-secondary uppercase tracking-widest leading-relaxed">Secure end-to-end encryption. Your credentials are protected.</p>

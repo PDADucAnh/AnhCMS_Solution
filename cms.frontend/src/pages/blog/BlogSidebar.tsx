@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import categoryService from '../../services/categoryService';
+import React from 'react';
+import { useBlogCategories } from '../../hooks/useCategories';
 import type { Category } from '../../types/category';
 
 interface BlogSidebarProps {
@@ -8,19 +8,7 @@ interface BlogSidebarProps {
 }
 
 const BlogSidebar = ({ onCategoryChange, activeId }: BlogSidebarProps) => {
-  const [categories, setCategories] = useState<Category[]>([]);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const data = await categoryService.getBlogCategories();
-        setCategories(data as any as Category[]);
-      } catch (err) {
-        console.error("Lỗi khi tải danh mục tin tức:", err);
-      }
-    };
-    fetchCategories();
-  }, []);
+  const { data: categories = [] } = useBlogCategories();
 
   return (
     <div className="space-y-xl">
@@ -28,16 +16,16 @@ const BlogSidebar = ({ onCategoryChange, activeId }: BlogSidebarProps) => {
         <h6 className="text-[10px] uppercase tracking-[0.3em] font-bold text-secondary border-b border-outline-variant pb-2">Editorial Pillars</h6>
         <ul className="space-y-sm list-none p-0">
           <li>
-            <button 
+            <button
               className={`bg-transparent border-0 p-0 text-label-sm uppercase tracking-widest transition-all ${activeId === null ? 'text-primary font-bold' : 'text-secondary hover:text-primary'}`}
               onClick={() => onCategoryChange(null)}
             >
               The Full Narrative
             </button>
           </li>
-          {categories.map((cat) => (
+          {(categories as Category[]).map((cat) => (
             <li key={cat.id}>
-              <button 
+              <button
                 className={`bg-transparent border-0 p-0 text-label-sm uppercase tracking-widest transition-all ${activeId === cat.id ? 'text-primary font-bold' : 'text-secondary hover:text-primary'}`}
                 onClick={() => onCategoryChange(cat.id)}
               >
