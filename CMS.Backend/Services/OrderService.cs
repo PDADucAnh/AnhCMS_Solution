@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace CMS.Backend.Services
@@ -13,10 +14,12 @@ namespace CMS.Backend.Services
     public class OrderService : IOrderService
     {
         private readonly IApplicationDbContext _context;
+        private readonly ILogger<OrderService> _logger;
 
-        public OrderService(IApplicationDbContext context)
+        public OrderService(IApplicationDbContext context, ILogger<OrderService> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<OrderDTO>> GetAll()
@@ -47,6 +50,10 @@ namespace CMS.Backend.Services
         {
             try
             {
+                var customerExists = await _context.Customers.AnyAsync(c => c.Id == customerId);
+                if (!customerExists)
+                    return (false, "Khách hàng không tồn tại", 0);
+
                 var newOrder = new Order
                 {
                     OrderDate = DateTime.Now,
@@ -84,9 +91,20 @@ namespace CMS.Backend.Services
 
                 return (true, "Đặt hàng thành công!", newOrder.Id);
             }
+            catch (DbUpdateException ex)
+            {
+                _logger.LogError(ex, "Database error creating order for customer {CustomerId}", customerId);
+                return (false, "Lỗi cơ sở dữ liệu khi tạo đơn hàng", 0);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                _logger.LogWarning(ex, "Product not found for customer {CustomerId}", customerId);
+                return (false, ex.Message, 0);
+            }
             catch (Exception ex)
             {
-                return (false, $"Lỗi xử lý tạo đơn hàng ngầm: {ex.Message}", 0);
+                _logger.LogError(ex, "Unexpected error creating order for customer {CustomerId}", customerId);
+                return (false, "Lỗi không xác định khi tạo đơn hàng", 0);
             }
         }
 
