@@ -15,6 +15,7 @@ using CMS.Backend.Models;
 using CMS.Backend.Services;
 using CMS.Backend.Services.Interfaces;
 using CMS.Data;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -25,27 +26,66 @@ using System.Text.Json;
 var builder = WebApplication.CreateBuilder(args);
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
-var secretKey = jwtSettings["SecretKey"]!;
+var secretKey = jwtSettings["SecretKey"]
+    ?? throw new InvalidOperationException("Jwt:SecretKey is not configured.");
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = "AnhCMS.Auth";
+})
+.AddPolicyScheme("AnhCMS.Auth", "Bearer or Cookie", options =>
+{
+    options.ForwardDefaultSelector = context =>
     {
-        options.LoginPath = "/Account/Login";
-        options.AccessDeniedPath = "/Account/AccessDenied";
-    })
-    .AddJwtBearer(options =>
+        if (context.Request.Path.StartsWithSegments("/api"))
+            return JwtBearerDefaults.AuthenticationScheme;
+        return CookieAuthenticationDefaults.AuthenticationScheme;
+    };
+})
+.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, cookieOptions =>
+{
+    cookieOptions.LoginPath = "/Account/Login";
+    cookieOptions.AccessDeniedPath = "/Account/AccessDenied";
+})
+.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, jwtOptions =>
+{
+    jwtOptions.TokenValidationParameters = new TokenValidationParameters
     {
-        options.TokenValidationParameters = new TokenValidationParameters
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidAudience = jwtSettings["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+    };
+    jwtOptions.Events = new JwtBearerEvents
+    {
+        OnChallenge = context =>
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtSettings["Issuer"],
-            ValidAudience = jwtSettings["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
-        };
-    });
+            context.HandleResponse();
+            context.Response.StatusCode = 401;
+            context.Response.ContentType = "application/json";
+            var error = new ApiErrorResponse
+            {
+                Code = "UNAUTHORIZED",
+                Message = context.ErrorDescription ?? "Authentication required"
+            };
+            return context.Response.WriteAsync(JsonSerializer.Serialize(error));
+        },
+        OnForbidden = context =>
+        {
+            context.Response.StatusCode = 403;
+            context.Response.ContentType = "application/json";
+            var error = new ApiErrorResponse
+            {
+                Code = "FORBIDDEN",
+                Message = "You do not have permission to access this resource"
+            };
+            return context.Response.WriteAsync(JsonSerializer.Serialize(error));
+        }
+    };
+});
 builder.Services.AddControllersWithViews();
 
 // Swagger
@@ -117,8 +157,11 @@ app.Use(async (context, next) =>
         {
             await next();
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+            logger.LogError(ex, "Unhandled exception on API request {Path}", context.Request.Path);
+
             context.Response.StatusCode = 500;
             context.Response.ContentType = "application/json";
             var error = new ApiErrorResponse
