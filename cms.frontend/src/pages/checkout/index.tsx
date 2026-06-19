@@ -41,15 +41,15 @@ const CheckoutPage: React.FC = () => {
 
   if (cartItems.length === 0) {
     return (
-      <div className="container text-center py-20">
-        <div className="size-20 bg-surface-container flex items-center justify-center text-outline mb-4 rounded-full mx-auto">
+      <div className="text-center py-xl px-margin">
+        <div className="size-20 bg-surface-container flex items-center justify-center text-outline mb-4 mx-auto">
           <span className="material-symbols-outlined text-4xl">shopping_bag</span>
         </div>
         <div className="space-y-md">
           <h2 className="font-display-xl text-display-xl-mobile md:text-headline-lg uppercase tracking-tighter">Manifest Empty</h2>
-          <p className="text-secondary italic serif max-w-md mx-auto">You cannot proceed to checkout without items in your collection.</p>
+          <p className="text-secondary max-w-md mx-auto">You cannot proceed to checkout without items in your collection.</p>
         </div>
-        <Link to="/shop" className="bg-primary text-on-primary px-xl py-4 font-label-sm text-label-sm uppercase tracking-[0.3em] font-bold hover:bg-neutral-800 transition-all text-decoration-none inline-block mt-4">
+        <Link to="/shop" className="bg-primary text-on-primary px-xl py-4 font-label-sm text-label-sm uppercase tracking-[0.3em] font-bold text-decoration-none inline-block mt-4 btn-luxury btn-primary-luxury">
           Return to Boutique
         </Link>
       </div>
@@ -166,7 +166,7 @@ const CheckoutPage: React.FC = () => {
                     <button
                         type="submit"
                         disabled={createOrder.isPending || cartItems.length === 0}
-                        className="w-full bg-primary text-on-primary py-5 text-label-sm uppercase tracking-[0.3em] font-bold hover:bg-neutral-800 transition-all border-0 outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full bg-primary text-on-primary py-5 text-label-sm uppercase tracking-[0.3em] font-bold border border-primary outline-none disabled:opacity-50 disabled:cursor-not-allowed btn-luxury btn-primary-luxury"
                     >
                         {createOrder.isPending ? 'Processing...' : 'Confirm Transaction'}
                     </button>

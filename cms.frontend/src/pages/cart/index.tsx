@@ -13,15 +13,15 @@ const ShoppingCartPage: React.FC = () => {
 
   if (cartItems.length === 0) {
     return (
-      <div className="container text-center py-20">
-        <div className="size-20 bg-surface-container flex items-center justify-center text-outline mb-4 rounded-full mx-auto">
+      <div className="text-center py-xl px-margin">
+        <div className="size-20 bg-surface-container flex items-center justify-center text-outline mb-4 mx-auto">
           <span className="material-symbols-outlined text-4xl">shopping_bag</span>
         </div>
         <div className="space-y-md">
           <h2 className="font-display-xl text-display-xl-mobile md:text-headline-lg uppercase tracking-tighter">Your Bag is Empty</h2>
-          <p className="text-secondary italic serif max-w-md mx-auto">Discover the latest collection and curate your personal luxury aesthetic.</p>
+          <p className="text-secondary max-w-md mx-auto">Discover the latest collection and curate your personal luxury aesthetic.</p>
         </div>
-        <Link to="/shop" className="bg-primary text-on-primary px-xl py-4 font-label-sm text-label-sm uppercase tracking-[0.3em] font-bold hover:bg-neutral-800 transition-all text-decoration-none inline-block mt-4">
+        <Link to="/shop" className="bg-primary text-on-primary px-xl py-4 font-label-sm text-label-sm uppercase tracking-[0.3em] font-bold text-decoration-none inline-block mt-4 btn-luxury btn-primary-luxury">
           Begin Exploration
         </Link>
       </div>
@@ -45,7 +45,7 @@ const ShoppingCartPage: React.FC = () => {
               onRemove={removeFromCart} 
             />
             
-            <Link to="/shop" className="inline-flex items-center gap-2 text-label-sm uppercase tracking-widest font-bold border-b border-primary pb-1 text-primary text-decoration-none hover:text-secondary hover:border-secondary transition-all">
+            <Link to="/shop" className="inline-flex items-center gap-2 font-bold text-primary text-decoration-none btn-link-luxury">
               <span className="material-symbols-outlined text-lg">arrow_back</span>
               Continue Exploration
             </Link>
@@ -74,7 +74,7 @@ const ShoppingCartPage: React.FC = () => {
               </div>
               
               <button 
-                className="w-full bg-primary text-on-primary py-5 text-label-sm uppercase tracking-[0.3em] font-bold hover:bg-neutral-800 transition-all border-0"
+                className="w-full bg-primary text-on-primary py-5 text-label-sm uppercase tracking-[0.3em] font-bold border border-primary btn-luxury btn-primary-luxury"
                 onClick={handleCheckout}
               >
                 Proceed to Checkout

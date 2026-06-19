@@ -46,16 +46,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
                 </Link>
                 
                 {item.stockQuantity <= 5 && (
-                    <div className="absolute top-xs left-xs bg-transparent border border-error px-2 py-1">
-                        <span className="font-label-sm text-[10px] text-error uppercase tracking-widest">Limited / {item.stockQuantity} Left</span>
+                    <div className="absolute top-xs left-xs bg-transparent border border-primary px-2 py-1">
+                        <span className="font-label-sm text-[10px] text-primary uppercase tracking-widest font-medium">Limited / {item.stockQuantity} Left</span>
                     </div>
                 )}
 
-                <div className="absolute bottom-0 left-0 w-full p-sm flex flex-col gap-xs bg-gradient-to-t from-black/50 to-transparent opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                <div className="absolute bottom-0 left-0 w-full p-sm flex flex-col gap-xs bg-gradient-to-t from-black/50 to-transparent opacity-0 translate-y-[10px] group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ease-out">
                     <div className="flex gap-xs">
-                        <Link to={`/product/${item.id}`} className="flex-1 bg-surface text-primary py-2 font-label-sm text-[10px] text-center uppercase tracking-widest hover:bg-primary hover:text-white transition-colors border border-transparent hover:border-primary text-decoration-none">Quick View</Link>
+                        <Link to={`/product/${item.id}`} className="flex-1 bg-surface text-primary py-2 font-label-sm text-[10px] text-center uppercase tracking-widest border border-transparent text-decoration-none btn-luxury btn-overlay-luxury">Quick View</Link>
                         <button 
-                            className="bg-primary text-on-primary p-2 flex items-center justify-center hover:bg-surface hover:text-primary transition-colors border border-primary outline-none"
+                            className="bg-primary text-on-primary p-2 flex items-center justify-center border border-primary outline-none btn-luxury btn-overlay-luxury"
                             onClick={handleAddToCart}
                         >
                             <span className="material-symbols-outlined text-[18px]">add_shopping_cart</span>
@@ -63,7 +63,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
                     </div>
                     <button 
                         onClick={handleDirectBuy}
-                        className="w-full bg-white text-black py-2 font-label-sm text-[10px] uppercase tracking-widest hover:bg-black hover:text-white transition-all duration-300 border-0 outline-none"
+                        className="w-full bg-white text-black py-2 font-label-sm text-[10px] uppercase tracking-widest border-0 outline-none btn-luxury btn-overlay-luxury"
                     >
                         Direct Buy
                     </button>

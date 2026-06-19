@@ -19,10 +19,10 @@ function CategoryMenu({ onSelectCategory, activeId }: CategoryMenuProps) {
     };
 
     const btnClass = (isActive: boolean) =>
-        'flex-shrink-0 px-lg py-4 font-label-sm text-label-sm uppercase tracking-widest transition-all border ' +
+        'flex-shrink-0 px-lg py-4 font-label-sm text-label-sm uppercase tracking-widest border btn-luxury btn-pill-luxury ' +
         (isActive
             ? 'bg-primary text-on-primary border-primary'
-            : 'bg-surface text-secondary border-outline-variant hover:border-primary hover:text-primary');
+            : 'bg-surface text-secondary border-outline-variant');
 
     return (
         <section className="px-margin mb-xl">

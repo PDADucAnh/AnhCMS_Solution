@@ -1,5 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useBlogCategories } from '../../hooks/useCategories';
+import { usePosts } from '../../hooks/usePosts';
 import type { Category } from '../../types/category';
 
 interface BlogSidebarProps {
@@ -9,6 +11,8 @@ interface BlogSidebarProps {
 
 const BlogSidebar = ({ onCategoryChange, activeId }: BlogSidebarProps) => {
   const { data: categories = [] } = useBlogCategories();
+  const { data: allPosts = [] } = usePosts();
+  const latestPosts = [...allPosts].sort((a: any, b: any) => b.id - a.id).slice(0, 3);
 
   return (
     <div className="space-y-xl">
@@ -39,14 +43,12 @@ const BlogSidebar = ({ onCategoryChange, activeId }: BlogSidebarProps) => {
       <div className="space-y-md">
         <h6 className="text-[10px] uppercase tracking-[0.3em] font-bold text-secondary border-b border-outline-variant pb-2">Journal Highlights</h6>
         <div className="space-y-lg">
-          <div className="group cursor-pointer">
-            <a href="#" className="text-body-md font-bold uppercase tracking-tight text-primary group-hover:text-secondary transition-colors text-decoration-none block mb-1 leading-tight">Mastering the Evening Silhouette</a>
-            <span className="text-[10px] text-outline uppercase tracking-widest font-bold">12 June 2026</span>
-          </div>
-          <div className="group cursor-pointer">
-            <a href="#" className="text-body-md font-bold uppercase tracking-tight text-primary group-hover:text-secondary transition-colors text-decoration-none block mb-1 leading-tight">Essential Minimalism for the Office</a>
-            <span className="text-[10px] text-outline uppercase tracking-widest font-bold">10 June 2026</span>
-          </div>
+          {latestPosts.map((p: any) => (
+            <div key={p.id} className="group cursor-pointer">
+              <Link to={`/blog/${p.id}`} className="text-body-md font-bold uppercase tracking-tight text-primary group-hover:text-secondary transition-colors text-decoration-none block mb-1 leading-tight">{p.title}</Link>
+              <span className="text-[10px] text-outline uppercase tracking-widest font-bold">{p.createdDate ? new Date(p.createdDate).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}</span>
+            </div>
+          ))}
         </div>
       </div>
     </div>

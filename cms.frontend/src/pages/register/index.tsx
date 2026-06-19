@@ -49,68 +49,68 @@ const RegisterPage: React.FC = () => {
                             </svg>
                         </div>
                         <h1 className="serif text-4xl font-bold tracking-tighter uppercase">AnhCMS.Fashion</h1>
-                        <p className="text-[10px] text-neutral-500 uppercase tracking-[0.4em] font-bold">New Identity Commissioning</p>
+                        <p className="text-[10px] text-secondary uppercase tracking-[0.4em] font-bold">New Identity Commissioning</p>
                     </div>
 
-                    <form onSubmit={handleSubmit(onSubmit)} className="bg-white border border-neutral-200 p-lg space-y-lg shadow-sm">
+                    <form onSubmit={handleSubmit(onSubmit)} className="bg-surface-container-lowest border border-outline-variant p-lg space-y-lg">
                         <div className="space-y-sm">
-                            <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold">Identity Code (Username)</label>
+                            <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Identity Code (Username)</label>
                             <input
                                 type="text"
                                 {...register('username')}
-                                className="w-full bg-neutral-50 border-none focus:ring-1 focus:ring-black px-md py-4 text-sm font-semibold tracking-widest uppercase placeholder:text-neutral-300"
+                                className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm font-semibold tracking-widest uppercase placeholder:text-outline-variant"
                                 placeholder="Username"
                             />
-                            {errors.username && <p className="text-red-600 text-[10px] uppercase tracking-widest font-bold mt-1">{errors.username.message}</p>}
+                            {errors.username && <p className="text-error text-[10px] uppercase tracking-widest font-bold mt-1">{errors.username.message}</p>}
                         </div>
 
                         <div className="space-y-sm">
-                            <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold">Full Nomenclature</label>
+                            <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Full Nomenclature</label>
                             <input
                                 type="text"
                                 {...register('fullName')}
-                                className="w-full bg-neutral-50 border-none focus:ring-1 focus:ring-black px-md py-4 text-sm font-semibold tracking-widest uppercase placeholder:text-neutral-300"
+                                className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm font-semibold tracking-widest uppercase placeholder:text-outline-variant"
                                 placeholder="Full Name"
                             />
-                            {errors.fullName && <p className="text-red-600 text-[10px] uppercase tracking-widest font-bold mt-1">{errors.fullName.message}</p>}
+                            {errors.fullName && <p className="text-error text-[10px] uppercase tracking-widest font-bold mt-1">{errors.fullName.message}</p>}
                         </div>
 
                         <div className="space-y-sm">
-                            <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold">Electronic Mail</label>
+                            <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Electronic Mail</label>
                             <input
                                 type="email"
                                 {...register('email')}
-                                className="w-full bg-neutral-50 border-none focus:ring-1 focus:ring-black px-md py-4 text-sm tracking-widest placeholder:text-neutral-300"
+                                className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm tracking-widest placeholder:text-outline-variant"
                                 placeholder="Email"
                             />
-                            {errors.email && <p className="text-red-600 text-[10px] uppercase tracking-widest font-bold mt-1">{errors.email.message}</p>}
+                            {errors.email && <p className="text-error text-[10px] uppercase tracking-widest font-bold mt-1">{errors.email.message}</p>}
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
                             <div className="space-y-sm">
-                                <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold">Security Token</label>
+                                <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Security Token</label>
                                 <input
                                     type="password"
                                     {...register('password')}
-                                    className="w-full bg-neutral-50 border-none focus:ring-1 focus:ring-black px-md py-4 text-sm tracking-widest placeholder:text-neutral-300"
+                                    className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm tracking-widest placeholder:text-outline-variant"
                                     placeholder="Password"
                                 />
-                                {errors.password && <p className="text-red-600 text-[10px] uppercase tracking-widest font-bold mt-1">{errors.password.message}</p>}
+                                {errors.password && <p className="text-error text-[10px] uppercase tracking-widest font-bold mt-1">{errors.password.message}</p>}
                             </div>
                             <div className="space-y-sm">
-                                <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold">Verify Token</label>
+                                <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Verify Token</label>
                                 <input
                                     type="password"
                                     {...register('confirmPassword')}
-                                    className="w-full bg-neutral-50 border-none focus:ring-1 focus:ring-black px-md py-4 text-sm tracking-widest placeholder:text-neutral-300"
+                                    className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm tracking-widest placeholder:text-outline-variant"
                                     placeholder="Confirm"
                                 />
-                                {errors.confirmPassword && <p className="text-red-600 text-[10px] uppercase tracking-widest font-bold mt-1">{errors.confirmPassword.message}</p>}
+                                {errors.confirmPassword && <p className="text-error text-[10px] uppercase tracking-widest font-bold mt-1">{errors.confirmPassword.message}</p>}
                             </div>
                         </div>
 
                         {error && (
-                            <div className="p-md bg-red-50 border border-red-100 text-red-600 text-[10px] uppercase tracking-widest font-bold text-center">
+                            <div className="p-md bg-error-container text-error text-[10px] uppercase tracking-widest font-bold text-center">
                                 {error}
                             </div>
                         )}
@@ -118,7 +118,7 @@ const RegisterPage: React.FC = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-black text-white py-4 text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-neutral-800 transition-all border-0 outline-none"
+                            className="w-full bg-primary text-on-primary py-4 text-[10px] font-bold uppercase tracking-[0.3em] border border-primary outline-none disabled:opacity-50 btn-luxury btn-primary-luxury"
                         >
                             {loading ? 'Commissioning...' : 'Commission Account'}
                         </button>
@@ -131,7 +131,7 @@ const RegisterPage: React.FC = () => {
                     </form>
 
                     <div className="text-center">
-                        <p className="text-[10px] text-neutral-400 uppercase tracking-widest">© 2024 International Holdings. All Rights Reserved.</p>
+                        <p className="text-[10px] text-outline uppercase tracking-widest">© 2024 International Holdings. All Rights Reserved.</p>
                     </div>
                 </div>
             </main>

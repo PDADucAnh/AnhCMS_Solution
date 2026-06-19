@@ -31,7 +31,7 @@ const CartTable = ({ items, onUpdateQuantity, onRemove }: CartTableProps) => {
                     <div className="flex items-center gap-lg">
                       <div className="size-20 flex-shrink-0 bg-surface-container overflow-hidden border border-outline-variant">
                         <img 
-                          src={imageUrl || 'https://via.placeholder.com/100x125'} 
+                          src={imageUrl} 
                           alt={item.name} 
                           className="w-full h-full object-cover grayscale"
                         />
@@ -50,14 +50,14 @@ const CartTable = ({ items, onUpdateQuantity, onRemove }: CartTableProps) => {
                   <td className="px-lg py-6">
                     <div className="flex items-center justify-center gap-md">
                       <button 
-                        className="size-8 flex items-center justify-center border border-outline-variant bg-transparent text-secondary hover:text-primary hover:border-primary transition-all outline-none" 
+                        className="size-8 flex items-center justify-center border border-outline-variant bg-transparent text-secondary outline-none btn-luxury" 
                         onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
                       >
                         <span className="material-symbols-outlined text-sm">remove</span>
                       </button>
                       <span className="font-bold text-sm w-4 text-center">{item.quantity}</span>
                       <button 
-                        className="size-8 flex items-center justify-center border border-outline-variant bg-transparent text-secondary hover:text-primary hover:border-primary transition-all outline-none" 
+                        className="size-8 flex items-center justify-center border border-outline-variant bg-transparent text-secondary outline-none btn-luxury" 
                         onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
                       >
                         <span className="material-symbols-outlined text-sm">add</span>
@@ -69,7 +69,7 @@ const CartTable = ({ items, onUpdateQuantity, onRemove }: CartTableProps) => {
                   </td>
                   <td className="px-lg py-6 text-right">
                     <button 
-                      className="bg-transparent border-0 text-error hover:text-red-800 transition-colors p-2 outline-none" 
+                      className="bg-transparent border-0 text-error p-2 outline-none btn-ghost-luxury" 
                       onClick={() => onRemove(item.id)}
                     >
                       <span className="material-symbols-outlined">delete_outline</span>

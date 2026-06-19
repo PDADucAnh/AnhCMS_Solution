@@ -85,16 +85,16 @@
                         "tertiary": "#000000"
                     },
                     "borderRadius": {
-                        "DEFAULT": "0px",
-                        "lg": "0px",
-                        "xl": "0px",
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
                         "full": "9999px"
                     },
                     "spacing": {
                         "lg": "2rem",
                         "md": "1.5rem",
                         "xs": "0.5rem",
-                        "margin": "4rem",
+                        "margin": "2rem",
                         "sm": "1rem",
                         "xl": "4rem",
                         "base": "4px",
@@ -122,6 +122,156 @@
             }
         }
     </script>
+    <style>
+        body {
+            color: #1a1c1c;
+        }
+        .text-primary { color: #000000 !important; }
+        .text-secondary { color: #5d5f5f !important; }
+        .text-on-primary { color: #ffffff !important; }
+        .text-on-background { color: #1a1c1c !important; }
+        .bg-primary { background-color: #000000 !important; }
+        .bg-surface { background-color: #f9f9f9 !important; }
+        .border-primary { border-color: #000000 !important; }
+        a { color: inherit; }
+        a:hover { color: #5d5f5f; }
+
+        /* ============ LUXURY BUTTON EFFECTS ============ */
+
+        /* Base: every interactive element gets tactile feedback */
+        .btn-luxury {
+            position: relative;
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                        box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+        }
+        .btn-luxury:active { transform: scale(0.96) !important; }
+
+        /* ---- Primary: shine sweep + darken background ---- */
+        .btn-primary-luxury {
+            overflow: hidden;
+            z-index: 1;
+        }
+        .btn-primary-luxury::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: #1a1c1c;
+            opacity: 0;
+            transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: -1;
+        }
+        .btn-primary-luxury:hover::before { opacity: 1; }
+        .btn-primary-luxury:hover {
+            box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+        }
+        .btn-primary-luxury::after {
+            content: '';
+            position: absolute; top: 0; left: -80%;
+            width: 60%; height: 100%;
+            background: linear-gradient(110deg, transparent 20%, rgba(255,255,255,0.1) 50%, transparent 80%);
+            transform: skewX(-20deg);
+            transition: left 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .btn-primary-luxury:hover::after { left: 130%; }
+
+        /* ---- Outline: vertical fill from bottom ---- */
+        .btn-outline-luxury {
+            overflow: hidden;
+            z-index: 1;
+        }
+        .btn-outline-luxury::before {
+            content: '';
+            position: absolute; bottom: 0; left: 0;
+            width: 100%; height: 0;
+            background: #000000;
+            transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: -1;
+        }
+        .btn-outline-luxury:hover::before { height: 100%; }
+        .btn-outline-luxury:hover {
+            color: #ffffff !important;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        /* ---- Outline Light (on dark/photo backgrounds) ---- */
+        .btn-outline-light-luxury {
+            overflow: hidden;
+            z-index: 1;
+        }
+        .btn-outline-light-luxury::before {
+            content: '';
+            position: absolute; bottom: 0; left: 0;
+            width: 100%; height: 0;
+            background: #ffffff;
+            transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: -1;
+        }
+        .btn-outline-light-luxury:hover::before { height: 100%; }
+        .btn-outline-light-luxury:hover {
+            color: #1a1c1c !important;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+        }
+
+        /* ---- Underline Link: center-expand ---- */
+        .btn-link-luxury {
+            display: inline-block;
+            position: relative;
+            cursor: pointer;
+        }
+        .btn-link-luxury::after {
+            content: '';
+            position: absolute; bottom: -1px; left: 50%;
+            width: 0; height: 1px;
+            background: currentColor;
+            transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateX(-50%);
+        }
+        .btn-link-luxury:hover::after { width: 100%; }
+        .btn-link-luxury:hover { opacity: 0.65; }
+
+        /* ---- Ghost Icon: subtle fade + compress ---- */
+        .btn-ghost-luxury {
+            background: transparent; border: none;
+            transition: opacity 0.25s ease, transform 0.15s ease;
+            cursor: pointer;
+            display: inline-flex; align-items: center; justify-content: center;
+        }
+        .btn-ghost-luxury:hover { opacity: 0.55; }
+        .btn-ghost-luxury:active { transform: scale(0.88) !important; }
+
+        /* ---- Category Pill: horizontal slide fill ---- */
+        .btn-pill-luxury {
+            overflow: hidden;
+            z-index: 1;
+        }
+        .btn-pill-luxury::before {
+            content: '';
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: #000000;
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: -1;
+        }
+        .btn-pill-luxury:hover::before { transform: scaleX(1); transform-origin: left; }
+        .btn-pill-luxury:hover {
+            color: #ffffff !important;
+            border-color: #000000 !important;
+        }
+
+        /* ---- Product overlay buttons (dark gradient bg) ---- */
+        .btn-overlay-luxury {
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+        }
+        .btn-overlay-luxury:hover {
+            transform: scale(1.04);
+        }
+        .btn-overlay-luxury:active { transform: scale(0.94) !important; }
+    </style>
 
     <title>AnhCMS.Fashion</title>
 </head>

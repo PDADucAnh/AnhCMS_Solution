@@ -4,8 +4,8 @@ import { useProduct, useProducts } from '../../hooks/useProducts';
 import { useCart } from '../../context/CartContext';
 import { getImageUrl } from '../../utils/apiUtils';
 
-const formatImageUrl = (url?: string, fallback?: string): string => {
-  return getImageUrl(url) || fallback || '';
+const formatImageUrl = (url?: string): string => {
+  return getImageUrl(url) || '';
 };
 
 const ProductDetailPage = () => {
@@ -37,17 +37,22 @@ const ProductDetailPage = () => {
 
   if (isLoading) {
     return (
-      <div className="bg-background min-vh-100 flex items-center justify-center">
-        <div className="spinner-border text-primary" role="status"></div>
+      <div className="bg-background min-h-screen flex items-center justify-center">
+        <div className="animate-pulse flex flex-col items-center">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-md" role="status">
+            <span className="sr-only">Loading...</span>
+          </div>
+          <p className="font-label-sm text-label-sm uppercase tracking-widest text-secondary">Curating Product...</p>
+        </div>
       </div>
     );
   }
 
   if (!product) {
     return (
-      <div className="container py-20 text-center">
-        <h2 className="font-display-xl text-headline-lg">Sản phẩm không tồn tại</h2>
-        <Link to="/shop" className="text-primary underline mt-4 inline-block">Quay lại cửa hàng</Link>
+      <div className="text-center py-xl px-margin">
+        <h2 className="font-display-xl text-headline-lg uppercase tracking-tight">Product Not Found</h2>
+        <Link to="/shop" className="text-primary font-label-sm uppercase tracking-widest mt-4 inline-block text-decoration-none btn-link-luxury">Back to Shop</Link>
       </div>
     );
   }
@@ -73,7 +78,7 @@ const ProductDetailPage = () => {
             <img
               alt={product.name}
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              src={formatImageUrl(product.imageUrl, "https://via.placeholder.com/800x1000")}
+              src={formatImageUrl(product.imageUrl)}
             />
           </div>
         </div>
@@ -142,7 +147,7 @@ const ProductDetailPage = () => {
                 </button>
               </div>
               <button
-                className="w-2/3 bg-primary text-on-primary border border-primary font-label-sm text-label-sm uppercase tracking-widest hover:bg-transparent hover:text-primary transition-colors duration-300"
+                className="w-2/3 bg-primary text-on-primary border border-primary font-label-sm text-label-sm uppercase tracking-widest btn-luxury btn-primary-luxury"
                 onClick={handleAddToCart}
               >
                 Add to Cart
@@ -150,11 +155,11 @@ const ProductDetailPage = () => {
             </div>
             <button
                 onClick={() => { addToCart(product, quantity); navigate('/checkout'); }}
-                className="w-full h-14 bg-transparent text-primary border border-primary font-label-sm text-label-sm uppercase tracking-widest hover:bg-primary hover:text-on-primary transition-colors duration-300"
+                className="w-full h-14 bg-transparent text-primary border border-primary font-label-sm text-label-sm uppercase tracking-widest btn-luxury btn-outline-luxury"
             >
               Buy Now
             </button>
-            <button className="flex items-center justify-center gap-2 text-secondary hover:text-primary transition-colors mt-xs py-2 bg-transparent border-0">
+            <button className="flex items-center justify-center gap-2 text-secondary mt-xs py-2 bg-transparent border-0 btn-link-luxury">
               <span className="material-symbols-outlined">favorite</span>
               <span className="font-label-sm text-label-sm uppercase tracking-widest">Add to Wishlist</span>
             </button>
@@ -182,11 +187,7 @@ const ProductDetailPage = () => {
               </button>
               {activeTab === 'specs' && (
                 <div className="pb-md text-secondary font-body-md text-body-md">
-                  <ul className="list-none space-y-2 p-0 m-0">
-                    <li><span className="text-primary font-medium">Material:</span> Premium Fabric</li>
-                    <li><span className="text-primary font-medium">Care:</span> Dry clean only</li>
-                    <li><span className="text-primary font-medium">Origin:</span> Imported</li>
-                  </ul>
+                  <p>Detailed specifications for this product are not available at this time.</p>
                 </div>
               )}
             </div>
@@ -220,7 +221,7 @@ const ProductDetailPage = () => {
                   <img
                     alt={rp.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    src={formatImageUrl(rp.imageUrl, "https://via.placeholder.com/400x500")}
+                    src={formatImageUrl(rp.imageUrl)}
                   />
                   <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <button

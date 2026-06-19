@@ -23,12 +23,12 @@ const Login = lazy(() => import('./pages/login/index'));
 const Register = lazy(() => import('./pages/register/index'));
 
 const PageLoader: React.FC = () => (
-  <div className="d-flex justify-content-center align-items-center min-vh-100 bg-light">
+  <div className="flex justify-center items-center min-h-screen bg-surface">
     <div className="text-center">
-      <div className="spinner-border text-dark mb-3" role="status" style={{ width: '2rem', height: '2rem' }}>
-        <span className="visually-hidden">Loading...</span>
+      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-md mx-auto" role="status">
+        <span className="sr-only">Loading...</span>
       </div>
-      <p className="text-muted font-body-sm text-[11px] tracking-widest text-uppercase">ANHCMS NARRATIVE...</p>
+      <p className="font-label-sm text-label-sm text-secondary uppercase tracking-widest">Curating Narrative...</p>
     </div>
   </div>
 );
@@ -43,16 +43,13 @@ const AuthRedirectHandler: React.FC = () => {
 };
 
 const NotFound: React.FC = () => (
-  <div className="container text-center py-5 my-5">
-    <img
-      src="https://cdn-icons-png.flaticon.com/512/580/580185.png"
-      alt="404"
-      className="mb-4"
-      style={{ width: '100px', opacity: 0.6 }}
-    />
-    <h2 className="fw-bold text-secondary">404 - KHÔNG TÌM THẤY TRANG</h2>
-    <p className="text-muted">Đường dẫn bạn truy cập không tồn tại trên hệ thống AnhCMS.</p>
-    <Link to="/" className="btn btn-dark btn-sm mt-2 text-decoration-none">Quay lại Trang Chủ</Link>
+  <div className="text-center py-xl px-margin">
+    <div className="w-24 h-24 mx-auto mb-md opacity-60 flex items-center justify-center">
+      <span className="material-symbols-outlined text-6xl text-outline">error_outline</span>
+    </div>
+    <h2 className="font-headline-lg text-headline-lg text-secondary uppercase tracking-tight mb-sm">404 - Page Not Found</h2>
+    <p className="text-secondary font-body-md mb-lg">The page you're looking for doesn't exist.</p>
+    <Link to="/" className="bg-primary text-on-primary px-8 py-3 font-label-sm text-label-sm uppercase tracking-widest border border-primary inline-block text-decoration-none btn-luxury btn-primary-luxury">Back to Home</Link>
   </div>
 );
 
@@ -75,7 +72,7 @@ const App: React.FC = () => {
                 error: { iconTheme: { primary: '#ba1a1a', secondary: '#fff' }, style: { background: '#ba1a1a' } },
               }}
             />
-            <div className="d-flex flex-column min-vh-100 bg-light">
+            <div className="flex flex-col min-h-screen bg-surface">
               <Header />
               <main className="flex-grow-1">
                 <Suspense fallback={<PageLoader />}>

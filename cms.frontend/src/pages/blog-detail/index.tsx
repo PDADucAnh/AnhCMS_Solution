@@ -21,7 +21,7 @@ const BlogDetail: React.FC = () => {
 
     if (isLoading) {
         return (
-            <div className="bg-background min-vh-100 flex items-center justify-center">
+            <div className="min-h-screen flex items-center justify-center">
                 <div className="animate-pulse flex flex-col items-center">
                     <div className="size-16 bg-surface-container rounded-full mb-md"></div>
                     <p className="font-label-sm text-label-sm uppercase tracking-widest text-secondary">Retrieving Narrative...</p>
@@ -32,9 +32,9 @@ const BlogDetail: React.FC = () => {
 
     if (!post) {
         return (
-            <div className="container py-20 text-center">
+            <div className="text-center py-xl px-margin">
                 <h2 className="font-display-xl text-headline-lg uppercase tracking-tighter">Narrative Not Found</h2>
-                <Link to="/blog" className="text-primary font-label-sm uppercase tracking-widest border-b border-primary pb-1 mt-4 inline-block text-decoration-none">Back to Journal</Link>
+                <Link to="/blog" className="text-primary font-label-sm uppercase tracking-widest mt-4 inline-block text-decoration-none btn-link-luxury">Back to Journal</Link>
             </div>
         );
     }
@@ -48,7 +48,7 @@ const BlogDetail: React.FC = () => {
                     <img
                         alt={post.title}
                         className="absolute inset-0 w-full h-full object-cover z-0"
-                        src={postImage || "https://via.placeholder.com/1920x1080"}
+                        src={postImage}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent z-10"></div>
                     <div className="relative z-20 max-w-4xl mx-auto text-center w-full">
@@ -58,7 +58,7 @@ const BlogDetail: React.FC = () => {
                             </span>
                         </div>
                         <h1 className="font-display-xl text-display-xl-mobile md:text-display-xl text-on-primary mb-md uppercase tracking-tighter drop-shadow-lg">{post.title}</h1>
-                        <p className="font-body-lg text-body-lg text-white/80 max-w-2xl mx-auto italic serif">{post.summary || 'Mastering transitions with structured silhouettes and fine textiles.'}</p>
+                        {post.summary && <p className="font-body-lg text-body-lg text-white/80 max-w-2xl mx-auto">{post.summary}</p>}
                         <div className="mt-lg flex items-center justify-center gap-xs text-white/60 font-label-sm text-[10px] uppercase tracking-[0.2em] font-bold">
                             <span>By Editorial Team</span>
                             <span className="mx-2">/</span>
@@ -104,7 +104,7 @@ const BlogDetail: React.FC = () => {
                                 <h3 className="font-display-xl text-headline-lg text-primary mb-xs uppercase tracking-tighter">Shop The Editorial</h3>
                                 <p className="font-body-md text-body-md text-secondary italic serif">Curated pieces to recreate the layered aesthetic.</p>
                             </div>
-                            <Link className="font-label-sm text-label-sm text-primary uppercase tracking-widest border-b border-primary pb-1 hover:text-secondary hover:border-secondary transition-colors duration-300 text-decoration-none font-bold" to="/shop">View All</Link>
+                            <Link className="font-label-sm text-label-sm text-primary uppercase tracking-widest text-decoration-none font-bold btn-link-luxury" to="/shop">View All</Link>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-gutter">
                             {products.map((p: any) => (
@@ -134,7 +134,7 @@ const BlogDetail: React.FC = () => {
                                 <input className="block w-full px-0 py-sm text-body-md bg-transparent border-0 border-b border-outline appearance-none focus:outline-none focus:ring-0 focus:border-primary peer transition-colors" id="email" placeholder=" " type="email" />
                                 <label className="absolute font-label-sm text-label-sm text-secondary duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-primary peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 uppercase tracking-widest" htmlFor="email">Email Address</label>
                             </div>
-                            <button className="w-full bg-primary text-on-primary font-label-sm text-label-sm uppercase py-sm rounded-none border border-primary hover:bg-transparent hover:text-primary transition-colors duration-300 font-bold tracking-[0.2em]" type="button">Subscribe</button>
+                            <button className="w-full bg-primary text-on-primary font-label-sm text-label-sm uppercase py-sm border border-primary font-bold tracking-[0.2em] btn-luxury btn-primary-luxury" type="button">Subscribe</button>
                         </form>
                     </div>
 
@@ -150,7 +150,7 @@ const BlogDetail: React.FC = () => {
                                     <textarea className="block w-full px-0 py-sm text-body-md bg-transparent border-0 border-b border-outline appearance-none focus:outline-none focus:ring-0 focus:border-primary peer transition-colors resize-none" id="comment" placeholder=" " rows={4}></textarea>
                                     <label className="absolute font-label-sm text-label-sm text-secondary duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-primary peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 uppercase tracking-widest" htmlFor="comment">Your narrative</label>
                                 </div>
-                                <button className="self-start bg-transparent text-primary font-label-sm text-label-sm uppercase py-sm px-lg rounded-none border border-primary hover:bg-primary hover:text-on-primary transition-colors duration-300 font-bold tracking-[0.2em]" type="button">Post Comment</button>
+                                <button className="self-start bg-transparent text-primary font-label-sm text-label-sm uppercase py-sm px-lg border border-primary font-bold tracking-[0.2em] btn-luxury btn-outline-luxury" type="button">Post Comment</button>
                             </form>
                         </div>
                     </div>
