@@ -12,10 +12,12 @@ namespace CMS.Backend.Controllers.Api
     public class ProductsController : ControllerBase
     {
         private readonly IProductService _productService;
+        private readonly INotificationService _notificationService;
 
-        public ProductsController(IProductService productService)
+        public ProductsController(IProductService productService, INotificationService notificationService)
         {
             _productService = productService;
+            _notificationService = notificationService;
         }
 
         [AllowAnonymous]
@@ -55,6 +57,7 @@ namespace CMS.Backend.Controllers.Api
                 return BadRequest(ModelState);
 
             var created = await _productService.Create(dto);
+            await _notificationService.NotifyEntityChanged("Product");
             return CreatedAtAction(nameof(GetDetail), new { id = created.Id }, created);
         }
 
@@ -72,6 +75,7 @@ namespace CMS.Backend.Controllers.Api
             if (!updated)
                 return NotFound();
 
+            await _notificationService.NotifyEntityChanged("Product");
             return NoContent();
         }
 
@@ -83,6 +87,7 @@ namespace CMS.Backend.Controllers.Api
             if (!deleted)
                 return NotFound();
 
+            await _notificationService.NotifyEntityChanged("Product");
             return NoContent();
         }
     }

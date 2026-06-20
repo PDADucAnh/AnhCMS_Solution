@@ -12,10 +12,12 @@ namespace CMS.Backend.Controllers.Api
     public class PostsController : ControllerBase
     {
         private readonly IPostService _postService;
+        private readonly INotificationService _notificationService;
 
-        public PostsController(IPostService postService)
+        public PostsController(IPostService postService, INotificationService notificationService)
         {
             _postService = postService;
+            _notificationService = notificationService;
         }
 
         [AllowAnonymous]
@@ -55,6 +57,7 @@ namespace CMS.Backend.Controllers.Api
                 return BadRequest(ModelState);
 
             var created = await _postService.Create(dto);
+            await _notificationService.NotifyEntityChanged("Post");
             return CreatedAtAction(nameof(GetDetail), new { id = created.Id }, created);
         }
 
@@ -72,6 +75,7 @@ namespace CMS.Backend.Controllers.Api
             if (!updated)
                 return NotFound();
 
+            await _notificationService.NotifyEntityChanged("Post");
             return NoContent();
         }
 
@@ -83,6 +87,7 @@ namespace CMS.Backend.Controllers.Api
             if (!deleted)
                 return NotFound();
 
+            await _notificationService.NotifyEntityChanged("Post");
             return NoContent();
         }
     }

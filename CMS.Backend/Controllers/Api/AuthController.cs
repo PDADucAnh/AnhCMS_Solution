@@ -1,5 +1,5 @@
-using CMS.Backend.Services.Interfaces;
 using CMS.Backend.Models.DTOs;
+using CMS.Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -25,28 +25,31 @@ namespace CMS.Backend.Controllers.Api
             _configuration = configuration;
         }
 
-        private static Claim[] BuildUserClaims(Data.Entities.User user) => new[]
+        private static Claim[] BuildUserClaims(LoginResult result) => new[]
         {
-            new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Role, user.Role),
-            new Claim("FullName", user.FullName),
+            new Claim(ClaimTypes.Name, result.Username),
+            new Claim(ClaimTypes.Role, result.Role),
+            new Claim("FullName", result.FullName ?? ""),
+            new Claim("Email", result.Email ?? ""),
+            new Claim("Phone", result.Phone ?? ""),
+            new Claim("Address", result.Address ?? ""),
+            new Claim("AuthType", result.AuthType ?? ""),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest login)
         {
-            var user = await _authService.Login(login.Username, login.Password);
+            var result = await _authService.Login(login.Username, login.Password);
 
-            if (user != null)
+            if (result != null)
             {
                 var claimsIdentity = new ClaimsIdentity(
-                    BuildUserClaims(user), CookieAuthenticationDefaults.AuthenticationScheme);
+                    BuildUserClaims(result), CookieAuthenticationDefaults.AuthenticationScheme);
 
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity));
 
-                // Generate JWT
                 var jwtKey = _configuration["Jwt:SecretKey"]
                     ?? throw new InvalidOperationException("Jwt:SecretKey is not configured.");
                 var issuer = _configuration["Jwt:Issuer"];
@@ -58,7 +61,7 @@ namespace CMS.Backend.Controllers.Api
                 var expiration = DateTime.UtcNow.AddMinutes(expiryMinutes);
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
-                    Subject = new ClaimsIdentity(BuildUserClaims(user)),
+                    Subject = new ClaimsIdentity(BuildUserClaims(result)),
                     Expires = expiration,
                     Issuer = issuer,
                     Audience = audience,
@@ -73,21 +76,51 @@ namespace CMS.Backend.Controllers.Api
                 {
                     token = tokenString,
                     expiresAt = expiration.ToString("o"),
-                    username = user.Username,
-                    fullName = user.FullName,
-                    role = user.Role,
-                    message = "Đăng nhập thành công"
+                    username = result.Username,
+                    fullName = result.FullName,
+                    email = result.Email,
+                    phone = result.Phone,
+                    address = result.Address,
+                    role = result.Role,
+                    message = "Login successful"
                 });
             }
 
-            return Unauthorized(new { message = "Tên đăng nhập hoặc mật khẩu không đúng!" });
+            return Unauthorized(new { message = "Invalid username or password!" });
+        }
+
+        [Authorize]
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            var username = User.Identity?.Name;
+            if (string.IsNullOrEmpty(username))
+                return Unauthorized(new { message = "Invalid token" });
+
+            var authType = User.FindFirst("AuthType")?.Value ?? "User";
+
+            var result = await _authService.GetProfile(username, authType);
+            if (result == null)
+                return NotFound(new { message = "User not found" });
+
+            return Ok(new
+            {
+                id = result.Id,
+                username = result.Username,
+                fullName = result.FullName,
+                email = result.Email,
+                phone = result.Phone,
+                address = result.Address,
+                role = result.Role
+            });
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest register)
         {
             var (success, message) = await _authService.Register(
-                register.Username, register.Password, register.FullName);
+                register.Username, register.Password, register.FullName,
+                register.Email, register.Phone, register.Address);
 
             if (!success)
                 return BadRequest(new { message });

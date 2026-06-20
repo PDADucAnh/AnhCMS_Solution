@@ -20,19 +20,20 @@ const RegisterPage: React.FC = () => {
         setLoading(true);
         try {
             const success = await authService.register({
-                username: data.username,
                 fullName: data.fullName,
                 email: data.email,
+                phone: data.phone,
+                address: data.address,
                 password: data.password,
             });
             if (success) {
-                toast.success('Account commissioned successfully. Please authenticate.');
+                toast.success('Account created successfully. Please sign in.');
                 navigate('/login');
             } else {
-                setError('Registration failed. Identity code may already be in use.');
+                setError('Registration failed. Username may already be taken.');
             }
         } catch {
-            setError('An error occurred during commissioning.');
+            setError('An error occurred during registration.');
         } finally {
             setLoading(false);
         }
@@ -54,29 +55,18 @@ const RegisterPage: React.FC = () => {
 
                     <form onSubmit={handleSubmit(onSubmit)} className="bg-surface-container-lowest border border-outline-variant p-lg space-y-lg">
                         <div className="space-y-sm">
-                            <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Identity Code (Username)</label>
-                            <input
-                                type="text"
-                                {...register('username')}
-                                className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm font-semibold tracking-widest uppercase placeholder:text-outline-variant"
-                                placeholder="Username"
-                            />
-                            {errors.username && <p className="text-error text-[10px] uppercase tracking-widest font-bold mt-1">{errors.username.message}</p>}
-                        </div>
-
-                        <div className="space-y-sm">
-                            <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Full Nomenclature</label>
+                            <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Full Name</label>
                             <input
                                 type="text"
                                 {...register('fullName')}
-                                className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm font-semibold tracking-widest uppercase placeholder:text-outline-variant"
+                                className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm font-semibold tracking-widest placeholder:text-outline-variant"
                                 placeholder="Full Name"
                             />
                             {errors.fullName && <p className="text-error text-[10px] uppercase tracking-widest font-bold mt-1">{errors.fullName.message}</p>}
                         </div>
 
                         <div className="space-y-sm">
-                            <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Electronic Mail</label>
+                            <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Email Address</label>
                             <input
                                 type="email"
                                 {...register('email')}
@@ -86,9 +76,31 @@ const RegisterPage: React.FC = () => {
                             {errors.email && <p className="text-error text-[10px] uppercase tracking-widest font-bold mt-1">{errors.email.message}</p>}
                         </div>
 
+                        <div className="space-y-sm">
+                            <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Phone Number</label>
+                            <input
+                                type="tel"
+                                {...register('phone')}
+                                className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm tracking-widest placeholder:text-outline-variant"
+                                placeholder="Phone Number"
+                            />
+                            {errors.phone && <p className="text-error text-[10px] uppercase tracking-widest font-bold mt-1">{errors.phone.message}</p>}
+                        </div>
+
+                        <div className="space-y-sm">
+                            <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Shipping Address</label>
+                            <textarea
+                                {...register('address')}
+                                className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm tracking-widest placeholder:text-outline-variant resize-none"
+                                placeholder="Shipping Address"
+                                rows={3}
+                            />
+                            {errors.address && <p className="text-error text-[10px] uppercase tracking-widest font-bold mt-1">{errors.address.message}</p>}
+                        </div>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
                             <div className="space-y-sm">
-                                <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Security Token</label>
+                                <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Password</label>
                                 <input
                                     type="password"
                                     {...register('password')}
@@ -98,7 +110,7 @@ const RegisterPage: React.FC = () => {
                                 {errors.password && <p className="text-error text-[10px] uppercase tracking-widest font-bold mt-1">{errors.password.message}</p>}
                             </div>
                             <div className="space-y-sm">
-                                <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Verify Token</label>
+                                <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Confirm Password</label>
                                 <input
                                     type="password"
                                     {...register('confirmPassword')}
@@ -120,12 +132,12 @@ const RegisterPage: React.FC = () => {
                             disabled={loading}
                             className="w-full bg-primary text-on-primary py-4 text-[10px] font-bold uppercase tracking-[0.3em] border border-primary outline-none disabled:opacity-50 btn-luxury btn-primary-luxury"
                         >
-                            {loading ? 'Commissioning...' : 'Commission Account'}
+                            {loading ? 'Processing...' : 'Create Account'}
                         </button>
 
                         <div className="text-center pt-4 border-t border-outline-variant">
                             <p className="text-[10px] text-secondary uppercase tracking-widest">
-                                Already Commissioned? <Link to="/login" className="text-primary font-bold hover:underline ml-2">Authenticate Access</Link>
+                                Already have an account? <Link to="/login" className="text-primary font-bold hover:underline ml-2">Sign In</Link>
                             </p>
                         </div>
                     </form>

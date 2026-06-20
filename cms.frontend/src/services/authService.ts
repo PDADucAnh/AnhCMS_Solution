@@ -10,12 +10,21 @@ const authService = {
             throw error;
         }
     },
-    register: async (userData: any) => {
+    register: async (userData: { fullName: string; email: string; phone: string; address: string; password: string }) => {
         try {
             const response = await axiosClient.post('/Auth/register', userData);
             return response.data || response;
         } catch (error) {
             console.error("Lỗi đăng ký:", error);
+            throw error;
+        }
+    },
+    getProfile: async () => {
+        try {
+            const response = await axiosClient.get('/Auth/profile');
+            return response.data || response;
+        } catch (error) {
+            console.error("Lỗi lấy hồ sơ:", error);
             throw error;
         }
     }

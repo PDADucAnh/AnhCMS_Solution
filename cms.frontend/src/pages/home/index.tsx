@@ -3,8 +3,10 @@ import HeroBanner from './HeroBanner';
 import CategoryMenu from './CategoryMenu';
 import ProductGrid from './ProductGrid';
 import LatestBlog from './LatestBlog';
+import { useRealtimeUpdates } from '../../hooks/useRealtimeUpdates';
 
 function Home() {
+    useRealtimeUpdates();
     const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
 
     const handleSelectCategory = (id: number | null) => {

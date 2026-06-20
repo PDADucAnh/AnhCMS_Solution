@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CMS.Backend.Services;
 using CMS.Data;
 using CMS.Data.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
@@ -20,59 +21,62 @@ namespace CMS.Tests
         }
 
         [Fact]
-        public async Task Register_NewUser_ShouldSucceed()
+        public async Task Register_NewCustomer_ShouldSucceed()
         {
             // Arrange
             using var context = CreateInMemoryDbContext();
             var authService = new AuthService(context);
 
             // Act
-            var result = await authService.Register("testuser", "Password123!", "Test User");
+            var result = await authService.Register(null, "Password123!", "Test User", "test@example.com", "0123456789", "123 Street");
 
             // Assert
             Assert.True(result.Success);
-            Assert.Equal("Đăng ký thành công!", result.Message);
+            Assert.Equal("Registration successful!", result.Message);
 
-            var userInDb = await context.Users.FirstOrDefaultAsync(u => u.Username == "testuser");
-            Assert.NotNull(userInDb);
-            Assert.Equal("Test User", userInDb.FullName);
-            Assert.Equal("Customer", userInDb.Role);
+            var customerInDb = await context.Customers.FirstOrDefaultAsync(c => c.Email == "test@example.com");
+            Assert.NotNull(customerInDb);
+            Assert.Equal("Test User", customerInDb.FullName);
+            Assert.Equal("0123456789", customerInDb.Phone);
+            Assert.Equal("123 Street", customerInDb.Address);
         }
 
         [Fact]
-        public async Task Register_ExistingUser_ShouldFail()
+        public async Task Register_ExistingEmail_ShouldFail()
         {
             // Arrange
             using var context = CreateInMemoryDbContext();
             var authService = new AuthService(context);
             
-            // Seed existing user
-            await authService.Register("testuser", "Password123!", "Test User");
+            // Seed existing customer
+            await authService.Register(null, "Password123!", "Test User", "test@example.com", null, null);
 
             // Act
-            var result = await authService.Register("testuser", "DifferentPassword!", "Another Name");
+            var result = await authService.Register(null, "DifferentPassword!", "Another Name", "test@example.com", null, null);
 
             // Assert
             Assert.False(result.Success);
-            Assert.Equal("Tên đăng nhập này đã tồn tại!", result.Message);
+            Assert.Equal("Email already exists!", result.Message);
         }
 
         [Fact]
-        public async Task Login_CorrectCredentials_ShouldReturnUser()
+        public async Task Login_CustomerCorrectCredentials_ShouldReturnResult()
         {
             // Arrange
             using var context = CreateInMemoryDbContext();
             var authService = new AuthService(context);
-            await authService.Register("loginuser", "Password123!", "Login User");
+            await authService.Register(null, "Password123!", "Login User", "login@example.com", null, null);
 
             // Act
-            var user = await authService.Login("loginuser", "Password123!");
+            var result = await authService.Login("login@example.com", "Password123!");
 
             // Assert
-            Assert.NotNull(user);
-            Assert.Equal("loginuser", user.Username);
-            Assert.Equal("Login User", user.FullName);
-            Assert.NotNull(user.PasswordHash); // PasswordHash should contain the hash, not be null
+            Assert.NotNull(result);
+            Assert.Equal("login@example.com", result.Username);
+            Assert.Equal("Login User", result.FullName);
+            Assert.Equal("login@example.com", result.Email);
+            Assert.Equal("Customer", result.Role);
+            Assert.Equal("Customer", result.AuthType);
         }
 
         [Fact]
@@ -81,13 +85,13 @@ namespace CMS.Tests
             // Arrange
             using var context = CreateInMemoryDbContext();
             var authService = new AuthService(context);
-            await authService.Register("loginuser", "Password123!", "Login User");
+            await authService.Register(null, "Password123!", "Login User", "login@example.com", null, null);
 
             // Act
-            var user = await authService.Login("loginuser", "WrongPassword!");
+            var result = await authService.Login("login@example.com", "WrongPassword!");
 
             // Assert
-            Assert.Null(user);
+            Assert.Null(result);
         }
 
         [Fact]
@@ -98,10 +102,39 @@ namespace CMS.Tests
             var authService = new AuthService(context);
 
             // Act
-            var user = await authService.Login("nonexistent", "Password123!");
+            var result = await authService.Login("nonexistent@example.com", "Password123!");
 
             // Assert
-            Assert.Null(user);
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task Login_AdminUser_ShouldReturnResult()
+        {
+            // Arrange
+            using var context = CreateInMemoryDbContext();
+            var authService = new AuthService(context);
+
+            // Seed an admin User directly in the database
+            var admin = new User
+            {
+                Username = "admin",
+                FullName = "Admin User",
+                Role = "Admin",
+                PasswordHash = new PasswordHasher<User>().HashPassword(new User(), "Admin@123")
+            };
+            context.Users.Add(admin);
+            await context.SaveChangesAsync();
+
+            // Act
+            var result = await authService.Login("admin", "Admin@123");
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("admin", result.Username);
+            Assert.Equal("Admin User", result.FullName);
+            Assert.Equal("Admin", result.Role);
+            Assert.Equal("User", result.AuthType);
         }
     }
 }

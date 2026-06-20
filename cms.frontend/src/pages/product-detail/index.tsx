@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useProduct, useProducts } from '../../hooks/useProducts';
 import { useCart } from '../../context/CartContext';
+import { useWishlist } from '../../context/WishlistContext';
 import { getImageUrl } from '../../utils/apiUtils';
 
 const formatImageUrl = (url?: string): string => {
@@ -12,6 +13,7 @@ const ProductDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { isFavorite, toggleFavorite } = useWishlist();
   const { data: product, isLoading } = useProduct(id as string);
   const { data: allProducts = [] } = useProducts();
   const [quantity, setQuantity] = useState(1);
@@ -159,9 +161,16 @@ const ProductDetailPage = () => {
             >
               Buy Now
             </button>
-            <button className="flex items-center justify-center gap-2 text-secondary mt-xs py-2 bg-transparent border-0 btn-link-luxury">
-              <span className="material-symbols-outlined">favorite</span>
-              <span className="font-label-sm text-label-sm uppercase tracking-widest">Add to Wishlist</span>
+            <button
+              className="flex items-center justify-center gap-2 mt-xs py-2 bg-transparent border-0 btn-link-luxury"
+              onClick={() => toggleFavorite(product)}
+            >
+              <span className={`material-symbols-outlined ${isFavorite(product.id) ? 'text-error' : 'text-secondary'}`}>
+                {isFavorite(product.id) ? 'favorite' : 'favorite'}
+              </span>
+              <span className="font-label-sm text-label-sm uppercase tracking-widest">
+                {isFavorite(product.id) ? 'Saved' : 'Add to Wishlist'}
+              </span>
             </button>
           </div>
 

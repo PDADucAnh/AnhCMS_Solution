@@ -44,12 +44,12 @@ const LoginPage: React.FC = () => {
 
                     <form onSubmit={handleSubmit(onSubmit)} className="bg-surface-container-lowest border border-outline-variant p-lg space-y-lg">
                         <div className="space-y-sm">
-                            <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Identity Code</label>
+                            <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Email</label>
                             <input
-                                type="text"
+                                type="email"
                                 {...register('username')}
-                                className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm font-semibold tracking-widest uppercase placeholder:text-outline-variant"
-                                placeholder="Username"
+                                className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm tracking-widest placeholder:text-outline-variant"
+                                placeholder="Email"
                             />
                             {errors.username && <p className="text-error text-[10px] uppercase tracking-widest font-bold mt-1">{errors.username.message}</p>}
                         </div>

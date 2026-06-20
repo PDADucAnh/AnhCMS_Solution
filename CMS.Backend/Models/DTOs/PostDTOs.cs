@@ -8,6 +8,7 @@ namespace CMS.Backend.Models.DTOs
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
+        public string? Summary { get; set; }
         public string ImageUrl { get; set; } = string.Empty;
         public DateTime CreatedDate { get; set; }
         public int CategoryId { get; set; }
@@ -16,15 +17,17 @@ namespace CMS.Backend.Models.DTOs
 
     public class CreatePostDTO
     {
-        [Required(ErrorMessage = "Tiêu đề không được để trống")]
+        [Required(ErrorMessage = "Title is required")]
         public string Title { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Nội dung không được để trống")]
+        [Required(ErrorMessage = "Content is required")]
         public string Content { get; set; } = string.Empty;
+
+        public string? Summary { get; set; }
 
         public string ImageUrl { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Danh mục không được để trống")]
+        [Required(ErrorMessage = "Category is required")]
         public int CategoryId { get; set; }
     }
 
@@ -32,15 +35,17 @@ namespace CMS.Backend.Models.DTOs
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Tiêu đề không được để trống")]
+        [Required(ErrorMessage = "Title is required")]
         public string Title { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Nội dung không được để trống")]
+        [Required(ErrorMessage = "Content is required")]
         public string Content { get; set; } = string.Empty;
+
+        public string? Summary { get; set; }
 
         public string ImageUrl { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Danh mục không được để trống")]
+        [Required(ErrorMessage = "Category is required")]
         public int CategoryId { get; set; }
     }
 }

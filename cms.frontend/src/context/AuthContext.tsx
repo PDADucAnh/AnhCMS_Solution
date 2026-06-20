@@ -16,7 +16,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 const payload = JSON.parse(atob(token.split('.')[1]));
                 setUser({
                     username: payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || payload.unique_name,
-                    fullName: payload.FullName,
+                    fullName: payload.FullName || '',
+                    email: payload.Email || '',
+                    phone: payload.Phone || '',
+                    address: payload.Address || '',
                     role: payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || payload.role,
                 });
             } catch {
@@ -33,6 +36,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             setUser({
                 username: response.username,
                 fullName: response.fullName,
+                email: response.email,
+                phone: response.phone,
+                address: response.address,
                 role: response.role,
             });
         }
@@ -44,9 +50,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(null);
     }, []);
 
+    const refreshProfile = useCallback(async () => {
+        try {
+            const profile = await authService.getProfile();
+            if (profile) {
+                setUser((prev) => prev ? { ...prev, ...profile } : profile);
+            }
+        } catch {
+            // silently fail
+        }
+    }, []);
+
     const isAuthenticated = !!user;
 
-    const value: AuthContextType = { user, login, logout, isAuthenticated, loading, token: tokenService.getToken() };
+    const value: AuthContextType = { user, login, logout, refreshProfile, isAuthenticated, loading, token: tokenService.getToken() };
 
     return (
         <AuthContext.Provider value={value}>

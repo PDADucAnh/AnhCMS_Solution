@@ -15,11 +15,13 @@ namespace CMS.Backend.Controllers
     {
         private readonly IProductService _productService;
         private readonly ICategoryProductService _categoryProductService;
+        private readonly INotificationService _notificationService;
 
-        public ProductController(IProductService productService, ICategoryProductService categoryProductService)
+        public ProductController(IProductService productService, ICategoryProductService categoryProductService, INotificationService notificationService)
         {
             _productService = productService;
             _categoryProductService = categoryProductService;
+            _notificationService = notificationService;
         }
 
         public async Task<IActionResult> Index()
@@ -63,12 +65,14 @@ namespace CMS.Backend.Controllers
             }
 
             await _productService.Create(model);
+            await _notificationService.NotifyEntityChanged("Product");
             return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Delete(int id)
         {
             await _productService.Delete(id);
+            await _notificationService.NotifyEntityChanged("Product");
             return RedirectToAction("Index");
         }
 
@@ -137,6 +141,7 @@ namespace CMS.Backend.Controllers
             }
 
             await _productService.Update(model.Id, model);
+            await _notificationService.NotifyEntityChanged("Product");
             return RedirectToAction("Index");
         }
     }

@@ -6,6 +6,7 @@ import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { WishlistProvider } from './context/WishlistContext';
 import { authEvents } from './utils/eventEmitter';
 import ErrorFallback from './components/ErrorFallback';
 import { Toaster } from 'react-hot-toast';
@@ -21,6 +22,10 @@ const Cart = lazy(() => import('./pages/cart/index'));
 const Checkout = lazy(() => import('./pages/checkout/index'));
 const Login = lazy(() => import('./pages/login/index'));
 const Register = lazy(() => import('./pages/register/index'));
+const Profile = lazy(() => import('./pages/auth/Profile'));
+const MyOrders = lazy(() => import('./pages/auth/MyOrders'));
+const Wishlist = lazy(() => import('./pages/wishlist/index'));
+const About = lazy(() => import('./pages/about/index'));
 
 const PageLoader: React.FC = () => (
   <div className="flex justify-center items-center min-h-screen bg-surface">
@@ -58,6 +63,7 @@ const App: React.FC = () => {
     <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <CartProvider>
+        <WishlistProvider>
         <Router>
           <AuthRedirectHandler />
           <ErrorBoundary FallbackComponent={ErrorFallback} onError={(error) => console.error('[Global Error]', error)}>
@@ -86,6 +92,10 @@ const App: React.FC = () => {
                     <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
+                    <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                    <Route path="/my-orders" element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
+                    <Route path="/wishlist" element={<Wishlist />} />
+                    <Route path="/about" element={<About />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>
@@ -94,6 +104,7 @@ const App: React.FC = () => {
             </div>
           </ErrorBoundary>
         </Router>
+        </WishlistProvider>
       </CartProvider>
     </AuthProvider>
     </QueryClientProvider>

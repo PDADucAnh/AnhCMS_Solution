@@ -12,10 +12,12 @@ namespace CMS.Backend.Controllers.Api
     public class CategoriesProductsController : ControllerBase
     {
         private readonly ICategoryProductService _categoryProductService;
+        private readonly INotificationService _notificationService;
 
-        public CategoriesProductsController(ICategoryProductService categoryProductService)
+        public CategoriesProductsController(ICategoryProductService categoryProductService, INotificationService notificationService)
         {
             _categoryProductService = categoryProductService;
+            _notificationService = notificationService;
         }
 
         [AllowAnonymous]
@@ -55,6 +57,7 @@ namespace CMS.Backend.Controllers.Api
                 return BadRequest(ModelState);
 
             var created = await _categoryProductService.Create(dto);
+            await _notificationService.NotifyEntityChanged("CategoryProduct");
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 

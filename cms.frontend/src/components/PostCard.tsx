@@ -28,9 +28,10 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
             <h3 className="font-display-xl text-xl mb-sm group-hover:text-secondary transition-colors duration-300 uppercase tracking-tighter font-bold">
                 <Link to={`/blog/${post.id}`} className="text-primary text-decoration-none hover:text-secondary transition-colors duration-300">{post.title}</Link>
             </h3>
-            <p className="text-secondary text-sm line-clamp-2 mb-md leading-relaxed">
-                {post.summary}
-            </p>
+            {/* Safe-truncated summary */}
+                <p className="card-text text-secondary text-justify mb-4" style={{ fontSize: '14px', lineHeight: '1.6' }}>
+                    {post.summary ? `${post.summary.substring(0, 100)}...` : 'Discover style tips and fashion insights to elevate your look...'}
+                </p>
             <div className="mt-auto">
                 <Link 
                     to={`/blog/${post.id}`}

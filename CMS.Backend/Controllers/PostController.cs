@@ -16,11 +16,13 @@ namespace CMS.Backend.Controllers
     {
         private readonly IPostService _postService;
         private readonly ICategoryService _categoryService;
+        private readonly INotificationService _notificationService;
 
-        public PostController(IPostService postService, ICategoryService categoryService)
+        public PostController(IPostService postService, ICategoryService categoryService, INotificationService notificationService)
         {
             _postService = postService;
             _categoryService = categoryService;
+            _notificationService = notificationService;
         }
 
         public async Task<IActionResult> Index(int? id)
@@ -78,12 +80,14 @@ namespace CMS.Backend.Controllers
             }
 
             await _postService.Create(model);
+            await _notificationService.NotifyEntityChanged("Post");
             return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Delete(int id)
         {
             await _postService.Delete(id);
+            await _notificationService.NotifyEntityChanged("Post");
             return RedirectToAction("Index");
         }
 
@@ -101,6 +105,7 @@ namespace CMS.Backend.Controllers
                 Id = post.Id,
                 Title = post.Title,
                 Content = post.Content,
+                Summary = post.Summary,
                 ImageUrl = post.ImageUrl,
                 CategoryId = post.CategoryId
             };
@@ -143,6 +148,7 @@ namespace CMS.Backend.Controllers
             }
 
             await _postService.Update(model.Id, model);
+            await _notificationService.NotifyEntityChanged("Post");
             return RedirectToAction("Index");
         }
     }

@@ -26,12 +26,22 @@ namespace CMS.Data.Entities
         [Required]
         public string PasswordHash { get; set; }
 
-        [Required(ErrorMessage = "Họ tên không được để trống")]
+        [Required(ErrorMessage = "Full name is required")]
         [MaxLength(200)]
         public string FullName { get; set; }
 
-        [Required(ErrorMessage = "Vai trò không được để trống")]
+        [EmailAddress]
+        [MaxLength(200)]
+        public string? Email { get; set; }
+
+        [MaxLength(20)]
+        public string? Phone { get; set; }
+
+        [MaxLength(500)]
+        public string? Address { get; set; }
+
+        [Required(ErrorMessage = "Role is required")]
         [MaxLength(50)]
-        public string Role { get; set; } // Quản trị viên hoặc Biên tập viên
+        public string Role { get; set; }
     }
 }

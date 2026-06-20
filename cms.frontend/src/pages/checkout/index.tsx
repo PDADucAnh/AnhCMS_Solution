@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,19 +10,32 @@ import { checkoutSchema, type CheckoutFormData } from '../../schemas/checkoutSch
 const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
   const { cartItems, cartTotal, clearCart } = useCart();
-  const { user } = useAuth();
+  const { user, refreshProfile } = useAuth();
   const createOrder = useCreateOrder();
 
-  const { register, handleSubmit, formState: { errors } } = useForm<CheckoutFormData>({
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm<CheckoutFormData>({
     resolver: zodResolver(checkoutSchema),
   });
+
+  useEffect(() => {
+    refreshProfile();
+  }, [refreshProfile]);
+
+  useEffect(() => {
+    if (user) {
+      if (user.fullName) setValue('fullname', user.fullName);
+      if (user.email) setValue('email', user.email);
+      if (user.phone) setValue('phone', user.phone);
+      if (user.address) setValue('address', user.address);
+    }
+  }, [user, setValue]);
 
   const onSubmit = async (formData: CheckoutFormData) => {
     if (cartItems.length === 0) return;
 
     const orderPayload = {
       customerId: user?.id || 0,
-      notes: `Delivery to: ${formData.fullname}, Contact: ${formData.phone}, Location: ${formData.address}. Narrative: ${formData.notes}`,
+      notes: `Delivery to: ${formData.fullname}, Email: ${formData.email}, Contact: ${formData.phone}, Location: ${formData.address}. Narrative: ${formData.notes}`,
       items: cartItems.map(item => ({
         productId: item.id,
         quantity: item.quantity,
@@ -76,7 +89,7 @@ const CheckoutPage: React.FC = () => {
                             <input
                                 type="text"
                                 {...register('fullname')}
-                                className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm font-semibold tracking-widest uppercase placeholder:text-outline-variant"
+                                className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm font-semibold tracking-widest placeholder:text-outline-variant"
                                 placeholder="Recipient Name"
                             />
                             {errors.fullname && <p className="text-error text-[10px] mt-1">{errors.fullname.message}</p>}
@@ -86,7 +99,7 @@ const CheckoutPage: React.FC = () => {
                             <input
                                 type="text"
                                 {...register('phone')}
-                                className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm font-semibold tracking-widest uppercase placeholder:text-outline-variant"
+                                className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm font-semibold tracking-widest placeholder:text-outline-variant"
                                 placeholder="Contact Number"
                             />
                             {errors.phone && <p className="text-error text-[10px] mt-1">{errors.phone.message}</p>}
@@ -94,12 +107,23 @@ const CheckoutPage: React.FC = () => {
                     </div>
 
                     <div className="space-y-sm">
+                        <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Electronic Mail</label>
+                        <input
+                            type="email"
+                            {...register('email')}
+                            className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm tracking-widest placeholder:text-outline-variant"
+                            placeholder="Email Address"
+                        />
+                        {errors.email && <p className="text-error text-[10px] mt-1">{errors.email.message}</p>}
+                    </div>
+
+                    <div className="space-y-sm">
                         <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Physical Residence</label>
                         <input
                             type="text"
                             {...register('address')}
-                            className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm font-semibold tracking-widest uppercase placeholder:text-outline-variant"
-                            placeholder="Delivery Address"
+                                className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm font-semibold tracking-widest placeholder:text-outline-variant"
+                                placeholder="Delivery Address"
                         />
                         {errors.address && <p className="text-error text-[10px] mt-1">{errors.address.message}</p>}
                     </div>

@@ -27,6 +27,9 @@ namespace CMS.Data.Entities
         [Required(ErrorMessage = "Nội dung không được để trống")]
         public string Content { get; set; } // Nội dung chi tiết
 
+        [MaxLength(500)]
+        public string? Summary { get; set; } // Mô tả ngắn
+
         [MaxLength(1000)]
         public string? ImageUrl { get; set; } // Hình ảnh đại diện
         public DateTime CreatedDate { get; set; } = DateTime.Now;

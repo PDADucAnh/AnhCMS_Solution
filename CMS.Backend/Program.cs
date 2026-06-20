@@ -108,6 +108,8 @@ builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IAuthService, CMS.Bac
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.ICustomerService, CMS.Backend.Services.CustomerService>();
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IOrderService, CMS.Backend.Services.OrderService>();
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IOrderDetailService, CMS.Backend.Services.OrderDetailService>();
+builder.Services.AddScoped<CMS.Backend.Services.Interfaces.INotificationService, CMS.Backend.Services.NotificationService>();
+builder.Services.AddSignalR();
 
 // ---- CẤU HÌNH CORS (THÊM VÀO TRƯỚC builder.Build()) ----
 builder.Services.AddCors(options =>
@@ -182,6 +184,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<CMS.Backend.Hubs.NotificationHub>("/hubs/notifications");
 
 app.MapControllerRoute(
     name: "default",

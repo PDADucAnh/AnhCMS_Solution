@@ -233,6 +233,7 @@ namespace CMS.Backend.Models.DTOs
                 Id = post.Id,
                 Title = post.Title,
                 Content = post.Content,
+                Summary = post.Summary,
                 ImageUrl = post.ImageUrl,
                 CreatedDate = post.CreatedDate,
                 CategoryId = post.CategoryId,
@@ -247,6 +248,9 @@ namespace CMS.Backend.Models.DTOs
             {
                 Title = dto.Title,
                 Content = dto.Content,
+                Summary = !string.IsNullOrWhiteSpace(dto.Summary)
+                    ? dto.Summary
+                    : (dto.Content?.Length > 100 ? dto.Content.Substring(0, 100) : dto.Content),
                 ImageUrl = dto.ImageUrl,
                 CategoryId = dto.CategoryId
             };
@@ -257,6 +261,9 @@ namespace CMS.Backend.Models.DTOs
             if (dto == null || entity == null) return;
             entity.Title = dto.Title;
             entity.Content = dto.Content;
+            entity.Summary = !string.IsNullOrWhiteSpace(dto.Summary)
+                ? dto.Summary
+                : (dto.Content?.Length > 100 ? dto.Content.Substring(0, 100) : dto.Content);
             entity.ImageUrl = dto.ImageUrl;
             entity.CategoryId = dto.CategoryId;
         }
