@@ -40,9 +40,24 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const addToCart = useCallback((product: Product, quantity = 1) => {
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((item) => item.id === product.id);
+      const currentQty = existingItem ? existingItem.quantity : 0;
+      const requestedQty = currentQty + quantity;
+      const maxStock = product.stockQuantity;
+
+      if (requestedQty > maxStock) {
+        const cappedQty = Math.max(maxStock, 0);
+        if (cappedQty <= 0) return prevItems;
+        if (existingItem) {
+          return prevItems.map((item) =>
+            item.id === product.id ? { ...item, quantity: cappedQty } : item
+          );
+        }
+        return [...prevItems, { ...product, quantity: cappedQty }];
+      }
+
       if (existingItem) {
         return prevItems.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item
+          item.id === product.id ? { ...item, quantity: requestedQty } : item
         );
       }
       return [...prevItems, { ...product, quantity }];

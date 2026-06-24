@@ -38,7 +38,7 @@
             </div>
             <div class="space-y-md">
                 <label class="text-label-sm uppercase tracking-widest text-secondary font-bold">Unit Value (VNĐ)</label>
-                <input asp-for="UnitPrice" type="number" step="1000" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-lg py-3 font-bold serif text-xl" required />
+                <input asp-for="UnitPrice" type="text" inputmode="numeric" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-lg py-3 font-bold serif text-xl" required />
                 <span asp-validation-for="UnitPrice" class="text-error text-xs uppercase tracking-widest"></span>
             </div>
         </div>
@@ -56,4 +56,22 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function formatPriceInput(input) {
+            let val = input.value.replace(/\s/g, '');
+            if (val) {
+                input.value = val.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            var priceInput = document.getElementById('UnitPrice');
+            if (priceInput) {
+                formatPriceInput(priceInput);
+                priceInput.addEventListener('input', function() { formatPriceInput(this); });
+                priceInput.closest('form').addEventListener('submit', function() {
+                    priceInput.value = priceInput.value.replace(/\s/g, '');
+                });
+            }
+        });
+    </script>
 }

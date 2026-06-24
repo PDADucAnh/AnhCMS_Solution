@@ -43,7 +43,7 @@ namespace CMS.Backend.Controllers.Api
 
             if (!success)
             {
-                return StatusCode(500, new { message, detail = message });
+                return BadRequest(new { message });
             }
 
             return StatusCode(201, new

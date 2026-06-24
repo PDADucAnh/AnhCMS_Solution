@@ -52,9 +52,12 @@ namespace CMS.Backend.Controllers.Api
 
                 var jwtKey = _configuration["Jwt:SecretKey"]
                     ?? throw new InvalidOperationException("Jwt:SecretKey is not configured.");
-                var issuer = _configuration["Jwt:Issuer"];
-                var audience = _configuration["Jwt:Audience"];
-                var expiryMinutes = int.Parse(_configuration["Jwt:ExpiryMinutes"] ?? "60");
+                var issuer = _configuration["Jwt:Issuer"]
+                    ?? throw new InvalidOperationException("Jwt:Issuer is not configured.");
+                var audience = _configuration["Jwt:Audience"]
+                    ?? throw new InvalidOperationException("Jwt:Audience is not configured.");
+                if (!int.TryParse(_configuration["Jwt:ExpiryMinutes"], out var expiryMinutes))
+                    expiryMinutes = 60;
 
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var key = Encoding.UTF8.GetBytes(jwtKey);
@@ -119,7 +122,7 @@ namespace CMS.Backend.Controllers.Api
         public async Task<IActionResult> Register([FromBody] RegisterRequest register)
         {
             var (success, message) = await _authService.Register(
-                register.Username, register.Password, register.FullName,
+                register.Password, register.FullName,
                 register.Email, register.Phone, register.Address);
 
             if (!success)

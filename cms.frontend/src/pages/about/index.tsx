@@ -11,7 +11,7 @@ const About: React.FC = () => {
         <div className="max-w-3xl mx-auto text-center mb-20 md:mb-28">
           <span className="font-label-sm text-label-sm uppercase tracking-[0.3em] text-secondary block mb-6">House of Fashion</span>
           <h1 className="font-display-xl-mobile md:font-display-xl text-display-xl-mobile md:text-display-xl text-primary uppercase tracking-tight leading-none mb-8">
-            AnhCMS<span className="text-outline font-body-md text-body-md tracking-[0.05em] font-normal lowercase">.Fashion</span>
+            PDA FLOWER<span className="text-outline font-body-md text-body-md tracking-[0.05em] font-normal lowercase">.Flower</span>
           </h1>
           <div className="w-8 h-0.5 bg-primary mx-auto mb-8"></div>
           <p className="font-body-lg text-body-lg text-secondary leading-relaxed max-w-2xl mx-auto">
@@ -33,7 +33,7 @@ const About: React.FC = () => {
               <div className="space-y-4 text-secondary leading-relaxed">
                 <p>
                   Founded with a singular vision — to create pieces that transcend seasons and trends — 
-                  AnhCMS.Fashion represents a return to the essential. Every collection is born from 
+                   PDA FLOWER represents a return to the essential. Every collection is born from 
                   a dialogue between heritage craftsmanship and contemporary sensibility.
                 </p>
                 <p>
@@ -72,7 +72,7 @@ const About: React.FC = () => {
               <p className="text-secondary leading-relaxed">
                 Based in the creative heart of the city, our atelier is both workshop and sanctuary — 
                 a space where ideas are sketched, fabrics are studied, and garments take form through 
-                patient collaboration between designer and artisan. Every piece that bears the AnhCMS 
+                patient collaboration between designer and artisan. Every piece that bears the PDA FLOWER 
                 label passes through our studio, ensuring that what reaches you carries the integrity 
                 of its origin.
               </p>

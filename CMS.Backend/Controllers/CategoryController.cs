@@ -44,12 +44,14 @@ namespace CMS.Backend.Controllers
                 return View(model);
 
             await _categoryService.Create(model);
+            TempData["Success"] = "Danh mục blog đã được tạo thành công.";
             return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Delete(int id)
         {
             await _categoryService.Delete(id);
+            TempData["Success"] = "Danh mục blog đã được xóa.";
             return RedirectToAction("Index");
         }
 
@@ -77,6 +79,7 @@ namespace CMS.Backend.Controllers
                 return View(model);
 
             await _categoryService.Update(model.Id, model);
+            TempData["Success"] = "Danh mục blog đã được cập nhật.";
             return RedirectToAction("Index");
         }
     }

@@ -18,10 +18,17 @@ using CMS.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json;
+using System.Globalization;
+
+var cultureInfo = new CultureInfo("vi-VN");
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +53,8 @@ builder.Services.AddAuthentication(options =>
 {
     cookieOptions.LoginPath = "/Account/Login";
     cookieOptions.AccessDeniedPath = "/Account/AccessDenied";
+    cookieOptions.Cookie.IsEssential = true;
+    cookieOptions.SlidingExpiration = false;
 })
 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, jwtOptions =>
 {
@@ -86,7 +95,13 @@ builder.Services.AddAuthentication(options =>
         }
     };
 });
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    var policy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+    options.Filters.Add(new AuthorizeFilter(policy));
+});
 
 // Swagger
 builder.Services.AddControllers();
@@ -109,6 +124,7 @@ builder.Services.AddScoped<CMS.Backend.Services.Interfaces.ICustomerService, CMS
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IOrderService, CMS.Backend.Services.OrderService>();
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IOrderDetailService, CMS.Backend.Services.OrderDetailService>();
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.INotificationService, CMS.Backend.Services.NotificationService>();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddSignalR();
 
 // ---- CẤU HÌNH CORS (THÊM VÀO TRƯỚC builder.Build()) ----
@@ -181,6 +197,7 @@ app.Use(async (context, next) =>
 });
 
 app.UseAuthentication();
+app.UseMiddleware<CMS.Backend.Middleware.SessionValidationMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();

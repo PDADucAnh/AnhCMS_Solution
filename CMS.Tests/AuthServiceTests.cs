@@ -28,7 +28,7 @@ namespace CMS.Tests
             var authService = new AuthService(context);
 
             // Act
-            var result = await authService.Register(null, "Password123!", "Test User", "test@example.com", "0123456789", "123 Street");
+            var result = await authService.Register("Password123!", "Test User", "test@example.com", "0123456789", "123 Street");
 
             // Assert
             Assert.True(result.Success);
@@ -49,10 +49,10 @@ namespace CMS.Tests
             var authService = new AuthService(context);
             
             // Seed existing customer
-            await authService.Register(null, "Password123!", "Test User", "test@example.com", null, null);
+            await authService.Register("Password123!", "Test User", "test@example.com", null, null);
 
             // Act
-            var result = await authService.Register(null, "DifferentPassword!", "Another Name", "test@example.com", null, null);
+            var result = await authService.Register("DifferentPassword!", "Another Name", "test@example.com", null, null);
 
             // Assert
             Assert.False(result.Success);
@@ -65,7 +65,7 @@ namespace CMS.Tests
             // Arrange
             using var context = CreateInMemoryDbContext();
             var authService = new AuthService(context);
-            await authService.Register(null, "Password123!", "Login User", "login@example.com", null, null);
+            await authService.Register("Password123!", "Login User", "login@example.com", null, null);
 
             // Act
             var result = await authService.Login("login@example.com", "Password123!");
@@ -85,7 +85,7 @@ namespace CMS.Tests
             // Arrange
             using var context = CreateInMemoryDbContext();
             var authService = new AuthService(context);
-            await authService.Register(null, "Password123!", "Login User", "login@example.com", null, null);
+            await authService.Register("Password123!", "Login User", "login@example.com", null, null);
 
             // Act
             var result = await authService.Login("login@example.com", "WrongPassword!");

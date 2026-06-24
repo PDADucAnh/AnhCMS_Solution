@@ -4,6 +4,7 @@ using CMS.Backend.Models.DTOs;
 using CMS.Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 
 namespace CMS.Backend.Services
 {
@@ -29,7 +30,6 @@ namespace CMS.Backend.Services
             Phone = user.Phone,
             Address = user.Address,
             Role = user.Role,
-            PasswordHash = user.PasswordHash,
             AuthType = "User"
         };
 
@@ -42,7 +42,6 @@ namespace CMS.Backend.Services
             Phone = customer.Phone,
             Address = customer.Address,
             Role = "Customer",
-            PasswordHash = customer.PasswordHash,
             AuthType = "Customer"
         };
 
@@ -89,7 +88,7 @@ namespace CMS.Backend.Services
             return null;
         }
 
-        public async Task<(bool Success, string Message)> Register(string username, string password, string fullName, string? email, string? phone, string? address)
+        public async Task<(bool Success, string Message)> Register(string password, string fullName, string? email, string? phone, string? address)
         {
             var checkExist = await _context.Customers.AnyAsync(c => c.Email == email);
             if (checkExist)
@@ -112,6 +111,84 @@ namespace CMS.Backend.Services
             await _context.SaveChangesAsync();
 
             return (true, "Registration successful!");
+        }
+
+        private static string GenerateRefreshToken()
+        {
+            var randomBytes = new byte[64];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomBytes);
+            return Convert.ToBase64String(randomBytes);
+        }
+
+        private static string HashToken(string token)
+        {
+            var bytes = System.Text.Encoding.UTF8.GetBytes(token);
+            var hash = SHA256.HashData(bytes);
+            return Convert.ToBase64String(hash);
+        }
+
+        public async Task<string> CreateRefreshTokenAsync(int userId, string? deviceInfo = null)
+        {
+            var rawToken = GenerateRefreshToken();
+            var tokenHash = HashToken(rawToken);
+
+            var refreshToken = new RefreshToken
+            {
+                UserId = userId,
+                TokenHash = tokenHash,
+                CreatedAt = DateTime.UtcNow,
+                ExpiresAt = DateTime.UtcNow.AddDays(30),
+                DeviceInfo = deviceInfo
+            };
+
+            _context.RefreshTokens.Add(refreshToken);
+            await _context.SaveChangesAsync();
+
+            return rawToken;
+        }
+
+        public async Task<int?> ValidateRefreshTokenAsync(string rawToken)
+        {
+            var tokenHash = HashToken(rawToken);
+
+            var token = await _context.RefreshTokens
+                .FirstOrDefaultAsync(t => t.TokenHash == tokenHash
+                    && !t.IsRevoked
+                    && t.RevokedAt == null
+                    && t.ExpiresAt > DateTime.UtcNow);
+
+            return token?.UserId;
+        }
+
+        public async Task RevokeUserTokensAsync(int userId)
+        {
+            var activeTokens = await _context.RefreshTokens
+                .Where(t => t.UserId == userId && !t.IsRevoked && t.RevokedAt == null)
+                .ToListAsync();
+
+            foreach (var token in activeTokens)
+            {
+                token.IsRevoked = true;
+                token.RevokedAt = DateTime.UtcNow;
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RevokeTokenAsync(string rawToken)
+        {
+            var tokenHash = HashToken(rawToken);
+
+            var token = await _context.RefreshTokens
+                .FirstOrDefaultAsync(t => t.TokenHash == tokenHash && !t.IsRevoked);
+
+            if (token != null)
+            {
+                token.IsRevoked = true;
+                token.RevokedAt = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task<LoginResult?> GetProfile(string identifier, string authType)

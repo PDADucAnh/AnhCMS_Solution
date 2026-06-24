@@ -29,66 +29,94 @@ const LoginPage: React.FC = () => {
     };
 
     return (
-        <div className="bg-background text-on-background font-body-md antialiased pt-20 flex flex-col min-h-screen">
-            <main className="flex-1 flex items-center justify-center p-sm py-20">
-                <div className="w-full max-w-md space-y-xl">
-                    <div className="text-center space-y-md">
-                        <div className="inline-flex size-16 bg-black items-center justify-center mb-4">
-                            <svg className="text-white size-10" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z" fill="currentColor"></path>
-                            </svg>
+        <div className="ambient-bg text-on-background font-body-md antialiased flex flex-col min-h-screen">
+            <main className="flex-1 flex items-center justify-center p-4">
+                <div className="w-full max-w-sm mx-auto">
+
+                    {/* Logo */}
+                    <div className="text-center mb-6">
+                        <div className="relative inline-flex">
+                            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center"
+                                 style={{ animation: 'float 6s ease-in-out infinite' }}>
+                                <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center"
+                                     style={{ boxShadow: '0 8px 40px rgba(171,44,93,0.10)' }}>
+                                    <span className="material-symbols-outlined text-on-primary text-[32px]" style={{ fontVariationSettings: "'FILL' 1" }}>local_florist</span>
+                                </div>
+                            </div>
                         </div>
-                        <h1 className="serif text-4xl font-bold tracking-tighter uppercase">AnhCMS.Fashion</h1>
-                        <p className="text-[10px] text-secondary uppercase tracking-[0.4em] font-bold">Secure Personnel Authentication</p>
                     </div>
 
-                    <form onSubmit={handleSubmit(onSubmit)} className="bg-surface-container-lowest border border-outline-variant p-lg space-y-lg">
-                        <div className="space-y-sm">
-                            <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Email</label>
-                            <input
-                                type="email"
-                                {...register('username')}
-                                className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm tracking-widest placeholder:text-outline-variant"
-                                placeholder="Email"
-                            />
-                            {errors.username && <p className="text-error text-[10px] uppercase tracking-widest font-bold mt-1">{errors.username.message}</p>}
+                    {/* Brand */}
+                    <div className="text-center mb-8">
+                        <h1 className="font-display-xl text-display-xl text-primary tracking-tight leading-none">PDA FLOWER</h1>
+                        <p className="font-body-md text-body-md text-on-surface-variant/70 mt-3">Secure Customer Access</p>
+                    </div>
+
+                    {/* Login card */}
+                    <form onSubmit={handleSubmit(onSubmit)}
+                          className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl px-8 py-8 space-y-6"
+                          style={{ boxShadow: '0 8px 40px rgba(171,44,93,0.10)' }}>
+
+                        {/* Email / Username */}
+                        <div className="space-y-2">
+                            <label htmlFor="username" className="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-2">
+                                <span className="material-symbols-outlined text-[16px] text-outline">person</span>
+                                Email
+                            </label>
+                            <input id="username" type="email" {...register('username')}
+                                   className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3.5 font-body-md text-body-md text-on-surface placeholder:text-outline/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                                   placeholder="Enter your email" required autoComplete="email" />
+                            {errors.username && (
+                                <p className="font-label-sm text-label-sm text-error mt-1">{errors.username.message}</p>
+                            )}
                         </div>
 
-                        <div className="space-y-sm">
-                            <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Security Token</label>
-                            <input
-                                type="password"
-                                {...register('password')}
-                                className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm tracking-widest placeholder:text-outline-variant"
-                                placeholder="Password"
-                            />
-                            {errors.password && <p className="text-error text-[10px] uppercase tracking-widest font-bold mt-1">{errors.password.message}</p>}
+                        {/* Password */}
+                        <div className="space-y-2">
+                            <label htmlFor="password" className="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-2">
+                                <span className="material-symbols-outlined text-[16px] text-outline">lock</span>
+                                Password
+                            </label>
+                            <input id="password" type="password" {...register('password')}
+                                   className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3.5 font-body-md text-body-md text-on-surface placeholder:text-outline/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                                   placeholder="Enter your password" required autoComplete="current-password" />
+                            {errors.password && (
+                                <p className="font-label-sm text-label-sm text-error mt-1">{errors.password.message}</p>
+                            )}
                         </div>
 
+                        {/* Error */}
                         {error && (
-                            <div className="p-md bg-error-container text-error text-[10px] uppercase tracking-widest font-bold text-center">
+                            <div className="p-4 bg-error-container border border-error/20 text-error font-label-sm text-label-sm rounded-xl flex items-center gap-3">
+                                <span className="material-symbols-outlined text-[20px]">error</span>
                                 {error}
                             </div>
                         )}
 
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full bg-primary text-on-primary py-4 text-[10px] font-bold uppercase tracking-[0.3em] border border-primary outline-none disabled:opacity-50 btn-luxury btn-primary-luxury"
-                        >
-                            {loading ? 'Authenticating...' : 'Authenticate'}
+                        {/* Submit */}
+                        <button type="submit" disabled={loading}
+                                className="w-full bg-primary text-on-primary py-3.5 rounded-xl font-label-md text-label-md hover:bg-primary/90 active:scale-[0.98] transition-all duration-200 disabled:opacity-50 cursor-pointer border-0 flex items-center justify-center gap-2"
+                                style={{ boxShadow: '0 4px 24px rgba(171,44,93,0.06)' }}>
+                            <span>{loading ? 'Signing In...' : 'Sign In'}</span>
+                            <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
                         </button>
 
-                        <div className="text-center pt-4 border-t border-outline-variant">
-                            <p className="text-[10px] text-secondary uppercase tracking-widest">
-                                New Member? <Link to="/register" className="text-primary font-bold hover:underline ml-2">Register Access</Link>
+                        {/* Register link */}
+                        <div className="text-center pt-4 border-t border-outline-variant/20">
+                            <p className="font-label-sm text-label-sm text-on-surface-variant">
+                                New Member?{' '}
+                                <Link to="/register" className="text-primary font-semibold hover:underline ml-1">Create Account</Link>
                             </p>
                         </div>
                     </form>
 
-                    <div className="text-center">
-                        <p className="text-[10px] text-outline uppercase tracking-widest">© 2024 International Holdings. All Rights Reserved.</p>
+                    {/* Footer */}
+                    <div className="text-center mt-8">
+                        <p className="font-label-sm text-label-sm text-on-surface-variant/40">
+                            &copy; {new Date().getFullYear()} PDA FLOWER. All rights reserved.
+                        </p>
                     </div>
+
                 </div>
             </main>
         </div>

@@ -48,12 +48,14 @@ namespace CMS.Backend.Controllers
             }
 
             await _orderDetailService.Create(model);
+            TempData["Success"] = "Chi tiết đơn hàng đã được tạo thành công.";
             return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Delete(int id)
         {
             await _orderDetailService.Delete(id);
+            TempData["Success"] = "Chi tiết đơn hàng đã được xóa.";
             return RedirectToAction("Index");
         }
 
@@ -84,6 +86,7 @@ namespace CMS.Backend.Controllers
             }
 
             await _orderDetailService.Update(model.Id, model);
+            TempData["Success"] = "Chi tiết đơn hàng đã được cập nhật.";
             return RedirectToAction("Index");
         }
     }

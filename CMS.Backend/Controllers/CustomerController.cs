@@ -35,12 +35,14 @@ namespace CMS.Backend.Controllers
                 return View(model);
 
             await _customerService.Create(model);
+            TempData["Success"] = "Khách hàng đã được tạo thành công.";
             return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Delete(int id)
         {
             await _customerService.Delete(id);
+            TempData["Success"] = "Khách hàng đã được xóa.";
             return RedirectToAction("Index");
         }
 
@@ -69,6 +71,7 @@ namespace CMS.Backend.Controllers
                 return View(model);
 
             await _customerService.Update(model.Id, model);
+            TempData["Success"] = "Khách hàng đã được cập nhật.";
             return RedirectToAction("Index");
         }
     }

@@ -42,6 +42,7 @@ namespace CMS.Backend.Controllers
                 return View(model);
 
             await _userService.Create(model);
+            TempData["Success"] = "Người dùng đã được tạo thành công.";
             return RedirectToAction("Index");
         }
 
@@ -69,8 +70,13 @@ namespace CMS.Backend.Controllers
                 return View(model);
 
             var success = await _userService.Update(model.Id, model);
-            if (!success) return NotFound();
+            if (!success)
+            {
+                TempData["Error"] = "Không thể cập nhật người dùng.";
+                return RedirectToAction("Index");
+            }
 
+            TempData["Success"] = "Người dùng đã được cập nhật.";
             return RedirectToAction("Index");
         }
 
@@ -80,12 +86,12 @@ namespace CMS.Backend.Controllers
             var targetUser = await _userService.GetById(id);
             if (targetUser != null && targetUser.Username == currentUsername)
             {
-                ModelState.AddModelError("", "Bạn không thể tự xóa tài khoản của chính mình");
-                var users = await _userService.GetAll();
-                return View("Index", users);
+                TempData["Error"] = "Bạn không thể tự xóa tài khoản của chính mình";
+                return RedirectToAction("Index");
             }
 
             await _userService.Delete(id);
+            TempData["Success"] = "Người dùng đã được xóa.";
             return RedirectToAction("Index");
         }
     }

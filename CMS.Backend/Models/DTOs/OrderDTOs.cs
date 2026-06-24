@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using CMS.Data.Entities;
 
@@ -31,6 +32,7 @@ namespace CMS.Backend.Models.DTOs
         public int Quantity { get; set; }
         [Required]
         [Range(0, double.MaxValue)]
+        [DisplayFormat(NullDisplayText = "", DataFormatString = "{0:N0}")]
         public decimal UnitPrice { get; set; }
     }
 

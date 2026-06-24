@@ -35,6 +35,27 @@ namespace CMS.Backend.Controllers
             return View(posts);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> UploadImage(IFormFile upload)
+        {
+            if (upload == null || upload.Length == 0)
+                return Json(new { error = new { message = "No file uploaded." } });
+
+            string folder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "ckeditor");
+            if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
+
+            string fileName = Guid.NewGuid().ToString() + Path.GetExtension(upload.FileName);
+            string filePath = Path.Combine(folder, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await upload.CopyToAsync(stream);
+            }
+
+            var url = "/uploads/ckeditor/" + fileName;
+            return Json(new { url, uploaded = true });
+        }
+
         public async Task<IActionResult> Details(int id)
         {
             var post = await _postService.GetById(id);
@@ -56,6 +77,13 @@ namespace CMS.Backend.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreatePostDTO model, IFormFile uploadImage)
         {
+            if (!ModelState.IsValid)
+            {
+                var categories = await _categoryService.GetAll();
+                ViewBag.CategoryList = new SelectList(categories, "Id", "Name", model.CategoryId);
+                return View(model);
+            }
+
             if (uploadImage != null && uploadImage.Length > 0)
             {
                 string folder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
@@ -72,15 +100,9 @@ namespace CMS.Backend.Controllers
                 model.ImageUrl = "/uploads/" + fileName;
             }
 
-            if (!ModelState.IsValid)
-            {
-                var categories = await _categoryService.GetAll();
-                ViewBag.CategoryList = new SelectList(categories, "Id", "Name", model.CategoryId);
-                return View(model);
-            }
-
             await _postService.Create(model);
             await _notificationService.NotifyEntityChanged("Post");
+            TempData["Success"] = "Bài viết đã được tạo thành công.";
             return RedirectToAction("Index");
         }
 
@@ -88,6 +110,7 @@ namespace CMS.Backend.Controllers
         {
             await _postService.Delete(id);
             await _notificationService.NotifyEntityChanged("Post");
+            TempData["Success"] = "Bài viết đã được xóa.";
             return RedirectToAction("Index");
         }
 
@@ -116,6 +139,14 @@ namespace CMS.Backend.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(UpdatePostDTO model, IFormFile uploadImage)
         {
+            if (!ModelState.IsValid)
+            {
+                TempData["Error"] = "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.";
+                var categories = await _categoryService.GetAll();
+                ViewBag.CategoryList = new SelectList(categories, "Id", "Name", model.CategoryId);
+                return View(model);
+            }
+
             if (uploadImage != null && uploadImage.Length > 0)
             {
                 string folder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
@@ -140,15 +171,17 @@ namespace CMS.Backend.Controllers
                 }
             }
 
-            if (!ModelState.IsValid)
+            var updated = await _postService.Update(model.Id, model);
+            if (!updated)
             {
+                TempData["Error"] = "Không thể cập nhật bài viết. Vui lòng thử lại.";
                 var categories = await _categoryService.GetAll();
                 ViewBag.CategoryList = new SelectList(categories, "Id", "Name", model.CategoryId);
                 return View(model);
             }
 
-            await _postService.Update(model.Id, model);
             await _notificationService.NotifyEntityChanged("Post");
+            TempData["Success"] = "Bài viết đã được cập nhật.";
             return RedirectToAction("Index");
         }
     }

@@ -1,6 +1,6 @@
 import React, { type MouseEvent } from 'react';
 import { useCart } from '../context/CartContext';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { getImageUrl } from '../utils/apiUtils';
 import type { Product } from '../types/product';
 
@@ -10,8 +10,7 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
     const { addToCart } = useCart();
-    const navigate = useNavigate();
-    
+
     const formatCurrency = (value: number): string => {
         return new Intl.NumberFormat('vi-VN', {
             style: 'currency',
@@ -21,13 +20,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
 
     const imageUrl = getImageUrl(item.imageUrl);
 
-    const handleDirectBuy = (e: MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        addToCart(item);
-        navigate('/checkout');
-    };
-
     const handleAddToCart = (e: MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
@@ -35,49 +27,38 @@ const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
     };
 
     return (
-        <div className="group cursor-pointer pb-md flex flex-col h-full">
-            <div className="relative aspect-[4/5] bg-surface-container mb-sm overflow-hidden">
-                <Link to={`/product/${item.id}`}>
-                    <img 
+        <article className="bg-surface-container-lowest rounded-lg overflow-hidden shadow-[0px_4px_20px_rgba(171,44,93,0.02)] transition-shadow duration-300 hover:shadow-[0px_8px_30px_rgba(171,44,93,0.08)] group flex flex-col">
+            <Link to={`/product/${item.id}`} className="no-underline">
+                <div className="relative w-full h-80 overflow-hidden bg-surface-variant">
+                    <img
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                         src={imageUrl}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
                         alt={item.name}
                     />
+                    {item.stockQuantity <= 5 && (
+                        <div className="absolute top-2 left-2 bg-primary/90 text-on-primary px-2 py-1 rounded text-[10px] font-label-sm uppercase tracking-widest">
+                            Only {item.stockQuantity} left
+                        </div>
+                    )}
+                </div>
+            </Link>
+            <div className="p-4 flex flex-col items-center text-center flex-grow">
+                <Link to={`/product/${item.id}`} className="no-underline">
+                    <h3 className="font-headline-sm text-headline-sm text-on-surface mb-1">{item.name}</h3>
                 </Link>
-                
-                {item.stockQuantity <= 5 && (
-                    <div className="absolute top-xs left-xs bg-transparent border border-primary px-2 py-1">
-                        <span className="font-label-sm text-[10px] text-primary uppercase tracking-widest font-medium">Limited / {item.stockQuantity} Left</span>
-                    </div>
-                )}
-
-                <div className="absolute bottom-0 left-0 w-full p-sm flex flex-col gap-xs bg-gradient-to-t from-black/50 to-transparent opacity-0 translate-y-[10px] group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ease-out">
-                    <div className="flex gap-xs">
-                        <Link to={`/product/${item.id}`} className="flex-1 bg-surface text-primary py-2 font-label-sm text-[10px] text-center uppercase tracking-widest border border-transparent text-decoration-none btn-luxury btn-overlay-luxury">Quick View</Link>
-                        <button 
-                            className="bg-primary text-on-primary p-2 flex items-center justify-center border border-primary outline-none btn-luxury btn-overlay-luxury"
-                            onClick={handleAddToCart}
-                        >
-                            <span className="material-symbols-outlined text-[18px]">add_shopping_cart</span>
-                        </button>
-                    </div>
-                    <button 
-                        onClick={handleDirectBuy}
-                        className="w-full bg-white text-black py-2 font-label-sm text-[10px] uppercase tracking-widest border-0 outline-none btn-luxury btn-overlay-luxury"
-                    >
-                        Direct Buy
-                    </button>
-                </div>
+                <p className="font-body-md text-body-md text-on-surface-variant mb-4 flex-grow">
+                    {item.description ? item.description.substring(0, 60) + (item.description.length > 60 ? '...' : '') : 'Premium floral arrangement'}
+                </p>
+                <p className="font-headline-sm text-headline-sm text-primary mb-4">{formatCurrency(item.price)}</p>
+                <button
+                    onClick={handleAddToCart}
+                    className="w-full px-6 py-3 bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:bg-primary/90 transition-colors shadow-sm focus:ring-2 focus:ring-offset-2 focus:ring-primary flex items-center justify-center gap-2 border-0 cursor-pointer"
+                >
+                    <span className="material-symbols-outlined text-[18px]">shopping_bag</span>
+                    Add to Cart
+                </button>
             </div>
-            <div className="flex justify-between items-start mt-2">
-                <div className="space-y-1">
-                    <h3 className="font-body-md text-sm text-primary font-bold uppercase tracking-tight leading-none truncate w-48">
-                        <Link to={`/product/${item.id}`} className="text-primary text-decoration-none">{item.name}</Link>
-                    </h3>
-                    <p className="font-body-md text-sm text-secondary">{formatCurrency(item.price)}</p>
-                </div>
-            </div>
-        </div>
+        </article>
     );
 }
 

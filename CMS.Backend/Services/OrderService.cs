@@ -2,6 +2,7 @@ using CMS.Data;
 using CMS.Data.Entities;
 using CMS.Backend.Services.Interfaces;
 using CMS.Backend.Models.DTOs;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,33 +16,73 @@ namespace CMS.Backend.Services
     {
         private readonly IApplicationDbContext _context;
         private readonly ILogger<OrderService> _logger;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public OrderService(IApplicationDbContext context, ILogger<OrderService> logger)
+        public OrderService(IApplicationDbContext context, ILogger<OrderService> logger, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        private async Task<int?> GetCurrentCustomerId()
+        {
+            var httpContext = _httpContextAccessor.HttpContext;
+            if (httpContext == null) return null;
+
+            var authType = httpContext.User.FindFirst("AuthType")?.Value;
+            if (authType != "Customer") return null;
+
+            var email = httpContext.User.Identity?.Name;
+            if (string.IsNullOrEmpty(email)) return null;
+
+            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Email == email);
+            return customer?.Id;
+        }
+
+        private IQueryable<Order> ApplyOwnershipFilter(IQueryable<Order> query)
+        {
+            var httpContext = _httpContextAccessor.HttpContext;
+            if (httpContext == null) return query;
+
+            var authType = httpContext.User.FindFirst("AuthType")?.Value;
+            if (authType == "Customer")
+            {
+                var email = httpContext.User.Identity?.Name;
+                if (!string.IsNullOrEmpty(email))
+                {
+                    query = query.Where(o => o.Customer != null && o.Customer.Email == email);
+                }
+            }
+
+            return query;
         }
 
         public async Task<IEnumerable<OrderDTO>> GetAll()
         {
-            var orders = await _context.Orders
+            IQueryable<Order> query = _context.Orders
                 .Include(o => o.Customer)
                 .Include(o => o.OrderDetails)
                     .ThenInclude(od => od.Product)
-                .OrderByDescending(o => o.OrderDate)
-                .ToListAsync();
+                .OrderByDescending(o => o.OrderDate);
 
+            query = ApplyOwnershipFilter(query);
+
+            var orders = await query.ToListAsync();
             return orders.Select(o => o.ToDTO());
         }
 
         public async Task<OrderDTO?> GetDetail(int id)
         {
-            var order = await _context.Orders
+            IQueryable<Order> query = _context.Orders
                 .Include(o => o.Customer)
                 .Include(o => o.OrderDetails)
                     .ThenInclude(od => od.Product)
-                .FirstOrDefaultAsync(o => o.Id == id);
+                .Where(o => o.Id == id);
 
+            query = ApplyOwnershipFilter(query);
+
+            var order = await query.FirstOrDefaultAsync();
             return order?.ToDTO();
         }
 
@@ -70,12 +111,23 @@ namespace CMS.Backend.Services
                         .ToListAsync();
                     var productDict = products.ToDictionary(p => p.Id);
 
-                    newOrder.OrderDetails = items.Select(item =>
+                    foreach (var item in items)
                     {
                         if (!productDict.TryGetValue(item.ProductId, out var product))
                         {
                             throw new KeyNotFoundException($"Sản phẩm không tồn tại");
                         }
+
+                        if (product.StockQuantity < item.Quantity)
+                        {
+                            return (false, $"Sản phẩm '{product.Name}' không đủ hàng (còn: {product.StockQuantity}, yêu cầu: {item.Quantity})", 0);
+                        }
+                    }
+
+                    newOrder.OrderDetails = items.Select(item =>
+                    {
+                        var product = productDict[item.ProductId];
+                        product.StockQuantity -= item.Quantity;
 
                         return new OrderDetail
                         {

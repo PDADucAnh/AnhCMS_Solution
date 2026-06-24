@@ -56,6 +56,9 @@ namespace CMS.Backend.Services
 
             existingUser.Username = dto.Username;
             existingUser.FullName = dto.FullName;
+            existingUser.Email = dto.Email;
+            existingUser.Phone = dto.Phone;
+            existingUser.Address = dto.Address;
             existingUser.Role = dto.Role;
 
             if (!string.IsNullOrEmpty(dto.Password))

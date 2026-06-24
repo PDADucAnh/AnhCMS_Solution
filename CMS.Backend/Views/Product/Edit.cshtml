@@ -36,7 +36,7 @@
                 @if (!string.IsNullOrEmpty(Model.ImageUrl))
                 {
                     <div class="mb-2">
-                        <img src="@Model.ImageUrl" class="h-20 w-auto border border-outline-variant object-cover grayscale" />
+                        <img src="@Model.ImageUrl" class="h-20 w-auto border border-outline-variant object-cover" />
                     </div>
                 }
                 <input type="file" name="uploadImage" class="w-full text-label-sm uppercase tracking-widest file:mr-lg file:py-2 file:px-lg file:border-0 file:bg-primary file:text-on-primary hover:file:bg-neutral-800" />
@@ -47,7 +47,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-xl">
             <div class="space-y-md">
                 <label class="text-label-sm uppercase tracking-widest text-secondary font-bold">Acquisition Value (VNĐ)</label>
-                <input asp-for="Price" type="number" step="1000" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-lg py-3 font-bold serif text-xl" required />
+                <input asp-for="Price" type="text" inputmode="numeric" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-lg py-3 font-bold serif text-xl" required />
                 <span asp-validation-for="Price" class="text-error text-xs uppercase tracking-widest"></span>
             </div>
             <div class="space-y-md">
@@ -76,4 +76,22 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function formatPriceInput(input) {
+            let val = input.value.replace(/\s/g, '');
+            if (val) {
+                input.value = val.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            var priceInput = document.getElementById('Price');
+            if (priceInput) {
+                formatPriceInput(priceInput);
+                priceInput.addEventListener('input', function() { formatPriceInput(this); });
+                priceInput.closest('form').addEventListener('submit', function() {
+                    priceInput.value = priceInput.value.replace(/\s/g, '');
+                });
+            }
+        });
+    </script>
 }

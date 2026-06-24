@@ -3,263 +3,386 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - AnhCMS.Fashion Admin</title>
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+    <title>@ViewData["Title"] - AnhCMS Admin</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
     <!-- Material Symbols -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <!-- Design System Configuration -->
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
                     "colors": {
-                        "surface-container-low": "#f3f3f3",
-                        "on-tertiary-fixed": "#1b1b1b",
-                        "surface-bright": "#f9f9f9",
-                        "on-primary-fixed-variant": "#474747",
-                        "error-container": "#ffdad6",
-                        "primary-container": "#1b1b1b",
-                        "on-secondary-container": "#616363",
-                        "primary-fixed-dim": "#c6c6c6",
-                        "surface-dim": "#dadada",
-                        "tertiary-fixed": "#e2e2e2",
-                        "secondary-container": "#dfe0e0",
-                        "primary": "#000000",
-                        "surface-container": "#eeeeee",
-                        "on-surface-variant": "#4c4546",
-                        "on-error": "#ffffff",
-                        "surface": "#f9f9f9",
-                        "secondary": "#5d5f5f",
-                        "surface-tint": "#5e5e5e",
-                        "surface-variant": "#e2e2e2",
-                        "tertiary-container": "#1b1b1b",
-                        "surface-container-highest": "#e2e2e2",
-                        "inverse-primary": "#c6c6c6",
-                        "on-tertiary-container": "#848484",
-                        "on-secondary-fixed-variant": "#454747",
-                        "outline": "#7e7576",
-                        "outline-variant": "#cfc4c5",
-                        "on-surface": "#1a1c1c",
-                        "on-secondary-fixed": "#1a1c1c",
-                        "on-tertiary": "#ffffff",
-                        "surface-container-high": "#e8e8e8",
-                        "secondary-fixed-dim": "#c6c6c7",
-                        "on-background": "#1a1c1c",
-                        "on-secondary": "#ffffff",
-                        "background": "#f9f9f9",
-                        "inverse-on-surface": "#f1f1f1",
-                        "on-primary-container": "#848484",
-                        "on-primary-fixed": "#1b1b1b",
-                        "secondary-fixed": "#e2e2e2",
-                        "error": "#ba1a1a",
-                        "tertiary-fixed-dim": "#c6c6c6",
-                        "primary-fixed": "#e2e2e2",
-                        "tertiary": "#000000",
-                        "on-error-container": "#93000a",
-                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#ddbfc5",
+                        "on-primary-fixed": "#3f001b",
+                        "surface-container-highest": "#e4e2e1",
+                        "primary-fixed": "#ffd9e1",
+                        "secondary": "#6b5a60",
+                        "surface-tint": "#ab2c5d",
+                        "on-primary-container": "#5e002b",
                         "on-primary": "#ffffff",
-                        "inverse-surface": "#2f3131",
-                        "on-tertiary-fixed-variant": "#474747"
+                        "on-tertiary-fixed": "#1a1c1c",
+                        "on-secondary": "#ffffff",
+                        "inverse-primary": "#ffb1c5",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f6f3f2",
+                        "secondary-fixed": "#f4dce4",
+                        "surface-bright": "#fbf9f8",
+                        "tertiary-fixed": "#e2e2e2",
+                        "surface-dim": "#dcd9d9",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#524249",
+                        "surface-variant": "#e4e2e1",
+                        "inverse-surface": "#303030",
+                        "surface": "#fbf9f8",
+                        "primary-fixed-dim": "#ffb1c5",
+                        "surface-container-high": "#eae8e7",
+                        "tertiary": "#5d5f5f",
+                        "tertiary-container": "#939494",
+                        "inverse-on-surface": "#f3f0f0",
+                        "tertiary-fixed-dim": "#c6c6c7",
+                        "on-error": "#ffffff",
+                        "primary": "#ab2c5d",
+                        "on-surface-variant": "#574146",
+                        "secondary-container": "#f4dce4",
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed": "#25181e",
+                        "primary-container": "#f06292",
+                        "secondary-fixed-dim": "#d7c1c8",
+                        "error": "#ba1a1a",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-container": "#716066",
+                        "background": "#fbf9f8",
+                        "surface-container": "#f0eded",
+                        "on-primary-fixed-variant": "#8b0e45",
+                        "outline": "#8a7176",
+                        "on-background": "#1b1c1c",
+                        "on-surface": "#1b1c1c",
+                        "on-tertiary-fixed-variant": "#454747",
+                        "on-tertiary-container": "#2b2d2d"
                     },
                     "borderRadius": {
-                        "DEFAULT": "0px",
-                        "lg": "0px",
-                        "xl": "0px",
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
                         "full": "9999px"
                     },
                     "spacing": {
+                        "stack-lg": "48px",
+                        "stack-md": "24px",
+                        "container-max": "1280px",
+                        "margin-desktop": "40px",
+                        "margin-mobile": "20px",
+                        "stack-sm": "12px",
+                        "gutter": "24px",
+                        "base": "8px",
                         "xl": "4rem",
                         "lg": "2rem",
-                        "base": "4px",
-                        "gutter": "1.5rem",
-                        "xs": "0.5rem",
-                        "margin": "2rem",
                         "md": "1.5rem",
-                        "sm": "1rem"
+                        "sm": "1rem",
+                        "xs": "0.5rem",
+                        "margin": "2rem"
                     },
                     "fontFamily": {
-                        "label-sm": ["Inter"],
-                        "display-xl": ["Playfair Display"],
-                        "body-md": ["Inter"],
-                        "headline-lg": ["Playfair Display"],
-                        "headline-sm": ["Inter"],
-                        "body-lg": ["Inter"],
-                        "display-xl-mobile": ["Playfair Display"]
+                        "display-lg-mobile": ["Playfair Display"],
+                        "headline-md": ["Playfair Display"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "headline-sm": ["Playfair Display"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "display-lg": ["Playfair Display"]
+                    },
+                    "fontSize": {
+                        "display-lg-mobile": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "headline-md": ["32px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "1.4", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-sm": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "display-lg": ["48px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }]
                     }
                 }
             }
-        };
+        }
     </script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f9f9f9; }
-        .serif { font-family: 'Playfair Display', serif; }
+        .petal-shadow-1 {
+            box-shadow: 0 4px 20px rgba(171, 44, 93, 0.04);
+        }
+        .petal-shadow-2 {
+            box-shadow: 0 8px 30px rgba(171, 44, 93, 0.08);
+        }
+        .ambient-bg {
+            background-image: radial-gradient(circle at top right, rgba(255, 217, 225, 0.3) 0%, transparent 40%),
+                              radial-gradient(circle at bottom left, rgba(244, 220, 228, 0.4) 0%, transparent 50%);
+        }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .sidebar-active { background-color: #000000; color: #ffffff !important; }
-        .sidebar-active span { color: #ffffff !important; }
-        .table-row-hover:hover { background-color: #f3f3f3; }
-        .chart-gradient { background: linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0) 100%); }
-        /* Fix for ASP.NET MVC Validation */
         .field-validation-error { color: #ba1a1a; font-size: 0.875rem; }
         .input-validation-error { border-color: #ba1a1a !important; }
+        .serif { font-family: 'Playfair Display', serif; }
     </style>
 </head>
-<body class="text-on-background">
-    <div class="flex min-h-screen">
-        <!-- Sidebar Navigation -->
-        <aside class="w-72 bg-surface border-r border-outline-variant flex flex-col fixed h-full z-50">
-            <div class="p-lg flex items-center gap-4 border-b border-outline-variant">
-                <div class="size-10 bg-primary flex items-center justify-center">
-                    <svg class="text-on-primary size-6" fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z" fill="currentColor"></path>
-                    </svg>
-                </div>
-                <div>
-                    <h1 class="font-headline-lg text-lg leading-none uppercase tracking-widest font-bold">AnhCMS</h1>
-                    <p class="text-label-sm text-secondary uppercase text-[10px] tracking-[0.2em] mt-1">Fashion Admin</p>
+<body class="bg-background text-on-background font-body-md text-body-md ambient-bg min-h-screen flex">
+    <!-- Sidebar Navigation -->
+    <nav class="fixed left-0 top-0 h-full flex flex-col p-stack-sm border-r border-outline-variant/20 bg-surface-container-low h-screen w-64 z-20">
+        <div class="px-base py-stack-md flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary text-lg font-bold">
+                <span class="material-symbols-outlined">local_florist</span>
+            </div>
+            <div>
+                <h1 class="font-headline-sm text-headline-sm text-primary tracking-tight leading-tight">Admin Panel</h1>
+                <p class="font-label-sm text-label-sm text-on-surface-variant">Management Suite</p>
+            </div>
+        </div>
+
+        <div class="px-base mb-stack-md">
+            <a asp-controller="Product" asp-action="Create" class="w-full flex items-center justify-center gap-2 bg-primary text-on-primary py-3 rounded-lg font-label-md text-label-md petal-shadow-1 hover:bg-primary/90 transition-colors no-underline">
+                <span class="material-symbols-outlined text-[20px]">add</span>
+                Add New Arrangement
+            </a>
+        </div>
+
+        <div class="flex-1 overflow-y-auto space-y-1 px-base no-scrollbar">
+            @{
+                var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+            }
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md @(controller == "Home" ? "text-primary bg-secondary-container" : "text-on-surface-variant hover:text-primary hover:bg-primary-container/20") transition-all duration-200 no-underline"
+               asp-controller="Home" asp-action="Index">
+                <span class="material-symbols-outlined @(controller == "Home" ? "text-primary" : "")">dashboard</span>
+                Dashboard
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md @(controller == "Product" ? "text-primary bg-secondary-container" : "text-on-surface-variant hover:text-primary hover:bg-primary-container/20") transition-all duration-200 no-underline"
+               asp-controller="Product" asp-action="Index">
+                <span class="material-symbols-outlined @(controller == "Product" ? "text-primary" : "")">local_florist</span>
+                Inventory
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md @(controller == "Order" ? "text-primary bg-secondary-container" : "text-on-surface-variant hover:text-primary hover:bg-primary-container/20") transition-all duration-200 no-underline"
+               asp-controller="Order" asp-action="Index">
+                <span class="material-symbols-outlined @(controller == "Order" ? "" : "")" style="@(controller == "Order" ? "font-variation-settings: 'FILL' 1;" : "")">shopping_cart</span>
+                Orders
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md @(controller == "Customer" ? "text-primary bg-secondary-container" : "text-on-surface-variant hover:text-primary hover:bg-primary-container/20") transition-all duration-200 no-underline"
+               asp-controller="Customer" asp-action="Index">
+                <span class="material-symbols-outlined @(controller == "Customer" ? "text-primary" : "")">group</span>
+                Customers
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md text-on-surface-variant hover:text-primary hover:bg-primary-container/20 transition-all duration-200 no-underline"
+               href="#">
+                <span class="material-symbols-outlined">bar_chart</span>
+                Analytics
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md text-on-surface-variant hover:text-primary hover:bg-primary-container/20 transition-all duration-200 no-underline"
+               href="#">
+                <span class="material-symbols-outlined">campaign</span>
+                Marketing
+            </a>
+
+            <div class="pt-4 pb-2 px-4">
+                <p class="text-[10px] text-on-surface-variant uppercase tracking-[0.2em] font-medium">Management</p>
+            </div>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md @(controller == "CategoryProduct" ? "text-primary bg-secondary-container" : "text-on-surface-variant hover:text-primary hover:bg-primary-container/20") transition-all duration-200 no-underline"
+               asp-controller="CategoryProduct" asp-action="Index">
+                <span class="material-symbols-outlined @(controller == "CategoryProduct" ? "text-primary" : "")">category</span>
+                Product Categories
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md @(controller == "Category" ? "text-primary bg-secondary-container" : "text-on-surface-variant hover:text-primary hover:bg-primary-container/20") transition-all duration-200 no-underline"
+               asp-controller="Category" asp-action="Index">
+                <span class="material-symbols-outlined @(controller == "Category" ? "text-primary" : "")">grid_view</span>
+                Blog Categories
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md @(controller == "Post" ? "text-primary bg-secondary-container" : "text-on-surface-variant hover:text-primary hover:bg-primary-container/20") transition-all duration-200 no-underline"
+               asp-controller="Post" asp-action="Index">
+                <span class="material-symbols-outlined @(controller == "Post" ? "text-primary" : "")">article</span>
+                Blog Posts
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md @(controller == "User" ? "text-primary bg-secondary-container" : "text-on-surface-variant hover:text-primary hover:bg-primary-container/20") transition-all duration-200 no-underline"
+               asp-controller="User" asp-action="Index">
+                <span class="material-symbols-outlined @(controller == "User" ? "text-primary" : "")">manage_accounts</span>
+                Admin Users
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md @(controller == "OrderDetail" ? "text-primary bg-secondary-container" : "text-on-surface-variant hover:text-primary hover:bg-primary-container/20") transition-all duration-200 no-underline"
+               asp-controller="OrderDetail" asp-action="Index">
+                <span class="material-symbols-outlined @(controller == "OrderDetail" ? "text-primary" : "")">receipt_long</span>
+                Order Details
+            </a>
+        </div>
+
+        <div class="mt-auto px-base pt-stack-md border-t border-outline-variant/20 space-y-1">
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md text-on-surface-variant hover:text-primary hover:bg-primary-container/20 transition-all duration-200 no-underline" href="#">
+                <span class="material-symbols-outlined">help</span>
+                Help Center
+            </a>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md text-on-surface-variant hover:text-primary hover:bg-primary-container/20 transition-all duration-200 no-underline" asp-controller="Account" asp-action="Logout">
+                    <span class="material-symbols-outlined">logout</span>
+                    Log Out
+                </a>
+            }
+        </div>
+    </nav>
+
+    <!-- Main Content Canvas -->
+    <main class="ml-64 flex-1 flex flex-col min-h-screen">
+        <!-- Top Header -->
+        <header class="flex justify-between items-center px-margin-desktop w-full h-16 shadow-sm bg-surface">
+            <div class="md:hidden font-headline-sm text-headline-sm text-primary">AnhCMS Admin</div>
+            <div class="hidden md:block"></div>
+
+            <div class="hidden md:flex flex-1 max-w-md mx-8">
+                <div class="relative w-full">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+                    <input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant/30 rounded-full focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary font-body-md text-body-md text-on-surface transition-colors placeholder:text-on-surface-variant/70" placeholder="Search orders..." type="text" />
                 </div>
             </div>
-            <nav class="flex-1 px-sm py-lg space-y-2 overflow-y-auto no-scrollbar">
-                <a class="flex items-center gap-3 px-md py-3 @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "sidebar-active" : "text-on-surface hover:bg-surface-container transition-colors group")" 
-                   asp-controller="Home" asp-action="Index">
-                    <span class="material-symbols-outlined @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "" : "text-secondary group-hover:text-primary transition-colors")">house</span>
-                    <span class="text-label-sm uppercase tracking-widest font-semibold">Dashboard</span>
-                </a>
-                
-                <div class="px-md pt-4 pb-2">
-                    <p class="text-[10px] text-secondary uppercase tracking-[0.2em] font-bold">Blog Management</p>
-                </div>
-                <a class="flex items-center gap-3 px-md py-3 @(ViewContext.RouteData.Values["controller"]?.ToString() == "Category" ? "sidebar-active" : "text-on-surface hover:bg-surface-container transition-colors group")" 
-                   asp-controller="Category" asp-action="Index">
-                    <span class="material-symbols-outlined @(ViewContext.RouteData.Values["controller"]?.ToString() == "Category" ? "" : "text-secondary group-hover:text-primary transition-colors")">grid_view</span>
-                    <span class="text-label-sm uppercase tracking-widest">Blog Categories</span>
-                </a>
-                <a class="flex items-center gap-3 px-md py-3 @(ViewContext.RouteData.Values["controller"]?.ToString() == "Post" ? "sidebar-active" : "text-on-surface hover:bg-surface-container transition-colors group")" 
-                   asp-controller="Post" asp-action="Index">
-                    <span class="material-symbols-outlined @(ViewContext.RouteData.Values["controller"]?.ToString() == "Post" ? "" : "text-secondary group-hover:text-primary transition-colors")">article</span>
-                    <span class="text-label-sm uppercase tracking-widest">Blog Posts</span>
-                </a>
 
-                <div class="px-md pt-4 pb-2">
-                    <p class="text-[10px] text-secondary uppercase tracking-[0.2em] font-bold">Shop Management</p>
-                </div>
-                <a class="flex items-center gap-3 px-md py-3 @(ViewContext.RouteData.Values["controller"]?.ToString() == "CategoryProduct" ? "sidebar-active" : "text-on-surface hover:bg-surface-container transition-colors group")" 
-                   asp-controller="CategoryProduct" asp-action="Index">
-                    <span class="material-symbols-outlined @(ViewContext.RouteData.Values["controller"]?.ToString() == "CategoryProduct" ? "" : "text-secondary group-hover:text-primary transition-colors")">category</span>
-                    <span class="text-label-sm uppercase tracking-widest">Product Categories</span>
-                </a>
-                <a class="flex items-center gap-3 px-md py-3 @(ViewContext.RouteData.Values["controller"]?.ToString() == "Product" ? "sidebar-active" : "text-on-surface hover:bg-surface-container transition-colors group")" 
-                   asp-controller="Product" asp-action="Index">
-                    <span class="material-symbols-outlined @(ViewContext.RouteData.Values["controller"]?.ToString() == "Product" ? "" : "text-secondary group-hover:text-primary transition-colors")">package</span>
-                    <span class="text-label-sm uppercase tracking-widest">Products</span>
-                </a>
-                <a class="flex items-center gap-3 px-md py-3 @(ViewContext.RouteData.Values["controller"]?.ToString() == "Customer" ? "sidebar-active" : "text-on-surface hover:bg-surface-container transition-colors group")" 
-                   asp-controller="Customer" asp-action="Index">
-                    <span class="material-symbols-outlined @(ViewContext.RouteData.Values["controller"]?.ToString() == "Customer" ? "" : "text-secondary group-hover:text-primary transition-colors")">group</span>
-                    <span class="text-label-sm uppercase tracking-widest">Customers</span>
-                </a>
-                <a class="flex items-center gap-3 px-md py-3 @(ViewContext.RouteData.Values["controller"]?.ToString() == "Order" ? "sidebar-active" : "text-on-surface hover:bg-surface-container transition-colors group")" 
-                   asp-controller="Order" asp-action="Index">
-                    <span class="material-symbols-outlined @(ViewContext.RouteData.Values["controller"]?.ToString() == "Order" ? "" : "text-secondary group-hover:text-primary transition-colors")">shopping_bag</span>
-                    <span class="text-label-sm uppercase tracking-widest">Orders</span>
-                </a>
-                <a class="flex items-center gap-3 px-md py-3 @(ViewContext.RouteData.Values["controller"]?.ToString() == "OrderDetail" ? "sidebar-active" : "text-on-surface hover:bg-surface-container transition-colors group")" 
-                   asp-controller="OrderDetail" asp-action="Index">
-                    <span class="material-symbols-outlined @(ViewContext.RouteData.Values["controller"]?.ToString() == "OrderDetail" ? "" : "text-secondary group-hover:text-primary transition-colors")">receipt_long</span>
-                    <span class="text-label-sm uppercase tracking-widest">Order Details</span>
-                </a>
-
-                <div class="px-md pt-4 pb-2">
-                    <p class="text-[10px] text-secondary uppercase tracking-[0.2em] font-bold">System</p>
-                </div>
-                <a class="flex items-center gap-3 px-md py-3 @(ViewContext.RouteData.Values["controller"]?.ToString() == "User" ? "sidebar-active" : "text-on-surface hover:bg-surface-container transition-colors group")" 
-                   asp-controller="User" asp-action="Index">
-                    <span class="material-symbols-outlined @(ViewContext.RouteData.Values["controller"]?.ToString() == "User" ? "" : "text-secondary group-hover:text-primary transition-colors")">manage_accounts</span>
-                    <span class="text-label-sm uppercase tracking-widest">Admin Users</span>
-                </a>
-            </nav>
-            <div class="p-lg border-t border-outline-variant space-y-4">
+            <div class="flex items-center gap-4">
+                <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors text-on-surface-variant border-0 bg-transparent cursor-pointer">
+                    <span class="material-symbols-outlined">notifications</span>
+                </button>
+                <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors text-on-surface-variant border-0 bg-transparent cursor-pointer">
+                    <span class="material-symbols-outlined">settings</span>
+                </button>
+                <div class="w-px h-6 bg-outline-variant/30 mx-2"></div>
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <div class="flex items-center gap-3 px-md py-2">
-                        <div class="size-8 bg-surface-container-highest flex items-center justify-center">
-                            <span class="material-symbols-outlined text-sm">person</span>
+                    <div class="flex items-center gap-2 hover:bg-surface-container-low p-1 pr-3 rounded-full transition-colors border border-outline-variant/20">
+                        <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-primary font-headline-sm text-sm font-bold">
+                            @(User.FindFirst("FullName")?.Value?.Length >= 2 ? User.FindFirst("FullName")?.Value?.Substring(0, 2).ToUpper() : "AD")
                         </div>
-                        <div class="flex flex-col">
-                            <span class="text-xs font-bold uppercase tracking-tighter">@User.FindFirst("FullName")?.Value</span>
-                            <span class="text-[10px] text-secondary uppercase">@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</span>
-                        </div>
+                        <span class="font-label-md text-label-md text-on-surface hidden sm:block">@User.FindFirst("FullName")?.Value</span>
                     </div>
-                    <a class="flex items-center gap-3 px-md py-2 text-error hover:bg-error-container transition-colors group" asp-controller="Account" asp-action="Logout">
-                        <span class="material-symbols-outlined">logout</span>
-                        <span class="text-label-sm uppercase tracking-widest">Logout</span>
-                    </a>
                 }
             </div>
-        </aside>
+        </header>
 
-        <!-- Main Content -->
-        <main class="flex-1 ml-72">
-            <!-- Top Header -->
-            <header class="h-20 bg-surface-container-lowest border-b border-outline-variant flex items-center justify-between px-xl sticky top-0 z-40">
-                <div class="flex items-center gap-lg">
-                    <h2 class="serif text-headline-lg">@ViewData["Title"]</h2>
-                    <div class="relative hidden lg:block">
-                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-lg">search</span>
-                        <input class="bg-surface-container-low border-none focus:ring-1 focus:ring-primary text-label-sm uppercase px-10 py-2 w-64 placeholder:text-outline" placeholder="SEARCH ASSETS..." type="text" />
-                    </div>
+        <!-- Page Content -->
+        <div class="p-margin-desktop flex-1 max-w-container-max mx-auto w-full">
+            @if (TempData["Success"] != null)
+            {
+                <div class="mb-stack-md p-4 bg-[#E8F5E9] border border-[#A5D6A7]/50 text-[#2E7D32] font-label-md text-label-md rounded-lg flex items-center gap-3">
+                    <span class="material-symbols-outlined text-lg">check_circle</span>
+                    @TempData["Success"]
                 </div>
-                <div class="flex items-center gap-md">
-                    <button class="relative p-2 hover:bg-surface-container transition-colors">
-                        <span class="material-symbols-outlined">notifications</span>
-                        <span class="absolute top-2 right-2 size-1.5 bg-primary rounded-full"></span>
-                    </button>
-                    <button class="p-2 hover:bg-surface-container transition-colors">
-                        <span class="material-symbols-outlined">mail</span>
-                    </button>
-                    <div class="w-px h-6 bg-outline-variant mx-2"></div>
-                    <p class="text-label-sm font-semibold tracking-widest">VI / VND</p>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="mb-stack-md p-4 bg-error-container border border-error/20 text-error font-label-md text-label-md rounded-lg flex items-center gap-3">
+                    <span class="material-symbols-outlined text-lg">error</span>
+                    @TempData["Error"]
                 </div>
-            </header>
+            }
+            @RenderBody()
+        </div>
 
-            <div class="p-xl">
-                @RenderBody()
+        <!-- Footer -->
+        <footer class="border-t border-outline-variant/20 flex flex-col md:flex-row justify-between items-center px-margin-desktop py-6 gap-4 bg-surface-container-lowest">
+            <p class="font-label-sm text-label-sm text-on-surface-variant">&copy; @DateTime.Now.Year AnhCMS. All rights reserved.</p>
+            <div class="flex gap-6">
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors no-underline" href="#">Documentation</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors no-underline" href="#">Support</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors no-underline" href="#">Terms of Service</a>
             </div>
+        </footer>
+    </main>
 
-            <!-- Footer -->
-            <footer class="p-xl border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-md bg-surface">
-                <p class="text-label-sm text-secondary uppercase tracking-widest">© 2024 AnhCMS.Fashion International</p>
-                <div class="flex gap-lg">
-                    <a class="text-label-sm uppercase tracking-widest hover:text-primary transition-colors" href="#">Documentation</a>
-                    <a class="text-label-sm uppercase tracking-widest hover:text-primary transition-colors" href="#">Support</a>
-                    <a class="text-label-sm uppercase tracking-widest hover:text-primary transition-colors" href="#">Terms of Service</a>
-                </div>
-            </footer>
-        </main>
+    <!-- Idle Timeout Modal -->
+    <div id="idle-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/40 backdrop-blur-sm">
+        <div class="bg-surface rounded-2xl petal-shadow-2 p-8 max-w-sm w-full mx-4 text-center animate-in" style="animation: fadeInUp 0.3s ease-out;">
+            <div class="w-14 h-14 rounded-full bg-error-container flex items-center justify-center mx-auto mb-4">
+                <span class="material-symbols-outlined text-error text-3xl">timer_off</span>
+            </div>
+            <h3 class="font-headline-sm text-headline-sm text-on-surface mb-2">Session Expiring</h3>
+            <p class="font-body-md text-body-md text-on-surface-variant mb-1">
+                Your session will expire due to inactivity.
+            </p>
+            <p class="font-body-md text-body-md text-on-surface-variant mb-6">
+                You will be logged out in <strong id="idle-countdown" class="text-error">60</strong> seconds.
+            </p>
+            <div class="flex gap-3 justify-center">
+                <button id="idle-stay-btn"
+                        class="px-6 py-2.5 bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:bg-primary/90 transition-colors border-0 cursor-pointer">
+                    Stay Logged In
+                </button>
+                <a id="idle-logout-btn"
+                   class="px-6 py-2.5 bg-transparent text-on-surface-variant rounded-lg font-label-md text-label-md border border-outline-variant hover:bg-surface-container-low transition-colors no-underline"
+                   asp-controller="Account" asp-action="Logout">
+                    Log Out Now
+                </a>
+            </div>
+        </div>
     </div>
 
-    <!-- Scripts -->
+    <style>
+        @@keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-in { animation: fadeInUp 0.3s ease-out; }
+    </style>
+
+    <script>
+        (function() {
+            // === CONFIG ===
+            const IDLE_TIMEOUT_MS = 15 * 60 * 1000;
+            const COUNTDOWN_SECONDS = 60;
+
+            let idleTimer = null;
+            let countdownTimer = null;
+            let secondsRemaining = COUNTDOWN_SECONDS;
+
+            const modal = document.getElementById('idle-modal');
+            const countdownEl = document.getElementById('idle-countdown');
+            const stayBtn = document.getElementById('idle-stay-btn');
+            const logoutBtn = document.getElementById('idle-logout-btn');
+
+            function resetIdleTimer() {
+                if (idleTimer) clearTimeout(idleTimer);
+                if (modal.classList.contains('hidden')) {
+                    idleTimer = setTimeout(showWarning, IDLE_TIMEOUT_MS);
+                }
+            }
+
+            function showWarning() {
+                modal.classList.remove('hidden');
+                secondsRemaining = COUNTDOWN_SECONDS;
+                countdownEl.textContent = secondsRemaining;
+                countdownTimer = setInterval(function() {
+                    secondsRemaining--;
+                    countdownEl.textContent = secondsRemaining;
+                    if (secondsRemaining <= 0) {
+                        clearInterval(countdownTimer);
+                        window.location.href = logoutBtn.getAttribute('href');
+                    }
+                }, 1000);
+            }
+
+            function stayLoggedIn() {
+                if (countdownTimer) clearInterval(countdownTimer);
+                modal.classList.add('hidden');
+                resetIdleTimer();
+            }
+
+            stayBtn.addEventListener('click', stayLoggedIn);
+
+            ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(function(ev) {
+                document.addEventListener(ev, resetIdleTimer, { passive: true });
+            });
+
+            resetIdleTimer();
+        })();
+    </script>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Table row subtle hover effect logic
-            const rows = document.querySelectorAll('.table-row-hover');
-            rows.forEach(row => {
-                row.addEventListener('mouseenter', () => {
-                    row.style.transform = 'translateX(4px)';
-                    row.style.transition = 'transform 0.3s ease';
-                });
-                row.addEventListener('mouseleave', () => {
-                    row.style.transform = 'translateX(0)';
-                });
-            });
-        });
-    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

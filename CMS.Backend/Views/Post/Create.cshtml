@@ -36,7 +36,7 @@
 
         <div class="space-y-md">
             <label class="text-label-sm uppercase tracking-widest text-secondary font-bold">Narrative Content</label>
-            <textarea asp-for="Content" rows="12" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-lg py-4 text-body-lg leading-relaxed italic serif placeholder:text-outline-variant" placeholder="Compose your editorial masterpiece..."></textarea>
+            <textarea asp-for="Content" id="editor" rows="12" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-lg py-4 text-body-lg leading-relaxed italic serif placeholder:text-outline-variant" placeholder="Compose your editorial masterpiece..."></textarea>
             <span asp-validation-for="Content" class="text-error text-xs uppercase tracking-widest"></span>
         </div>
 
@@ -57,5 +57,31 @@
 </div>
 
 @section Scripts {
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.0.0/classic/ckeditor.js"></script>
+    <script>
+        class UploadAdapter {
+            constructor(loader) { this.loader = loader; }
+            upload() {
+                return this.loader.file.then(file => new Promise((resolve, reject) => {
+                    const data = new FormData();
+                    data.append('upload', file);
+                    fetch('/Post/UploadImage', { method: 'POST', body: data })
+                        .then(r => r.json())
+                        .then(r => { if (r.uploaded) resolve({ default: r.url }); else reject(r.error?.message || 'Upload failed'); })
+                        .catch(reject);
+                }));
+            }
+            abort() {}
+        }
+        function UploadAdapterPlugin(editor) {
+            editor.plugins.get('FileRepository').createUploadAdapter = loader => new UploadAdapter(loader);
+        }
+        ClassicEditor
+            .create(document.querySelector('#editor'), {
+                extraPlugins: [UploadAdapterPlugin],
+                toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|', 'blockQuote', 'insertTable', '|', 'undo', 'redo', 'imageUpload'],
+            })
+            .catch(console.error);
+    </script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

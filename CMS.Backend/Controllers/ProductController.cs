@@ -41,6 +41,13 @@ namespace CMS.Backend.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateProductDTO model, IFormFile uploadImage)
         {
+            if (!ModelState.IsValid)
+            {
+                var categories = await _categoryProductService.GetAll();
+                ViewBag.CategoryProductList = new SelectList(categories, "Id", "Name", model.CategoryProductId);
+                return View(model);
+            }
+
             if (uploadImage != null && uploadImage.Length > 0)
             {
                 string folder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "products");
@@ -57,15 +64,9 @@ namespace CMS.Backend.Controllers
                 model.ImageUrl = "/uploads/products/" + fileName;
             }
 
-            if (!ModelState.IsValid)
-            {
-                var categories = await _categoryProductService.GetAll();
-                ViewBag.CategoryProductList = new SelectList(categories, "Id", "Name", model.CategoryProductId);
-                return View(model);
-            }
-
             await _productService.Create(model);
             await _notificationService.NotifyEntityChanged("Product");
+            TempData["Success"] = "Sản phẩm đã được tạo thành công.";
             return RedirectToAction("Index");
         }
 
@@ -73,6 +74,7 @@ namespace CMS.Backend.Controllers
         {
             await _productService.Delete(id);
             await _notificationService.NotifyEntityChanged("Product");
+            TempData["Success"] = "Sản phẩm đã được xóa.";
             return RedirectToAction("Index");
         }
 
@@ -109,6 +111,14 @@ namespace CMS.Backend.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(UpdateProductDTO model, IFormFile uploadImage)
         {
+            if (!ModelState.IsValid)
+            {
+                TempData["Error"] = "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.";
+                var categories = await _categoryProductService.GetAll();
+                ViewBag.CategoryProductList = new SelectList(categories, "Id", "Name", model.CategoryProductId);
+                return View(model);
+            }
+
             if (uploadImage != null && uploadImage.Length > 0)
             {
                 string folder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "products");
@@ -133,15 +143,17 @@ namespace CMS.Backend.Controllers
                 }
             }
 
-            if (!ModelState.IsValid)
+            var updated = await _productService.Update(model.Id, model);
+            if (!updated)
             {
+                TempData["Error"] = "Không thể cập nhật sản phẩm. Vui lòng thử lại.";
                 var categories = await _categoryProductService.GetAll();
                 ViewBag.CategoryProductList = new SelectList(categories, "Id", "Name", model.CategoryProductId);
                 return View(model);
             }
 
-            await _productService.Update(model.Id, model);
             await _notificationService.NotifyEntityChanged("Product");
+            TempData["Success"] = "Sản phẩm đã được cập nhật.";
             return RedirectToAction("Index");
         }
     }

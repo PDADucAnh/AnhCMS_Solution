@@ -51,7 +51,7 @@ namespace CMS.Backend.Controllers.Api
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateProductDTO dto)
+        public async Task<IActionResult> Create([FromBody] CreateProductDTO dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -62,7 +62,7 @@ namespace CMS.Backend.Controllers.Api
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, UpdateProductDTO dto)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateProductDTO dto)
         {
             if (id != dto.Id)
                 return BadRequest();

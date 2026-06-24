@@ -38,6 +38,7 @@ namespace CMS.Backend.Controllers
 
             await _categoryProductService.Create(model);
             await _notificationService.NotifyEntityChanged("CategoryProduct");
+            TempData["Success"] = "Danh mục sản phẩm đã được tạo thành công.";
             return RedirectToAction("Index");
         }
 
@@ -45,6 +46,7 @@ namespace CMS.Backend.Controllers
         {
             await _categoryProductService.Delete(id);
             await _notificationService.NotifyEntityChanged("CategoryProduct");
+            TempData["Success"] = "Danh mục sản phẩm đã được xóa.";
             return RedirectToAction("Index");
         }
 
@@ -72,6 +74,7 @@ namespace CMS.Backend.Controllers
 
             await _categoryProductService.Update(model.Id, model);
             await _notificationService.NotifyEntityChanged("CategoryProduct");
+            TempData["Success"] = "Danh mục sản phẩm đã được cập nhật.";
             return RedirectToAction("Index");
         }
     }

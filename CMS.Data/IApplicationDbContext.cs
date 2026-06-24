@@ -16,6 +16,7 @@ namespace CMS.Data
         DbSet<Customer> Customers { get; set; }
         DbSet<Order> Orders { get; set; }
         DbSet<OrderDetail> OrderDetails { get; set; }
+        DbSet<RefreshToken> RefreshTokens { get; set; }
 
         EntityEntry Entry(object entity);
         EntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class;

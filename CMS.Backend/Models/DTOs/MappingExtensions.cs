@@ -16,6 +16,9 @@ namespace CMS.Backend.Models.DTOs
                 Id = user.Id,
                 Username = user.Username,
                 FullName = user.FullName,
+                Email = user.Email,
+                Phone = user.Phone,
+                Address = user.Address,
                 Role = user.Role
             };
         }

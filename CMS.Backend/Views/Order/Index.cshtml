@@ -5,70 +5,128 @@
     Layout = "_LayoutAdmin";
 }
 
-<div class="space-y-lg">
-    <div class="flex justify-between items-center">
+<div class="space-y-stack-lg">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-            <h3 class="text-label-sm uppercase tracking-[0.3em] text-secondary">Sales Management</h3>
-            <p class="serif text-3xl font-bold">Recent Acquisitions</p>
+            <h2 class="font-display-lg text-display-lg text-on-background mb-2">Orders Overview</h2>
+            <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Manage and track all incoming floral arrangements, deliveries, and customer requests.</p>
         </div>
-        <a asp-action="Create" class="bg-primary text-on-primary px-lg py-3 text-label-sm uppercase tracking-widest flex items-center gap-2 hover:bg-neutral-800 transition-all">
-            <span class="material-symbols-outlined text-lg">add</span>
-            Manual Order
-        </a>
+        <div class="flex gap-3">
+            <button class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg text-primary font-label-md text-label-md hover:bg-primary-container/10 transition-colors bg-surface">
+                <span class="material-symbols-outlined text-[18px]">download</span>
+                Export CSV
+            </button>
+        </div>
     </div>
 
-    <div class="bg-surface-container-lowest border border-outline-variant overflow-hidden">
+    <!-- Filters & Controls -->
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <div class="flex bg-surface-container-low p-1 rounded-lg border border-outline-variant/20">
+            <button class="px-6 py-2 rounded-md bg-surface text-primary font-label-md text-label-md shadow-sm transition-all">All Orders</button>
+            <button class="px-6 py-2 rounded-md text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all">Pending</button>
+            <button class="px-6 py-2 rounded-md text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all">Shipped</button>
+            <button class="px-6 py-2 rounded-md text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all">Delivered</button>
+        </div>
+        <div class="flex gap-3">
+            <div class="relative">
+                <select class="appearance-none bg-surface border border-outline-variant/40 rounded-lg pl-4 pr-10 py-2 font-label-sm text-label-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer">
+                    <option>Last 7 Days</option>
+                    <option>Last 30 Days</option>
+                    <option>This Month</option>
+                </select>
+                <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[18px] text-on-surface-variant pointer-events-none">expand_more</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="bg-surface rounded-xl border border-outline-variant/30 petal-shadow-1 overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-left">
+            <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr class="border-b border-outline-variant text-label-sm uppercase text-secondary tracking-widest bg-surface-container-low">
-                        <th class="px-lg py-4">Order ID</th>
-                        <th class="px-lg py-4">Customer</th>
-                        <th class="px-lg py-4">Date</th>
-                        <th class="px-lg py-4">Status</th>
-                        <th class="px-lg py-4 text-right">Actions</th>
+                    <tr class="border-b border-outline-variant/20 bg-surface-container-lowest">
+                        <th class="py-4 px-6 font-label-md text-label-md text-on-surface-variant font-medium">Order ID</th>
+                        <th class="py-4 px-6 font-label-md text-label-md text-on-surface-variant font-medium">Customer</th>
+                        <th class="py-4 px-6 font-label-md text-label-md text-on-surface-variant font-medium">Date</th>
+                        <th class="py-4 px-6 font-label-md text-label-md text-on-surface-variant font-medium">Status</th>
+                        <th class="py-4 px-6 font-label-md text-label-md text-on-surface-variant font-medium text-right">Action</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-outline-variant">
+                <tbody class="divide-y divide-outline-variant/10">
                     @foreach (var order in Model)
                     {
-                        <tr class="table-row-hover transition-colors">
-                             <td class="px-lg py-5 font-bold serif">#LX-ORD-@order.Id</td>
-                             <td class="px-lg py-5">
-                                 <div class="flex items-center gap-3">
-                                     <div class="size-8 bg-surface-container-highest flex items-center justify-center font-bold text-[10px]">
-                                         @(order.CustomerName?.Length >= 2 ? order.CustomerName.Substring(0, 2).ToUpper() : "??")
-                                     </div>
-                                     <span class="text-body-md font-semibold">@(order.CustomerName ?? "Unknown")</span>
-                                 </div>
-                             </td>
-                            <td class="px-lg py-5 text-label-sm text-secondary uppercase">@order.OrderDate.ToString("dd MMM yyyy HH:mm")</td>
-                            <td class="px-lg py-5">
+                        <tr class="hover:bg-surface-container-low/50 transition-colors group">
+                            <td class="py-4 px-6 font-label-md text-label-md text-primary">#ORD-@order.Id</td>
+                            <td class="py-4 px-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-primary font-headline-sm text-headline-sm text-[14px] font-bold">
+                                        @(order.CustomerName?.Length >= 2 ? order.CustomerName.Substring(0, 2).ToUpper() : "??")
+                                    </div>
+                                    <span class="font-body-md text-body-md font-medium text-on-surface">@(order.CustomerName ?? "Unknown")</span>
+                                </div>
+                            </td>
+                            <td class="py-4 px-6 font-body-md text-body-md text-on-surface-variant">@order.OrderDate.ToString("MMM dd, yyyy")</td>
+                            <td class="py-4 px-6">
                                 @switch (order.Status)
                                 {
                                     case OrderStatus.Pending:
-                                        <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 border border-outline bg-surface-container-low text-secondary">Processing</span>
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-variant text-on-surface-variant font-label-sm text-label-sm border border-outline-variant/30">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                                            Pending
+                                        </span>
                                         break;
                                     case OrderStatus.Shipping:
-                                        <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 border border-primary text-primary">Shipped</span>
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#E3F2FD] text-[#1565C0] font-label-sm text-label-sm border border-[#90CAF9]/50">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-[#1E88E5]"></span>
+                                            Shipped
+                                        </span>
                                         break;
                                     case OrderStatus.Completed:
-                                        <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 bg-primary text-on-primary">Completed</span>
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#E8F5E9] text-[#2E7D32] font-label-sm text-label-sm border border-[#A5D6A7]/50">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-[#43A047]"></span>
+                                            Delivered
+                                        </span>
                                         break;
                                     default:
-                                        <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 border border-outline text-secondary">Unknown</span>
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-variant text-on-surface-variant font-label-sm text-label-sm border border-outline-variant/30">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                                            Unknown
+                                        </span>
                                         break;
                                 }
                             </td>
-                            <td class="px-lg py-5 text-right space-x-4">
-                                <a asp-action="Details" asp-route-id="@order.Id" class="text-label-sm uppercase tracking-widest font-bold border-b border-primary pb-0.5">Details</a>
-                                <a asp-action="Edit" asp-route-id="@order.Id" class="text-label-sm uppercase tracking-widest font-bold text-secondary">Edit</a>
-                                <a asp-action="Delete" asp-route-id="@order.Id" class="text-label-sm uppercase tracking-widest font-bold text-error" onclick="return confirm('Delete this order?')">Delete</a>
+                            <td class="py-4 px-6 text-right">
+                                <div class="flex items-center justify-end gap-2">
+                                    <a asp-action="Details" asp-route-id="@order.Id" class="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-full hover:bg-primary-container/10 no-underline">
+                                        <span class="material-symbols-outlined text-[20px]">visibility</span>
+                                    </a>
+                                    <a asp-action="Edit" asp-route-id="@order.Id" class="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-full hover:bg-primary-container/10 no-underline">
+                                        <span class="material-symbols-outlined text-[20px]">edit</span>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@order.Id" class="text-on-surface-variant hover:text-error transition-colors p-2 rounded-full hover:bg-error-container/30 no-underline" onclick="return confirm('Delete this order?')">
+                                        <span class="material-symbols-outlined text-[20px]">delete</span>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
+        </div>
+        <!-- Pagination Footer -->
+        <div class="px-6 py-4 border-t border-outline-variant/20 flex items-center justify-between bg-surface-container-lowest">
+            <span class="font-label-sm text-label-sm text-on-surface-variant">Showing 1 to @Model.Count() of @Model.Count() entries</span>
+            <div class="flex gap-2">
+                <button class="p-1 rounded-md text-on-surface-variant hover:bg-surface-variant transition-colors disabled:opacity-50" disabled>
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+                <button class="w-8 h-8 rounded-md bg-primary text-on-primary font-label-sm text-label-sm flex items-center justify-center shadow-sm">1</button>
+                <button class="w-8 h-8 rounded-md text-on-surface-variant hover:bg-surface-variant font-label-sm text-label-sm flex items-center justify-center transition-colors">2</button>
+                <button class="w-8 h-8 rounded-md text-on-surface-variant hover:bg-surface-variant font-label-sm text-label-sm flex items-center justify-center transition-colors">3</button>
+                <button class="p-1 rounded-md text-on-surface-variant hover:bg-surface-variant transition-colors">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
+            </div>
         </div>
     </div>
 </div>
