@@ -8,7 +8,7 @@ namespace CMS.Backend.Services.Interfaces
     {
         Task<IEnumerable<OrderDTO>> GetAll();
         Task<OrderDTO?> GetDetail(int id);
-        Task<(bool Success, string Message, int OrderId)> CreateOrder(int customerId, string? notes, List<OrderItemInput> items);
+        Task<(bool Success, string Message, int OrderId)> CreateOrder(int customerId, string? notes, List<OrderItemInput> items, string? currency = null);
         Task<bool> Update(int id, UpdateOrderDTO dto);
         Task<bool> Delete(int id);
     }

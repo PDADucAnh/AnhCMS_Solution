@@ -4,13 +4,16 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import { useLocale } from '../../context/LocaleContext';
 import { useCreateOrder } from '../../hooks/useOrders';
+import { formatCurrency } from '../../utils/currency';
 import { checkoutSchema, type CheckoutFormData } from '../../schemas/checkoutSchema';
 
 const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
   const { cartItems, cartTotal, clearCart } = useCart();
   const { user, refreshProfile } = useAuth();
+  const { currency } = useLocale();
   const createOrder = useCreateOrder();
 
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<CheckoutFormData>({
@@ -36,6 +39,7 @@ const CheckoutPage: React.FC = () => {
     const orderPayload = {
       customerId: user?.id || 0,
       notes: `Delivery to: ${formData.fullname}, Email: ${formData.email}, Contact: ${formData.phone}, Location: ${formData.address}. Narrative: ${formData.notes}`,
+      currency: currency.toUpperCase(),
       items: cartItems.map(item => ({
         productId: item.id,
         quantity: item.quantity,
@@ -164,7 +168,7 @@ const CheckoutPage: React.FC = () => {
                                     <span className="text-label-sm uppercase tracking-widest font-bold block">{item.name}</span>
                                     <span className="text-[10px] text-secondary uppercase tracking-widest block">Qty: {item.quantity}</span>
                                 </div>
-                                <span className="font-bold text-sm">{((item.discountPrice || item.price) * item.quantity).toLocaleString()} ₫</span>
+                                <span className="font-bold text-sm">{formatCurrency((item.discountPrice || item.price) * item.quantity)}</span>
                             </div>
                         ))}
                     </div>
@@ -172,7 +176,7 @@ const CheckoutPage: React.FC = () => {
                     <div className="space-y-md">
                         <div className="flex justify-between items-center text-label-sm uppercase tracking-widest">
                             <span className="text-secondary">Subtotal</span>
-                            <span className="font-bold">{cartTotal.toLocaleString()} ₫</span>
+                            <span className="font-bold">{formatCurrency(cartTotal)}</span>
                         </div>
                         <div className="flex justify-between items-center text-label-sm uppercase tracking-widest">
                             <span className="text-secondary">Delivery Insight</span>
@@ -183,7 +187,7 @@ const CheckoutPage: React.FC = () => {
                     <div className="border-t border-outline-variant pt-lg flex justify-between items-center">
                         <span className="text-label-sm uppercase tracking-[0.2em] font-bold">Total Acquisition</span>
                         <span className="serif text-2xl font-bold">
-                            {cartTotal.toLocaleString()} ₫
+                            {formatCurrency(cartTotal)}
                         </span>
                     </div>
 

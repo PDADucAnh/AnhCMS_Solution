@@ -7,6 +7,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
+import { LocaleProvider } from './context/LocaleContext';
 import { authEvents } from './utils/eventEmitter';
 import ErrorFallback from './components/ErrorFallback';
 import { Toaster } from 'react-hot-toast';
@@ -26,6 +27,7 @@ const Profile = lazy(() => import('./pages/auth/Profile'));
 const MyOrders = lazy(() => import('./pages/auth/MyOrders'));
 const Wishlist = lazy(() => import('./pages/wishlist/index'));
 const About = lazy(() => import('./pages/about/index'));
+const Contact = lazy(() => import('./pages/contact/index'));
 
 const PageLoader: React.FC = () => (
   <div className="flex justify-center items-center min-h-screen bg-surface">
@@ -61,6 +63,7 @@ const NotFound: React.FC = () => (
 const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
+    <LocaleProvider>
     <AuthProvider>
       <CartProvider>
         <WishlistProvider>
@@ -96,6 +99,7 @@ const App: React.FC = () => {
                     <Route path="/my-orders" element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
                     <Route path="/wishlist" element={<Wishlist />} />
                     <Route path="/about" element={<About />} />
+                    <Route path="/contact" element={<Contact />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>
@@ -107,6 +111,7 @@ const App: React.FC = () => {
         </WishlistProvider>
       </CartProvider>
     </AuthProvider>
+    </LocaleProvider>
     </QueryClientProvider>
   );
 };

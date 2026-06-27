@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useWishlist } from '../../context/WishlistContext';
 import { getImageUrl } from '../../utils/apiUtils';
+import { formatCurrency } from '../../utils/currency';
 
 const WishlistPage: React.FC = () => {
   const { favorites, removeFavorite } = useWishlist();
@@ -71,7 +72,7 @@ const WishlistPage: React.FC = () => {
                     </Link>
                     <h3 className="font-body-md text-body-md text-primary mb-1 truncate">{product.name}</h3>
                     <p className="font-body-md text-body-md text-secondary">
-                      {(product.discountPrice || product.price).toLocaleString()} ₫
+                      {formatCurrency(product.discountPrice || product.price)}
                     </p>
                   </div>
                 ))}

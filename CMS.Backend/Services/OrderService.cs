@@ -2,6 +2,7 @@ using CMS.Data;
 using CMS.Data.Entities;
 using CMS.Backend.Services.Interfaces;
 using CMS.Backend.Models.DTOs;
+using CMS.Backend.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -17,12 +18,18 @@ namespace CMS.Backend.Services
         private readonly IApplicationDbContext _context;
         private readonly ILogger<OrderService> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IExchangeRateService _exchangeRateService;
 
-        public OrderService(IApplicationDbContext context, ILogger<OrderService> logger, IHttpContextAccessor httpContextAccessor)
+        public OrderService(
+            IApplicationDbContext context,
+            ILogger<OrderService> logger,
+            IHttpContextAccessor httpContextAccessor,
+            IExchangeRateService exchangeRateService)
         {
             _context = context;
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
+            _exchangeRateService = exchangeRateService;
         }
 
         private async Task<int?> GetCurrentCustomerId()
@@ -86,8 +93,18 @@ namespace CMS.Backend.Services
             return order?.ToDTO();
         }
 
+        private async Task<(string Currency, decimal Rate)> ResolveCurrency(string? currency)
+        {
+            if (currency?.ToUpper() == "VND")
+            {
+                var rate = await _exchangeRateService.GetUsdToVndRate();
+                return ("VND", rate.Rate);
+            }
+            return ("USD", 1m);
+        }
+
         public async Task<(bool Success, string Message, int OrderId)> CreateOrder(
-            int customerId, string? notes, List<OrderItemInput> items)
+            int customerId, string? notes, List<OrderItemInput> items, string? currency = null)
         {
             try
             {
@@ -95,12 +112,16 @@ namespace CMS.Backend.Services
                 if (!customerExists)
                     return (false, "Khách hàng không tồn tại", 0);
 
+                var (orderCurrency, exchangeRate) = await ResolveCurrency(currency);
+
                 var newOrder = new Order
                 {
                     OrderDate = DateTime.Now,
                     CustomerId = customerId,
                     Status = OrderStatus.Pending,
-                    Notes = notes
+                    Notes = notes,
+                    Currency = orderCurrency,
+                    ExchangeRate = exchangeRate
                 };
 
                 if (items != null && items.Count > 0)
@@ -133,7 +154,11 @@ namespace CMS.Backend.Services
                         {
                             ProductId = item.ProductId,
                             Quantity = item.Quantity,
-                            UnitPrice = product.Price
+                            UnitPrice = orderCurrency == "VND"
+                                ? PriceHelper.ConvertPrice(product.Price, exchangeRate, "VND")
+                                : product.Price,
+                            UnitPriceUsd = product.Price,
+                            Currency = orderCurrency
                         };
                     }).ToList();
                 }

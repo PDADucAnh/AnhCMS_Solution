@@ -35,6 +35,12 @@ namespace CMS.Data.Entities
 
         public string? Notes { get; set; }
 
+        [MaxLength(3)]
+        public string Currency { get; set; } = "USD";
+
+        [Column(TypeName = "decimal(18,6)")]
+        public decimal ExchangeRate { get; set; } = 1m;
+
         [ForeignKey("CustomerId")]
         public virtual Customer? Customer { get; set; }
 

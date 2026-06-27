@@ -9,6 +9,9 @@ namespace CMS.Backend.Models.DTOs
         public string Name { get; set; }
         public string? Description { get; set; }
         public decimal Price { get; set; }
+        public decimal PriceUsd { get; set; }
+        public decimal? PriceVnd { get; set; }
+        public string Currency { get; set; } = "USD";
         public int StockQuantity { get; set; }
         public string? ImageUrl { get; set; }
         public int CategoryProductId { get; set; }

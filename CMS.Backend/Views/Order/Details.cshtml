@@ -44,8 +44,8 @@
                                             <span class="text-body-md font-bold uppercase tracking-widest">@(detail.ProductName ?? "N/A")</span>
                                         </td>
                                         <td class="py-5 text-center text-body-md">@detail.Quantity</td>
-                                        <td class="py-5 text-right text-body-md">@detail.UnitPrice.ToString("N0") đ</td>
-                                        <td class="py-5 text-right font-bold">@((detail.Quantity * detail.UnitPrice).ToString("N0")) đ</td>
+                                        <td class="py-5 text-right text-body-md">@detail.UnitPrice.ToString("C2")</td>
+                                        <td class="py-5 text-right font-bold">@((detail.Quantity * detail.UnitPrice).ToString("C2"))</td>
                                     </tr>
                                 }
                             }

@@ -26,7 +26,7 @@ using System.Text;
 using System.Text.Json;
 using System.Globalization;
 
-var cultureInfo = new CultureInfo("vi-VN");
+var cultureInfo = new CultureInfo("en-US");
 CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
 CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
@@ -124,7 +124,9 @@ builder.Services.AddScoped<CMS.Backend.Services.Interfaces.ICustomerService, CMS
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IOrderService, CMS.Backend.Services.OrderService>();
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IOrderDetailService, CMS.Backend.Services.OrderDetailService>();
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.INotificationService, CMS.Backend.Services.NotificationService>();
+builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IExchangeRateService, CMS.Backend.Services.ExchangeRateService>();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
 builder.Services.AddSignalR();
 
 // ---- CẤU HÌNH CORS (THÊM VÀO TRƯỚC builder.Build()) ----

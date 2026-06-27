@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import CartTable from './CartTable';
+import { formatCurrency } from '../../utils/currency';
 
 const ShoppingCartPage: React.FC = () => {
   const navigate = useNavigate();
@@ -58,7 +59,7 @@ const ShoppingCartPage: React.FC = () => {
               <div className="space-y-md">
                 <div className="flex justify-between items-center text-label-sm uppercase tracking-widest">
                     <span className="text-secondary">Subtotal</span>
-                    <span className="font-bold">{cartTotal.toLocaleString()} ₫</span>
+                    <span className="font-bold">{formatCurrency(cartTotal)}</span>
                 </div>
                 <div className="flex justify-between items-center text-label-sm uppercase tracking-widest">
                     <span className="text-secondary">Delivery Insight</span>
@@ -69,7 +70,7 @@ const ShoppingCartPage: React.FC = () => {
               <div className="border-t border-outline-variant pt-lg flex justify-between items-center">
                 <span className="text-label-sm uppercase tracking-[0.2em] font-bold">Total Acquisition</span>
                 <span className="serif text-2xl font-bold">
-                  {cartTotal.toLocaleString()} ₫
+                  {formatCurrency(cartTotal)}
                 </span>
               </div>
               

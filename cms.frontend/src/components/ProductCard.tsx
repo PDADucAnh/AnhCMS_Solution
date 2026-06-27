@@ -1,7 +1,8 @@
 import React, { type MouseEvent } from 'react';
 import { useCart } from '../context/CartContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getImageUrl } from '../utils/apiUtils';
+import { formatCurrency } from '../utils/currency';
 import type { Product } from '../types/product';
 
 interface ProductCardProps {
@@ -10,13 +11,7 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
     const { addToCart } = useCart();
-
-    const formatCurrency = (value: number): string => {
-        return new Intl.NumberFormat('vi-VN', {
-            style: 'currency',
-            currency: 'VND'
-        }).format(value);
-    };
+    const navigate = useNavigate();
 
     const imageUrl = getImageUrl(item.imageUrl);
 
@@ -24,6 +19,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
         e.preventDefault();
         e.stopPropagation();
         addToCart(item);
+    };
+
+    const handleBuyNow = (e: MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        addToCart(item);
+        navigate('/checkout');
     };
 
     return (
@@ -50,13 +52,22 @@ const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
                     {item.description ? item.description.substring(0, 60) + (item.description.length > 60 ? '...' : '') : 'Premium floral arrangement'}
                 </p>
                 <p className="font-headline-sm text-headline-sm text-primary mb-4">{formatCurrency(item.price)}</p>
-                <button
-                    onClick={handleAddToCart}
-                    className="w-full px-6 py-3 bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:bg-primary/90 transition-colors shadow-sm focus:ring-2 focus:ring-offset-2 focus:ring-primary flex items-center justify-center gap-2 border-0 cursor-pointer"
-                >
-                    <span className="material-symbols-outlined text-[18px]">shopping_bag</span>
-                    Add to Cart
-                </button>
+                <div className="flex gap-2 w-full">
+                    <button
+                        onClick={handleAddToCart}
+                        className="flex-1 px-4 py-3 bg-surface-container-low text-on-surface-variant rounded-lg font-label-sm text-label-sm hover:bg-surface-container hover:text-primary transition-colors border-0 cursor-pointer flex items-center justify-center gap-2"
+                    >
+                        <span className="material-symbols-outlined text-[18px]">shopping_bag</span>
+                        Add to Cart
+                    </button>
+                    <button
+                        onClick={handleBuyNow}
+                        className="flex-1 px-4 py-3 bg-primary text-on-primary rounded-lg font-label-sm text-label-sm hover:bg-primary/90 transition-colors shadow-sm border-0 cursor-pointer flex items-center justify-center gap-2"
+                    >
+                        <span className="material-symbols-outlined text-[18px]">flash_on</span>
+                        Buy Now
+                    </button>
+                </div>
             </div>
         </article>
     );

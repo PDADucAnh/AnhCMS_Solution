@@ -198,6 +198,7 @@ namespace CMS.Backend.Models.DTOs
                 CustomerEmail = order.Customer?.Email,
                 Status = order.Status,
                 Notes = order.Notes,
+                Currency = order.Currency,
                 OrderDetails = details
             };
         }
@@ -214,7 +215,9 @@ namespace CMS.Backend.Models.DTOs
                 ProductImageUrl = detail.Product?.ImageUrl,
                 CustomerName = detail.Order?.Customer?.FullName,
                 Quantity = detail.Quantity,
-                UnitPrice = detail.UnitPrice
+                UnitPrice = detail.UnitPrice,
+                UnitPriceUsd = detail.UnitPriceUsd,
+                Currency = detail.Currency
             };
         }
 
@@ -244,6 +247,15 @@ namespace CMS.Backend.Models.DTOs
             };
         }
 
+        private static string? TruncateSummary(string? summary, string? content)
+        {
+            const int maxLength = 500;
+            var text = !string.IsNullOrWhiteSpace(summary)
+                ? summary
+                : (content?.Length > 100 ? content.Substring(0, 100) : content);
+            return text?.Length > maxLength ? text.Substring(0, maxLength) : text;
+        }
+
         public static Post ToEntity(this CreatePostDTO dto)
         {
             if (dto == null) return null;
@@ -251,9 +263,7 @@ namespace CMS.Backend.Models.DTOs
             {
                 Title = dto.Title,
                 Content = dto.Content,
-                Summary = !string.IsNullOrWhiteSpace(dto.Summary)
-                    ? dto.Summary
-                    : (dto.Content?.Length > 100 ? dto.Content.Substring(0, 100) : dto.Content),
+                Summary = TruncateSummary(dto.Summary, dto.Content),
                 ImageUrl = dto.ImageUrl,
                 CategoryId = dto.CategoryId
             };
@@ -264,9 +274,7 @@ namespace CMS.Backend.Models.DTOs
             if (dto == null || entity == null) return;
             entity.Title = dto.Title;
             entity.Content = dto.Content;
-            entity.Summary = !string.IsNullOrWhiteSpace(dto.Summary)
-                ? dto.Summary
-                : (dto.Content?.Length > 100 ? dto.Content.Substring(0, 100) : dto.Content);
+            entity.Summary = TruncateSummary(dto.Summary, dto.Content);
             entity.ImageUrl = dto.ImageUrl;
             entity.CategoryId = dto.CategoryId;
         }

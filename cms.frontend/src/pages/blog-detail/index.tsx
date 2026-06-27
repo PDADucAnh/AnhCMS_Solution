@@ -5,6 +5,7 @@ import { useProducts } from '../../hooks/useProducts';
 import { useCart } from '../../context/CartContext';
 import DOMPurify from 'dompurify';
 import { getImageUrl } from '../../utils/apiUtils';
+import { formatCurrency } from '../../utils/currency';
 import type { Product } from '../../types/product';
 
 const BlogDetail: React.FC = () => {
@@ -118,7 +119,7 @@ const BlogDetail: React.FC = () => {
                                         <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                     </div>
                                     <h4 className="font-body-md text-sm text-primary font-bold uppercase tracking-tight mb-1">{p.name}</h4>
-                                    <p className="font-body-md text-sm text-secondary">{(p.price).toLocaleString()} ₫</p>
+                                    <p className="font-body-md text-sm text-secondary">{formatCurrency(p.price)}</p>
                                 </Link>
                             ))}
                         </div>

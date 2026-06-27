@@ -8,6 +8,9 @@ export interface Product {
   stockQuantity: number;
   categoryProductName?: string;
   createdDate?: string;
+  priceUsd?: number;
+  priceVnd?: number;
+  currency?: string;
 }
 
 export interface ProductInput {

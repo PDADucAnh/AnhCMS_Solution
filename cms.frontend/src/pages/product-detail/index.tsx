@@ -4,6 +4,7 @@ import { useProduct } from '../../hooks/useProducts';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { getImageUrl } from '../../utils/apiUtils';
+import { formatCurrency } from '../../utils/currency';
 import toast from 'react-hot-toast';
 
 const formatImageUrl = (url?: string): string => {
@@ -118,11 +119,11 @@ const ProductDetailPage = () => {
             <h1 className="font-display-xl-mobile md:font-headline-lg text-display-xl-mobile md:text-headline-lg text-primary mb-3">{product.name}</h1>
             <div className="flex gap-3 items-center mb-3">
               <p className="font-body-lg text-body-lg text-primary mb-0 font-semibold">
-                {(product.discountPrice || product.price).toLocaleString()} ₫
+                {formatCurrency(product.discountPrice || product.price)}
               </p>
               {product.discountPrice! > 0 && (
                 <p className="font-body-md text-body-md text-secondary line-through mb-0 opacity-60">
-                  {product.price.toLocaleString()} ₫
+                  {formatCurrency(product.price)}
                 </p>
               )}
             </div>

@@ -42,7 +42,7 @@
                                 </div>
                             </td>
                             <td class="px-lg py-5 text-body-md">@od.Quantity units</td>
-                            <td class="px-lg py-5 text-right font-bold">@od.UnitPrice.ToString("N0") đ</td>
+                            <td class="px-lg py-5 text-right font-bold">@od.UnitPrice.ToString("C2")</td>
                             <td class="px-lg py-5 text-right space-x-4">
                                 <a asp-action="Edit" asp-route-id="@od.Id" class="text-label-sm uppercase tracking-widest font-bold text-secondary">Modify</a>
                                 <a asp-action="Delete" asp-route-id="@od.Id" class="text-label-sm uppercase tracking-widest font-bold text-error" onclick="return confirm('Remove manifest record?')">Remove</a>

@@ -3,19 +3,23 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
+import { useLocale } from '../context/LocaleContext';
 
 const Header: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const { cartCount } = useCart();
   const { favoritesCount } = useWishlist();
+  const { locale, currency, setPreference } = useLocale();
   const location = useLocation();
   const navigate = useNavigate();
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [localeOpen, setLocaleOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const localeRef = useRef<HTMLDivElement>(null);
 
   const isActive = (path: string) => {
     if (path === '/') return location.pathname === '/';
@@ -29,6 +33,9 @@ const Header: React.FC = () => {
       }
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
         setSearchOpen(false);
+      }
+      if (localeRef.current && !localeRef.current.contains(e.target as Node)) {
+        setLocaleOpen(false);
       }
     };
     const handleEscape = (e: KeyboardEvent) => {
@@ -51,6 +58,13 @@ const Header: React.FC = () => {
     }`;
   };
 
+  const localeOptions = [
+    { locale: 'en' as const, currency: 'usd' as const, label: 'EN / $' },
+    { locale: 'vi' as const, currency: 'vnd' as const, label: 'VI / ₫' },
+  ];
+
+  const currentLabel = locale === 'vi' ? 'VI / ₫' : 'EN / $';
+
   return (
     <header className="sticky top-0 z-50 bg-surface shadow-sm w-full" style={{ boxShadow: '0px 4px 20px rgba(171,44,93,0.02)' }}>
       <div className="flex justify-between items-center px-margin-desktop py-4 max-w-container-max mx-auto w-full">
@@ -70,6 +84,34 @@ const Header: React.FC = () => {
         </nav>
 
         <div className="flex items-center gap-4 text-primary">
+          <div className="relative" ref={localeRef}>
+            <button
+              onClick={() => setLocaleOpen((prev) => !prev)}
+              className="hover:opacity-80 transition-opacity bg-transparent border-0 p-0 cursor-pointer flex items-center justify-center font-label-sm text-label-sm tracking-wider font-bold gap-1"
+              aria-label="Language and currency"
+            >
+              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0", fontSize: '16px' }}>language</span>
+              <span className="hidden md:inline">{currentLabel}</span>
+            </button>
+            {localeOpen && (
+              <div className="absolute right-0 top-full mt-2 min-w-[160px] bg-surface-container-lowest border border-outline-variant shadow-[0px_10px_30px_rgba(0,0,0,0.08)] z-50">
+                {localeOptions.map((opt) => (
+                  <button
+                    key={opt.label}
+                    onClick={() => { setPreference(opt.locale, opt.currency); setLocaleOpen(false); }}
+                    className={`w-full text-left px-md py-sm text-xs uppercase tracking-widest bg-transparent border-0 cursor-pointer transition-colors duration-200 ${
+                      locale === opt.locale && currency === opt.currency
+                        ? 'text-primary font-bold bg-surface-container'
+                        : 'text-on-surface-variant hover:text-primary hover:bg-surface-container'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           <div className="relative" ref={searchRef}>
             <button
               onClick={() => { setSearchOpen((prev) => !prev); if (!searchOpen) setTimeout(() => searchInputRef.current?.focus(), 50); }}

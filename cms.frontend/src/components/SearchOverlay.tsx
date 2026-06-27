@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useProducts } from '../hooks/useProducts';
 import { getImageUrl } from '../utils/apiUtils';
+import { formatCurrency } from '../utils/currency';
 
 const SearchOverlay: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [query, setQuery] = useState('');
@@ -93,7 +94,7 @@ const SearchOverlay: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                   </div>
                   <h4 className="font-body-md text-body-md text-primary mb-0.5 truncate">{product.name}</h4>
                   <p className="font-label-sm text-label-sm text-secondary">
-                    {(product.discountPrice || product.price).toLocaleString()} ₫
+                    {formatCurrency(product.discountPrice || product.price)}
                   </p>
                 </Link>
               ))}

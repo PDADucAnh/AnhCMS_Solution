@@ -12,5 +12,7 @@ namespace CMS.Backend.Services.Interfaces
         Task<ProductDTO> Create(CreateProductDTO dto);
         Task<bool> Update(int id, UpdateProductDTO dto);
         Task<bool> Delete(int id);
+        Task<ProductDTO> ToCurrency(ProductDTO dto, string currency);
+        Task<IEnumerable<ProductDTO>> ToCurrency(IEnumerable<ProductDTO> items, string currency);
     }
 }

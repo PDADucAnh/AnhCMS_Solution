@@ -15,6 +15,7 @@ namespace CMS.Backend.Models.DTOs
         public string? CustomerEmail { get; set; }
         public OrderStatus Status { get; set; }
         public string? Notes { get; set; }
+        public string? Currency { get; set; }
         public List<OrderDetailDTO>? OrderDetails { get; set; }
     }
 
@@ -34,6 +35,8 @@ namespace CMS.Backend.Models.DTOs
         [Range(0, double.MaxValue)]
         [DisplayFormat(NullDisplayText = "", DataFormatString = "{0:N0}")]
         public decimal UnitPrice { get; set; }
+        public decimal? UnitPriceUsd { get; set; }
+        public string? Currency { get; set; }
     }
 
     public class UpdateOrderDTO

@@ -22,23 +22,25 @@ namespace CMS.Backend.Controllers.Api
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] string? currency)
         {
             var products = await _productService.GetAll();
-            return Ok(products);
+            var result = await _productService.ToCurrency(products, currency);
+            return Ok(result);
         }
 
         [AllowAnonymous]
         [HttpGet("categoryproduct/{categoryProductId}")]
-        public async Task<IActionResult> GetByCategoryProduct(int categoryProductId)
+        public async Task<IActionResult> GetByCategoryProduct(int categoryProductId, [FromQuery] string? currency)
         {
             var products = await _productService.GetByCategoryProduct(categoryProductId);
-            return Ok(products);
+            var result = await _productService.ToCurrency(products, currency);
+            return Ok(result);
         }
 
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetDetail(int id)
+        public async Task<IActionResult> GetDetail(int id, [FromQuery] string? currency)
         {
             var product = await _productService.GetDetail(id);
 
@@ -47,7 +49,8 @@ namespace CMS.Backend.Controllers.Api
                 return NotFound(new { message = "Không tìm thấy sản phẩm này trong hệ thống" });
             }
 
-            return Ok(product);
+            var result = await _productService.ToCurrency(product, currency);
+            return Ok(result);
         }
 
         [HttpPost]

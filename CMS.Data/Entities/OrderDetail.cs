@@ -29,6 +29,12 @@ namespace CMS.Data.Entities
         [Column(TypeName = "decimal(18,2)")]
         public decimal UnitPrice { get; set; } // Giá tại thời điểm mua
 
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal UnitPriceUsd { get; set; } // Giá gốc USD
+
+        [MaxLength(3)]
+        public string Currency { get; set; } = "USD";
+
         [ForeignKey("OrderId")]
         public virtual Order? Order { get; set; }
 

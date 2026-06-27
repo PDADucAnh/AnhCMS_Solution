@@ -2,6 +2,7 @@ using CMS.Data;
 using CMS.Data.Entities;
 using CMS.Backend.Services.Interfaces;
 using CMS.Backend.Models.DTOs;
+using CMS.Backend.Utils;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +13,12 @@ namespace CMS.Backend.Services
     public class ProductService : IProductService
     {
         private readonly IApplicationDbContext _context;
+        private readonly IExchangeRateService _exchangeRateService;
 
-        public ProductService(IApplicationDbContext context)
+        public ProductService(IApplicationDbContext context, IExchangeRateService exchangeRateService)
         {
             _context = context;
+            _exchangeRateService = exchangeRateService;
         }
 
         public async Task<IEnumerable<ProductDTO>> GetAll()
@@ -89,6 +92,46 @@ namespace CMS.Backend.Services
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<ProductDTO> ToCurrency(ProductDTO dto, string currency)
+        {
+            if (string.IsNullOrEmpty(currency) || currency.ToUpper() == "USD")
+            {
+                dto.PriceUsd = dto.Price;
+                dto.PriceVnd = null;
+                dto.Currency = "USD";
+                return dto;
+            }
+
+            var rate = await _exchangeRateService.GetUsdToVndRate();
+            dto.PriceUsd = dto.Price;
+            dto.PriceVnd = PriceHelper.ConvertPrice(dto.Price, rate.Rate, "VND");
+            dto.Currency = "VND";
+            return dto;
+        }
+
+        public async Task<IEnumerable<ProductDTO>> ToCurrency(IEnumerable<ProductDTO> items, string currency)
+        {
+            if (string.IsNullOrEmpty(currency) || currency.ToUpper() == "USD")
+            {
+                foreach (var dto in items)
+                {
+                    dto.PriceUsd = dto.Price;
+                    dto.PriceVnd = null;
+                    dto.Currency = "USD";
+                }
+                return items;
+            }
+
+            var rate = await _exchangeRateService.GetUsdToVndRate();
+            foreach (var dto in items)
+            {
+                dto.PriceUsd = dto.Price;
+                dto.PriceVnd = PriceHelper.ConvertPrice(dto.Price, rate.Rate, "VND");
+                dto.Currency = "VND";
+            }
+            return items;
         }
     }
 }

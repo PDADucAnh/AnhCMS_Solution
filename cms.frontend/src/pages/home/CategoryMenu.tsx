@@ -19,10 +19,10 @@ function CategoryMenu({ onSelectCategory, activeId }: CategoryMenuProps) {
     };
 
     const btnClass = (isActive: boolean) =>
-        'flex-shrink-0 px-lg py-4 font-label-sm text-label-sm uppercase tracking-widest border btn-luxury btn-pill-luxury ' +
+        'flex-shrink-0 px-6 py-3 font-label-sm text-label-sm uppercase tracking-widest rounded-full transition-all duration-300 cursor-pointer border-0 ' +
         (isActive
-            ? 'bg-primary text-on-primary border-primary'
-            : 'bg-surface text-secondary border-outline-variant');
+            ? 'bg-primary text-on-primary shadow-[0_4px_14px_rgba(171,44,93,0.3)]'
+            : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container hover:text-primary');
 
     return (
         <section className="px-margin mb-xl">
@@ -31,7 +31,7 @@ function CategoryMenu({ onSelectCategory, activeId }: CategoryMenuProps) {
                 <Link to="/shop" className="font-label-sm text-label-sm uppercase tracking-widest hover:text-secondary transition-colors border-b border-primary pb-1 text-decoration-none text-primary">View All</Link>
             </div>
 
-            <div className="flex gap-md overflow-x-auto no-scrollbar pb-4">
+            <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
                 <button
                     onClick={() => handleCategoryClick(null)}
                     className={btnClass(activeId === null)}

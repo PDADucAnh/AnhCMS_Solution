@@ -1,5 +1,6 @@
 import React from 'react';
 import { getImageUrl } from '../../utils/apiUtils';
+import { formatCurrency } from '../../utils/currency';
 import type { CartItem } from '../../context/CartContext';
 
 interface CartTableProps {
@@ -45,7 +46,7 @@ const CartTable = ({ items, onUpdateQuantity, onRemove }: CartTableProps) => {
                     </div>
                   </td>
                   <td className="px-lg py-6 text-center text-body-md serif">
-                    {(item.discountPrice || item.price).toLocaleString()} ₫
+                    {formatCurrency(item.discountPrice || item.price)}
                   </td>
                   <td className="px-lg py-6">
                     <div className="flex items-center justify-center gap-md">
@@ -65,7 +66,7 @@ const CartTable = ({ items, onUpdateQuantity, onRemove }: CartTableProps) => {
                     </div>
                   </td>
                   <td className="px-lg py-6 text-right font-bold serif text-lg">
-                    {((item.discountPrice || item.price) * item.quantity).toLocaleString()} ₫
+                    {formatCurrency((item.discountPrice || item.price) * item.quantity)}
                   </td>
                   <td className="px-lg py-6 text-right">
                     <button 

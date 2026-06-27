@@ -1,16 +1,45 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import productService from '../services/productService';
-import toast from 'react-hot-toast';
+import { useLocale } from '../context/LocaleContext';
 
-export const useProducts = () =>
-  useQuery({ queryKey: ['products'], queryFn: () => productService.getAllProducts() });
+export const useProducts = () => {
+  const { locale, currency } = useLocale();
+  return useQuery({
+    queryKey: ['products', { locale, currency }],
+    queryFn: () => productService.getAllProducts({ locale, currency }),
+  });
+};
 
-export const useProduct = (id: string | number) =>
-  useQuery({ queryKey: ['products', id], queryFn: () => productService.getProductById(id), enabled: !!id });
+export const useProduct = (id: string | number) => {
+  const { locale, currency } = useLocale();
+  return useQuery({
+    queryKey: ['products', id, { locale, currency }],
+    queryFn: () => productService.getProductById(id, { locale, currency }),
+    enabled: !!id,
+  });
+};
 
-export const useProductsByCategory = (categoryId: number | null) =>
-  useQuery({
-    queryKey: ['products', 'category', categoryId],
-    queryFn: () => productService.getProductsByCategory(categoryId),
+export const useProductsByCategory = (categoryId: number | null) => {
+  const { locale, currency } = useLocale();
+  return useQuery({
+    queryKey: ['products', 'category', categoryId, { locale, currency }],
+    queryFn: () => productService.getProductsByCategory(categoryId, { locale, currency }),
     enabled: categoryId !== null,
   });
+};
+
+export const useLatestProducts = (limit: number) => {
+  const query = useProducts();
+  return {
+    ...query,
+    data: query.data?.slice(0, limit) ?? [],
+  };
+};
+
+export const useBestSellingProducts = (limit: number) => {
+  const query = useProducts();
+  return {
+    ...query,
+    data: query.data?.slice(0, limit) ?? [],
+  };
+};

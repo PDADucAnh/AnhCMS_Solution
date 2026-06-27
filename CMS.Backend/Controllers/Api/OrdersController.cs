@@ -39,7 +39,7 @@ namespace CMS.Backend.Controllers.Api
             }).ToList() ?? new List<OrderItemInput>();
 
             var (success, message, orderId) = await _orderService.CreateOrder(
-                input.CustomerId, input.Notes, items);
+                input.CustomerId, input.Notes, items, input.Currency);
 
             if (!success)
             {

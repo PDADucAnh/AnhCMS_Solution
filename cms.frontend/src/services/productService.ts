@@ -1,52 +1,48 @@
-// Import cấu hình axiosClient dùng chung từ thư mục api
 import axiosClient from '../api/axiosClient';
 
+interface ProductQueryParams {
+  locale?: string;
+  currency?: string;
+}
+
+const buildProductUrl = (path: string, params?: ProductQueryParams): string => {
+  const searchParams = new URLSearchParams();
+  if (params?.locale) searchParams.set('locale', params.locale);
+  if (params?.currency) searchParams.set('currency', params.currency);
+  const qs = searchParams.toString();
+  return qs ? `${path}?${qs}` : path;
+};
+
 const productService = {
-    /**
-     * 1. Lấy danh sách toàn bộ sản phẩm thời trang (hoặc theo bộ lọc)
-     * API Endpoint: GET https://localhost:xxxx/api/Products
-     */
-    getAllProducts: async () => {
+    getAllProducts: async (params?: ProductQueryParams) => {
         try {
-            // Thực hiện gọi API GET để lấy danh sách sản phẩm
-            const response = await axiosClient.get('/Products');
-
-            // Trả về mảng dữ liệu sản phẩm
+            const response = await axiosClient.get(buildProductUrl('/Products', params));
             return response.data || response;
         } catch (error) {
-            console.error("Lỗi API getAllProducts:", error);
-            throw error; // Đẩy lỗi ra ngoài để component ProductGrid bắt được và xử lý giao diện
-        }
-    },
-
-    /**
-     * 2. Lấy thông tin chi tiết của một sản phẩm theo ID
-     * API Endpoint: GET https://localhost:xxxx/api/Products/{id}
-     */
-    getProductById: async (id: string | number) => {
-        try {
-            const response = await axiosClient.get(`/Products/${id}`);
-            return response.data || response;
-        } catch (error) {
-            console.error(`Lỗi API getProductById với ID ${id}:`, error);
+            console.error('API getAllProducts error:', error);
             throw error;
         }
     },
 
-    /**
-     * 3. Lấy danh sách sản phẩm theo danh mục sản phẩm
-     * API Endpoint: GET https://localhost:xxxx/api/Products/categoryproduct/{categoryProductId}
-     */
-    getProductsByCategory: async (categoryProductId: number | null) => {
+    getProductById: async (id: string | number, params?: ProductQueryParams) => {
         try {
-            const response = await axiosClient.get(`/Products/categoryproduct/${categoryProductId}`);
+            const response = await axiosClient.get(buildProductUrl(`/Products/${id}`, params));
             return response.data || response;
         } catch (error) {
-            console.error(`Lỗi API getProductsByCategory với ID ${categoryProductId}:`, error);
+            console.error(`API getProductById error for ID ${id}:`, error);
+            throw error;
+        }
+    },
+
+    getProductsByCategory: async (categoryProductId: number | null, params?: ProductQueryParams) => {
+        try {
+            const response = await axiosClient.get(buildProductUrl(`/Products/categoryproduct/${categoryProductId}`, params));
+            return response.data || response;
+        } catch (error) {
+            console.error(`API getProductsByCategory error for ID ${categoryProductId}:`, error);
             throw error;
         }
     }
 };
 
-// CRITICAL: Xuất mặc định đối tượng này để file ProductGrid.jsx import vào không bị lỗi 'default was not found'
 export default productService;
