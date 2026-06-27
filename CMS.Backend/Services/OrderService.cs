@@ -79,6 +79,31 @@ namespace CMS.Backend.Services
             return orders.Select(o => o.ToDTO());
         }
 
+        public async Task<PagedResult<OrderDTO>> GetPaged(int page, int pageSize)
+        {
+            IQueryable<Order> query = _context.Orders
+                .Include(o => o.Customer)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Product)
+                .OrderByDescending(o => o.OrderDate);
+
+            query = ApplyOwnershipFilter(query);
+
+            var totalCount = await query.CountAsync();
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<OrderDTO>
+            {
+                Items = items.Select(o => o.ToDTO()).ToList(),
+                TotalCount = totalCount,
+                Page = page,
+                PageSize = pageSize
+            };
+        }
+
         public async Task<OrderDTO?> GetDetail(int id)
         {
             IQueryable<Order> query = _context.Orders
@@ -128,6 +153,7 @@ namespace CMS.Backend.Services
                 {
                     var productIds = items.Select(i => i.ProductId).ToList();
                     var products = await _context.Products
+                        .Include(p => p.Translations)
                         .Where(p => productIds.Contains(p.Id))
                         .ToListAsync();
                     var productDict = products.ToDictionary(p => p.Id);
@@ -141,7 +167,8 @@ namespace CMS.Backend.Services
 
                         if (product.StockQuantity < item.Quantity)
                         {
-                            return (false, $"Sản phẩm '{product.Name}' không đủ hàng (còn: {product.StockQuantity}, yêu cầu: {item.Quantity})", 0);
+                            var productName = product.Translations.FirstOrDefault(t => t.Locale == "en")?.Name ?? product.Translations.FirstOrDefault()?.Name ?? $"Sản phẩm #{product.Id}";
+                            return (false, $"Sản phẩm '{productName}' không đủ hàng (còn: {product.StockQuantity}, yêu cầu: {item.Quantity})", 0);
                         }
                     }
 

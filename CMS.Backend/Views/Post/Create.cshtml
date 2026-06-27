@@ -17,10 +17,28 @@
     </div>
 
     <form asp-action="Create" method="post" enctype="multipart/form-data" class="bg-surface-container-lowest border border-outline-variant p-xl space-y-xl">
-        <div class="space-y-md">
-            <label class="text-label-sm uppercase tracking-widest text-secondary font-bold">Story Title</label>
-            <input asp-for="Title" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-lg py-4 serif text-2xl font-bold placeholder:text-outline-variant" placeholder="Enter an evocative title..." required />
-            <span asp-validation-for="Title" class="text-error text-xs uppercase tracking-widest"></span>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-xl">
+            <div class="space-y-md">
+                <label class="text-label-sm uppercase tracking-widest text-secondary font-bold">Title (English)</label>
+                <input asp-for="TitleEn" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-lg py-4 serif text-2xl font-bold placeholder:text-outline-variant" placeholder="Enter title..." required />
+                <span asp-validation-for="TitleEn" class="text-error text-xs uppercase tracking-widest"></span>
+            </div>
+            <div class="space-y-md">
+                <label class="text-label-sm uppercase tracking-widest text-secondary font-bold">Title (Vietnamese)</label>
+                <input asp-for="TitleVi" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-lg py-4 serif text-2xl font-bold placeholder:text-outline-variant" placeholder="Nhập tiêu đề..." required />
+                <span asp-validation-for="TitleVi" class="text-error text-xs uppercase tracking-widest"></span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-xl">
+            <div class="space-y-md">
+                <label class="text-label-sm uppercase tracking-widest text-secondary font-bold">Slug (English)</label>
+                <input asp-for="SlugEn" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-lg py-3" placeholder="how-to-choose-perfume" />
+            </div>
+            <div class="space-y-md">
+                <label class="text-label-sm uppercase tracking-widest text-secondary font-bold">Slug (Vietnamese)</label>
+                <input asp-for="SlugVi" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-lg py-3" placeholder="cach-chon-nuoc-hoa" />
+            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-xl">
@@ -34,15 +52,28 @@
             </div>
         </div>
 
-        <div class="space-y-md">
-            <label class="text-label-sm uppercase tracking-widest text-secondary font-bold">Narrative Content</label>
-            <textarea asp-for="Content" id="editor" rows="12" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-lg py-4 text-body-lg leading-relaxed italic serif placeholder:text-outline-variant" placeholder="Compose your editorial masterpiece..."></textarea>
-            <span asp-validation-for="Content" class="text-error text-xs uppercase tracking-widest"></span>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-xl">
+            <div class="space-y-md">
+                <label class="text-label-sm uppercase tracking-widest text-secondary font-bold">Content (English)</label>
+                <textarea asp-for="ContentEn" id="editorEn" rows="12" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-lg py-4 text-body-lg leading-relaxed italic serif placeholder:text-outline-variant" placeholder="Compose your editorial masterpiece..."></textarea>
+                <span asp-validation-for="ContentEn" class="text-error text-xs uppercase tracking-widest"></span>
+            </div>
+            <div class="space-y-md">
+                <label class="text-label-sm uppercase tracking-widest text-secondary font-bold">Content (Vietnamese)</label>
+                <textarea asp-for="ContentVi" id="editorVi" rows="12" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-lg py-4 text-body-lg leading-relaxed italic serif placeholder:text-outline-variant" placeholder="Viết nội dung bài viết..."></textarea>
+                <span asp-validation-for="ContentVi" class="text-error text-xs uppercase tracking-widest"></span>
+            </div>
         </div>
 
-        <div class="space-y-md">
-            <label class="text-label-sm uppercase tracking-widest text-secondary font-bold">Summary <span class="text-outline italic normal-case font-normal text-xs">(auto-generated from content if left empty)</span></label>
-            <textarea asp-for="Summary" rows="3" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-lg py-4 text-body-md leading-relaxed placeholder:text-outline-variant" placeholder="Brief excerpt for preview cards..."></textarea>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-xl">
+            <div class="space-y-md">
+                <label class="text-label-sm uppercase tracking-widest text-secondary font-bold">Summary (English) <span class="text-outline italic normal-case font-normal text-xs">(auto-generated from content if left empty)</span></label>
+                <textarea asp-for="SummaryEn" rows="3" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-lg py-4 text-body-md leading-relaxed placeholder:text-outline-variant" placeholder="Brief excerpt for preview cards..."></textarea>
+            </div>
+            <div class="space-y-md">
+                <label class="text-label-sm uppercase tracking-widest text-secondary font-bold">Summary (Vietnamese) <span class="text-outline italic normal-case font-normal text-xs">(tự động tạo từ nội dung nếu bỏ trống)</span></label>
+                <textarea asp-for="SummaryVi" rows="3" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-lg py-4 text-body-md leading-relaxed placeholder:text-outline-variant" placeholder="Mô tả ngắn cho thẻ xem trước..."></textarea>
+            </div>
         </div>
 
         <div class="pt-lg border-t border-outline-variant flex gap-md">
@@ -76,12 +107,17 @@
         function UploadAdapterPlugin(editor) {
             editor.plugins.get('FileRepository').createUploadAdapter = loader => new UploadAdapter(loader);
         }
-        ClassicEditor
-            .create(document.querySelector('#editor'), {
-                extraPlugins: [UploadAdapterPlugin],
-                toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|', 'blockQuote', 'insertTable', '|', 'undo', 'redo', 'imageUpload'],
-            })
-            .catch(console.error);
+        ['editorEn', 'editorVi'].forEach(function(id) {
+            const el = document.querySelector('#' + id);
+            if (el) {
+                ClassicEditor
+                    .create(el, {
+                        extraPlugins: [UploadAdapterPlugin],
+                        toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|', 'blockQuote', 'insertTable', '|', 'undo', 'redo', 'imageUpload'],
+                    })
+                    .catch(console.error);
+            }
+        });
     </script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

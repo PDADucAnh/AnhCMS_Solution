@@ -1,11 +1,14 @@
 using CMS.Backend.Models.DTOs;
 using CMS.Backend.Services.Interfaces;
+using CMS.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CMS.Backend.Controllers
@@ -16,18 +19,24 @@ namespace CMS.Backend.Controllers
         private readonly IProductService _productService;
         private readonly ICategoryProductService _categoryProductService;
         private readonly INotificationService _notificationService;
+        private readonly IApplicationDbContext _context;
 
-        public ProductController(IProductService productService, ICategoryProductService categoryProductService, INotificationService notificationService)
+        public ProductController(IProductService productService, ICategoryProductService categoryProductService, INotificationService notificationService, IApplicationDbContext context)
         {
             _productService = productService;
             _categoryProductService = categoryProductService;
             _notificationService = notificationService;
+            _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 12)
         {
-            var products = await _productService.GetAll();
-            return View(products);
+            var paged = await _productService.GetPaged(page, pageSize);
+            ViewData["TotalPages"] = paged.TotalPages;
+            ViewData["CurrentPage"] = paged.Page;
+            ViewData["TotalCount"] = paged.TotalCount;
+            ViewData["PageSize"] = paged.PageSize;
+            return View(paged.Items);
         }
 
         [HttpGet]
@@ -81,17 +90,26 @@ namespace CMS.Backend.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var product = await _productService.GetDetail(id);
+            var categories = await _categoryProductService.GetAll();
+            ViewBag.CategoryProductList = new SelectList(categories, "Id", "Name");
+
+            var product = await _context.Products
+                .Include(p => p.Translations)
+                .FirstOrDefaultAsync(p => p.Id == id);
             if (product == null) return NotFound();
 
-            var categories = await _categoryProductService.GetAll();
-            ViewBag.CategoryProductList = new SelectList(categories, "Id", "Name", product.CategoryProductId);
+            var transEn = product.Translations.FirstOrDefault(t => t.Locale == "en");
+            var transVi = product.Translations.FirstOrDefault(t => t.Locale == "vi");
 
             var model = new UpdateProductDTO
             {
                 Id = product.Id,
-                Name = product.Name,
-                Description = product.Description,
+                NameEn = transEn?.Name ?? "",
+                NameVi = transVi?.Name ?? "",
+                DescriptionEn = transEn?.Description,
+                DescriptionVi = transVi?.Description,
+                SlugEn = transEn?.Slug,
+                SlugVi = transVi?.Slug,
                 Price = product.Price,
                 StockQuantity = product.StockQuantity,
                 ImageUrl = product.ImageUrl ?? string.Empty,

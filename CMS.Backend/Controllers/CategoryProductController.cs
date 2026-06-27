@@ -1,7 +1,10 @@
 using CMS.Backend.Models.DTOs;
 using CMS.Backend.Services.Interfaces;
+using CMS.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CMS.Backend.Controllers
@@ -11,17 +14,23 @@ namespace CMS.Backend.Controllers
     {
         private readonly ICategoryProductService _categoryProductService;
         private readonly INotificationService _notificationService;
+        private readonly IApplicationDbContext _context;
 
-        public CategoryProductController(ICategoryProductService categoryProductService, INotificationService notificationService)
+        public CategoryProductController(ICategoryProductService categoryProductService, INotificationService notificationService, IApplicationDbContext context)
         {
             _categoryProductService = categoryProductService;
             _notificationService = notificationService;
+            _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 12)
         {
-            var categories = await _categoryProductService.GetAll();
-            return View(categories);
+            var paged = await _categoryProductService.GetPaged(page, pageSize);
+            ViewData["TotalPages"] = paged.TotalPages;
+            ViewData["CurrentPage"] = paged.Page;
+            ViewData["TotalCount"] = paged.TotalCount;
+            ViewData["PageSize"] = paged.PageSize;
+            return View(paged.Items);
         }
 
         [HttpGet]
@@ -53,14 +62,23 @@ namespace CMS.Backend.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var category = await _categoryProductService.GetById(id);
+            var category = await _context.CategoriesProducts
+                .Include(cp => cp.Translations)
+                .FirstOrDefaultAsync(cp => cp.Id == id);
             if (category == null) return NotFound();
+
+            var transEn = category.Translations.FirstOrDefault(t => t.Locale == "en");
+            var transVi = category.Translations.FirstOrDefault(t => t.Locale == "vi");
 
             var model = new UpdateCategoryProductDTO
             {
                 Id = category.Id,
-                Name = category.Name,
-                Description = category.Description
+                NameEn = transEn?.Name ?? "",
+                NameVi = transVi?.Name ?? "",
+                DescriptionEn = transEn?.Description,
+                DescriptionVi = transVi?.Description,
+                SlugEn = transEn?.Slug,
+                SlugVi = transVi?.Slug
             };
 
             return View(model);

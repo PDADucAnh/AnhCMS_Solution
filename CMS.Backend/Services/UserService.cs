@@ -27,6 +27,25 @@ namespace CMS.Backend.Services
             return users.Select(u => u.ToDTO());
         }
 
+        public async Task<PagedResult<UserDTO>> GetPaged(int page, int pageSize)
+        {
+            var query = _context.Users.OrderByDescending(u => u.Id);
+
+            var totalCount = await query.CountAsync();
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<UserDTO>
+            {
+                Items = items.Select(u => u.ToDTO()).ToList(),
+                TotalCount = totalCount,
+                Page = page,
+                PageSize = pageSize
+            };
+        }
+
         public async Task<UserDTO?> GetById(int id)
         {
             var user = await _context.Users.FindAsync(id);

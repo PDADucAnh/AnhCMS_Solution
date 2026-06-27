@@ -1,7 +1,10 @@
 using CMS.Backend.Models.DTOs;
 using CMS.Backend.Services.Interfaces;
+using CMS.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CMS.Backend.Controllers
@@ -10,16 +13,22 @@ namespace CMS.Backend.Controllers
     public class CategoryController : Controller
     {
         private readonly ICategoryService _categoryService;
+        private readonly IApplicationDbContext _context;
 
-        public CategoryController(ICategoryService categoryService)
+        public CategoryController(ICategoryService categoryService, IApplicationDbContext context)
         {
             _categoryService = categoryService;
+            _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 12)
         {
-            var data = await _categoryService.GetAll();
-            return View(data);
+            var paged = await _categoryService.GetPaged(page, pageSize);
+            ViewData["TotalPages"] = paged.TotalPages;
+            ViewData["CurrentPage"] = paged.Page;
+            ViewData["TotalCount"] = paged.TotalCount;
+            ViewData["PageSize"] = paged.PageSize;
+            return View(paged.Items);
         }
 
         public async Task<IActionResult> Details(int id)
@@ -58,15 +67,23 @@ namespace CMS.Backend.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var category = await _categoryService.GetById(id);
-
+            var category = await _context.Categories
+                .Include(c => c.Translations)
+                .FirstOrDefaultAsync(c => c.Id == id);
             if (category == null) return NotFound();
+
+            var transEn = category.Translations.FirstOrDefault(t => t.Locale == "en");
+            var transVi = category.Translations.FirstOrDefault(t => t.Locale == "vi");
 
             var model = new UpdateCategoryDTO
             {
                 Id = category.Id,
-                Name = category.Name,
-                Description = category.Description
+                NameEn = transEn?.Name ?? "",
+                NameVi = transVi?.Name ?? "",
+                DescriptionEn = transEn?.Description,
+                DescriptionVi = transVi?.Description,
+                SlugEn = transEn?.Slug,
+                SlugVi = transVi?.Slug
             };
 
             return View(model);

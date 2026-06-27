@@ -81,7 +81,7 @@ namespace CMS.Backend.Services
             {
                 foreach (var detail in order.OrderDetails)
                 {
-                    var productName = detail.Product?.Name ?? $"Sản phẩm #{detail.ProductId}";
+                    var productName = detail.Product?.Translations?.FirstOrDefault(t => t.Locale == "en")?.Name ?? detail.Product?.Translations?.FirstOrDefault()?.Name ?? $"Sản phẩm #{detail.ProductId}";
                     var lineTotal = detail.Quantity * detail.UnitPrice;
                     sb.AppendLine($"<tr><td>{productName}</td><td>{detail.Quantity}</td><td>{detail.UnitPrice:N0}₫</td><td>{lineTotal:N0}₫</td></tr>");
                 }

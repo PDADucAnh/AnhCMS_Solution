@@ -113,20 +113,6 @@
                 </tbody>
             </table>
         </div>
-        <!-- Pagination Footer -->
-        <div class="px-6 py-4 border-t border-outline-variant/20 flex items-center justify-between bg-surface-container-lowest">
-            <span class="font-label-sm text-label-sm text-on-surface-variant">Showing 1 to @Model.Count() of @Model.Count() entries</span>
-            <div class="flex gap-2">
-                <button class="p-1 rounded-md text-on-surface-variant hover:bg-surface-variant transition-colors disabled:opacity-50" disabled>
-                    <span class="material-symbols-outlined">chevron_left</span>
-                </button>
-                <button class="w-8 h-8 rounded-md bg-primary text-on-primary font-label-sm text-label-sm flex items-center justify-center shadow-sm">1</button>
-                <button class="w-8 h-8 rounded-md text-on-surface-variant hover:bg-surface-variant font-label-sm text-label-sm flex items-center justify-center transition-colors">2</button>
-                <button class="w-8 h-8 rounded-md text-on-surface-variant hover:bg-surface-variant font-label-sm text-label-sm flex items-center justify-center transition-colors">3</button>
-                <button class="p-1 rounded-md text-on-surface-variant hover:bg-surface-variant transition-colors">
-                    <span class="material-symbols-outlined">chevron_right</span>
-                </button>
-            </div>
-        </div>
+        <partial name="_Pagination" />
     </div>
 </div>

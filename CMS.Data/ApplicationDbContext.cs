@@ -23,6 +23,10 @@ namespace CMS.Data
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<ExchangeRate> ExchangeRates { get; set; }
+        public DbSet<ProductTranslation> ProductTranslations { get; set; }
+        public DbSet<CategoryProductTranslation> CategoryProductTranslations { get; set; }
+        public DbSet<CategoryTranslation> CategoryTranslations { get; set; }
+        public DbSet<PostTranslation> PostTranslations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -30,6 +34,22 @@ namespace CMS.Data
 
             modelBuilder.Entity<Customer>()
                 .HasIndex(c => c.Email)
+                .IsUnique();
+
+            modelBuilder.Entity<ProductTranslation>()
+                .HasIndex(pt => new { pt.ProductId, pt.Locale })
+                .IsUnique();
+
+            modelBuilder.Entity<CategoryProductTranslation>()
+                .HasIndex(cpt => new { cpt.CategoryProductId, cpt.Locale })
+                .IsUnique();
+
+            modelBuilder.Entity<CategoryTranslation>()
+                .HasIndex(ct => new { ct.CategoryId, ct.Locale })
+                .IsUnique();
+
+            modelBuilder.Entity<PostTranslation>()
+                .HasIndex(pt => new { pt.PostId, pt.Locale })
                 .IsUnique();
         }
     }

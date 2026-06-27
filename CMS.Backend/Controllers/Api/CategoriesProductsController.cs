@@ -22,17 +22,17 @@ namespace CMS.Backend.Controllers.Api
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] string? locale = "en")
         {
-            var categories = await _categoryProductService.GetAll();
+            var categories = await _categoryProductService.GetAll(locale);
             return Ok(categories);
         }
 
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById(int id, [FromQuery] string? locale = "en")
         {
-            var category = await _categoryProductService.GetById(id);
+            var category = await _categoryProductService.GetById(id, locale);
             if (category == null)
                 return NotFound();
 

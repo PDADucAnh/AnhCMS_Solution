@@ -21,28 +21,40 @@ namespace CMS.Backend.Controllers.Api
         }
 
         [AllowAnonymous]
-        [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] string? currency)
+        [HttpGet("paged")]
+        public async Task<IActionResult> GetPaged([FromQuery] int page = 1, [FromQuery] int pageSize = 8, [FromQuery] string? currency = null, [FromQuery] string? locale = "en")
         {
-            var products = await _productService.GetAll();
+            var result = await _productService.GetPaged(page, pageSize, locale);
+            if (!string.IsNullOrEmpty(currency) && currency.ToUpper() != "USD")
+            {
+                result.Items = (await _productService.ToCurrency(result.Items, currency)).ToList();
+            }
+            return Ok(result);
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> GetAll([FromQuery] string? currency, [FromQuery] string? locale = "en")
+        {
+            var products = await _productService.GetAll(locale);
             var result = await _productService.ToCurrency(products, currency);
             return Ok(result);
         }
 
         [AllowAnonymous]
         [HttpGet("categoryproduct/{categoryProductId}")]
-        public async Task<IActionResult> GetByCategoryProduct(int categoryProductId, [FromQuery] string? currency)
+        public async Task<IActionResult> GetByCategoryProduct(int categoryProductId, [FromQuery] string? currency, [FromQuery] string? locale = "en")
         {
-            var products = await _productService.GetByCategoryProduct(categoryProductId);
+            var products = await _productService.GetByCategoryProduct(categoryProductId, locale);
             var result = await _productService.ToCurrency(products, currency);
             return Ok(result);
         }
 
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetDetail(int id, [FromQuery] string? currency)
+        public async Task<IActionResult> GetDetail(int id, [FromQuery] string? currency, [FromQuery] string? locale = "en")
         {
-            var product = await _productService.GetDetail(id);
+            var product = await _productService.GetDetail(id, locale);
 
             if (product == null)
             {
@@ -54,12 +66,12 @@ namespace CMS.Backend.Controllers.Api
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateProductDTO dto)
+        public async Task<IActionResult> Create([FromBody] CreateProductDTO dto, [FromQuery] string? locale = "en")
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var created = await _productService.Create(dto);
+            var created = await _productService.Create(dto, locale);
             await _notificationService.NotifyEntityChanged("Product");
             return CreatedAtAction(nameof(GetDetail), new { id = created.Id }, created);
         }

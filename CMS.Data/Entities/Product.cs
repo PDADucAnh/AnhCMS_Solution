@@ -1,17 +1,6 @@
-﻿/* Họ tên: Phạm Đức Anh
- * Mã SV: 2123110135
- * Lớp: CCQ2311D
- * Ngày tạo: 16/05/2026
- * Mô tả: tạo thực thể Product
- */
-
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CMS.Data.Entities
 {
@@ -19,12 +8,6 @@ namespace CMS.Data.Entities
     {
         [Key]
         public int Id { get; set; }
-
-        [Required(ErrorMessage = "Tên sản phẩm không được để trống")]
-        [MaxLength(200)]
-        public string Name { get; set; }
-
-        public string? Description { get; set; }
 
         [Range(0, double.MaxValue)]
         [Column(TypeName = "decimal(18,2)")]
@@ -34,10 +17,11 @@ namespace CMS.Data.Entities
 
         public string? ImageUrl { get; set; }
 
-        // Khóa ngoại nối tới CategoryProduct
         public int CategoryProductId { get; set; }
 
         [ForeignKey("CategoryProductId")]
         public virtual CategoryProduct? CategoryProduct { get; set; }
+
+        public virtual ICollection<ProductTranslation> Translations { get; set; } = new List<ProductTranslation>();
     }
 }

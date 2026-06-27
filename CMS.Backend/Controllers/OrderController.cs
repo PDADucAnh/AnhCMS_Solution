@@ -19,10 +19,14 @@ namespace CMS.Backend.Controllers
             _customerService = customerService;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 12)
         {
-            var orders = await _orderService.GetAll();
-            return View(orders);
+            var paged = await _orderService.GetPaged(page, pageSize);
+            ViewData["TotalPages"] = paged.TotalPages;
+            ViewData["CurrentPage"] = paged.Page;
+            ViewData["TotalCount"] = paged.TotalCount;
+            ViewData["PageSize"] = paged.PageSize;
+            return View(paged.Items);
         }
 
         [HttpGet]

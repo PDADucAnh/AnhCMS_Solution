@@ -14,6 +14,21 @@ const buildProductUrl = (path: string, params?: ProductQueryParams): string => {
 };
 
 const productService = {
+    getProductsPaged: async (page: number, pageSize: number, params?: ProductQueryParams) => {
+        try {
+            const searchParams = new URLSearchParams();
+            searchParams.set('page', page.toString());
+            searchParams.set('pageSize', pageSize.toString());
+            if (params?.locale) searchParams.set('locale', params.locale);
+            if (params?.currency) searchParams.set('currency', params.currency);
+            const response = await axiosClient.get(`/Products/paged?${searchParams.toString()}`);
+            return response.data || response;
+        } catch (error) {
+            console.error('API getProductsPaged error:', error);
+            throw error;
+        }
+    },
+
     getAllProducts: async (params?: ProductQueryParams) => {
         try {
             const response = await axiosClient.get(buildProductUrl('/Products', params));

@@ -1,9 +1,11 @@
 using CMS.Backend.Models.DTOs;
 using CMS.Backend.Services.Interfaces;
+using CMS.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.IO;
 using System.Linq;
@@ -17,22 +19,35 @@ namespace CMS.Backend.Controllers
         private readonly IPostService _postService;
         private readonly ICategoryService _categoryService;
         private readonly INotificationService _notificationService;
+        private readonly IApplicationDbContext _context;
 
-        public PostController(IPostService postService, ICategoryService categoryService, INotificationService notificationService)
+        public PostController(IPostService postService, ICategoryService categoryService, INotificationService notificationService, IApplicationDbContext context)
         {
             _postService = postService;
             _categoryService = categoryService;
             _notificationService = notificationService;
+            _context = context;
         }
 
-        public async Task<IActionResult> Index(int? id)
+        public async Task<IActionResult> Index(int? id, int page = 1, int pageSize = 12)
         {
-            var posts = await _postService.GetAll();
             if (id != null)
             {
-                posts = posts.Where(p => p.CategoryId == id.Value);
+                var allPosts = await _postService.GetAll();
+                var filtered = allPosts.Where(p => p.CategoryId == id.Value).ToList();
+                ViewData["TotalPages"] = 1;
+                ViewData["CurrentPage"] = 1;
+                ViewData["TotalCount"] = filtered.Count;
+                ViewData["PageSize"] = filtered.Count;
+                return View(filtered);
             }
-            return View(posts);
+
+            var paged = await _postService.GetPaged(page, pageSize);
+            ViewData["TotalPages"] = paged.TotalPages;
+            ViewData["CurrentPage"] = paged.Page;
+            ViewData["TotalCount"] = paged.TotalCount;
+            ViewData["PageSize"] = paged.PageSize;
+            return View(paged.Items);
         }
 
         [HttpPost]
@@ -117,18 +132,28 @@ namespace CMS.Backend.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var post = await _postService.GetById(id);
+            var categories = await _categoryService.GetAll();
+            ViewBag.CategoryList = new SelectList(categories, "Id", "Name");
+
+            var post = await _context.Posts
+                .Include(p => p.Translations)
+                .FirstOrDefaultAsync(p => p.Id == id);
             if (post == null) return NotFound();
 
-            var categories = await _categoryService.GetAll();
-            ViewBag.CategoryList = new SelectList(categories, "Id", "Name", post.CategoryId);
+            var transEn = post.Translations.FirstOrDefault(t => t.Locale == "en");
+            var transVi = post.Translations.FirstOrDefault(t => t.Locale == "vi");
 
             var model = new UpdatePostDTO
             {
                 Id = post.Id,
-                Title = post.Title,
-                Content = post.Content,
-                Summary = post.Summary,
+                TitleEn = transEn?.Title ?? "",
+                TitleVi = transVi?.Title ?? "",
+                ContentEn = transEn?.Content ?? "",
+                ContentVi = transVi?.Content ?? "",
+                SummaryEn = transEn?.Summary,
+                SummaryVi = transVi?.Summary,
+                SlugEn = transEn?.Slug,
+                SlugVi = transVi?.Slug,
                 ImageUrl = post.ImageUrl,
                 CategoryId = post.CategoryId
             };

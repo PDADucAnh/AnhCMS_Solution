@@ -54,6 +54,32 @@ namespace CMS.Backend.Services
             return list.Select(od => od.ToDTO());
         }
 
+        public async Task<PagedResult<OrderDetailDTO>> GetPaged(int page, int pageSize)
+        {
+            IQueryable<OrderDetail> query = _context.OrderDetails
+                .Include(od => od.Order)
+                    .ThenInclude(o => o.Customer)
+                .Include(od => od.Product)
+                    .ThenInclude(p => p.CategoryProduct)
+                .OrderByDescending(od => od.Id);
+
+            query = ApplyOwnershipFilter(query);
+
+            var totalCount = await query.CountAsync();
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<OrderDetailDTO>
+            {
+                Items = items.Select(od => od.ToDTO()).ToList(),
+                TotalCount = totalCount,
+                Page = page,
+                PageSize = pageSize
+            };
+        }
+
         public async Task<OrderDetailDTO?> GetById(int id)
         {
             IQueryable<OrderDetail> query = _context.OrderDetails

@@ -21,26 +21,34 @@ namespace CMS.Backend.Controllers.Api
         }
 
         [AllowAnonymous]
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        [HttpGet("paged")]
+        public async Task<IActionResult> GetPaged([FromQuery] int page = 1, [FromQuery] int pageSize = 6, [FromQuery] string? locale = "en")
         {
-            var posts = await _postService.GetAll();
+            var result = await _postService.GetPaged(page, pageSize, locale);
+            return Ok(result);
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> GetAll([FromQuery] string? locale = "en")
+        {
+            var posts = await _postService.GetAll(locale);
             return Ok(posts);
         }
 
         [AllowAnonymous]
         [HttpGet("category/{categoryId}")]
-        public async Task<IActionResult> GetByCategory(int categoryId)
+        public async Task<IActionResult> GetByCategory(int categoryId, [FromQuery] string? locale = "en")
         {
-            var posts = await _postService.GetByCategory(categoryId);
+            var posts = await _postService.GetByCategory(categoryId, locale);
             return Ok(posts);
         }
 
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetDetail(int id)
+        public async Task<IActionResult> GetDetail(int id, [FromQuery] string? locale = "en")
         {
-            var post = await _postService.GetById(id);
+            var post = await _postService.GetById(id, locale);
 
             if (post == null)
             {

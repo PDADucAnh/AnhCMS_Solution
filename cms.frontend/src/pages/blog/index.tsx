@@ -1,19 +1,24 @@
 import React, { useState } from 'react';
 import BlogSidebar from './BlogSidebar';
 import PostCard from '../../components/PostCard';
-import { usePosts } from '../../hooks/usePosts';
+import Pagination from '../../components/Pagination';
+import { usePostsPaged } from '../../hooks/usePosts';
 import type { Post } from '../../types/post';
 
 const BlogPage: React.FC = () => {
-  const { data: posts = [], isLoading, error } = usePosts();
+  const [page, setPage] = useState(1);
+  const pageSize = 6;
+  const { data: paged, isLoading, error } = usePostsPaged(page, pageSize);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
 
+  const posts = paged?.items ?? [];
   const filteredPosts = selectedCategoryId
     ? posts.filter((p: Post) => p.categoryId === selectedCategoryId)
     : posts;
 
   const handleCategoryChange = (id: number | null) => {
     setSelectedCategoryId(id);
+    setPage(1);
   };
 
   return (
@@ -42,11 +47,20 @@ const BlogPage: React.FC = () => {
                 <p className="text-label-sm uppercase tracking-widest text-secondary">No editorial stories found in this pillar.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-xl">
-                {filteredPosts.map((post: any) => (
-                    <PostCard key={post.id} post={post} />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-xl">
+                  {filteredPosts.map((post: any) => (
+                      <PostCard key={post.id} post={post} />
+                  ))}
+                </div>
+                {!selectedCategoryId && paged && paged.totalPages > 1 && (
+                  <Pagination
+                    page={paged.page}
+                    totalPages={paged.totalPages}
+                    onPageChange={setPage}
+                  />
+                )}
+              </>
             )}
           </div>
 

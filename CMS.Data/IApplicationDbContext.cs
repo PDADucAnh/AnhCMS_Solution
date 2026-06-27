@@ -18,6 +18,10 @@ namespace CMS.Data
         DbSet<OrderDetail> OrderDetails { get; set; }
         DbSet<RefreshToken> RefreshTokens { get; set; }
         DbSet<ExchangeRate> ExchangeRates { get; set; }
+        DbSet<ProductTranslation> ProductTranslations { get; set; }
+        DbSet<CategoryProductTranslation> CategoryProductTranslations { get; set; }
+        DbSet<CategoryTranslation> CategoryTranslations { get; set; }
+        DbSet<PostTranslation> PostTranslations { get; set; }
 
         EntityEntry Entry(object entity);
         EntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class;

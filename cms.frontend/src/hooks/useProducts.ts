@@ -1,12 +1,22 @@
 import { useQuery } from '@tanstack/react-query';
 import productService from '../services/productService';
 import { useLocale } from '../context/LocaleContext';
+import type { PagedResult } from '../types/pagination';
 
 export const useProducts = () => {
   const { locale, currency } = useLocale();
   return useQuery({
     queryKey: ['products', { locale, currency }],
     queryFn: () => productService.getAllProducts({ locale, currency }),
+  });
+};
+
+export const useProductsPaged = (page: number, pageSize: number) => {
+  const { locale, currency } = useLocale();
+  return useQuery<PagedResult<any>>({
+    queryKey: ['products', 'paged', page, pageSize, { locale, currency }],
+    queryFn: () => productService.getProductsPaged(page, pageSize, { locale, currency }),
+    placeholderData: (prev) => prev,
   });
 };
 

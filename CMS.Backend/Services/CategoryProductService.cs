@@ -1,4 +1,5 @@
 using CMS.Data;
+using CMS.Data.Entities;
 using CMS.Backend.Services.Interfaces;
 using CMS.Backend.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
@@ -17,16 +18,41 @@ namespace CMS.Backend.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<CategoryProductDTO>> GetAll()
+        public async Task<IEnumerable<CategoryProductDTO>> GetAll(string? locale = "en")
         {
-            var list = await _context.CategoriesProducts.ToListAsync();
-            return list.Select(c => c.ToDTO());
+            var list = await _context.CategoriesProducts
+                .Include(cp => cp.Translations.Where(t => t.Locale == locale))
+                .ToListAsync();
+            return list.Select(c => c.ToDTO(locale));
         }
 
-        public async Task<CategoryProductDTO?> GetById(int id)
+        public async Task<PagedResult<CategoryProductDTO>> GetPaged(int page, int pageSize, string? locale = "en")
         {
-            var category = await _context.CategoriesProducts.FindAsync(id);
-            return category?.ToDTO();
+            var query = _context.CategoriesProducts
+                .Include(cp => cp.Translations.Where(t => t.Locale == locale))
+                .OrderByDescending(cp => cp.Id);
+
+            var totalCount = await query.CountAsync();
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<CategoryProductDTO>
+            {
+                Items = items.Select(cp => cp.ToDTO(locale)).ToList(),
+                TotalCount = totalCount,
+                Page = page,
+                PageSize = pageSize
+            };
+        }
+
+        public async Task<CategoryProductDTO?> GetById(int id, string? locale = "en")
+        {
+            var category = await _context.CategoriesProducts
+                .Include(cp => cp.Translations.Where(t => t.Locale == locale))
+                .FirstOrDefaultAsync(cp => cp.Id == id);
+            return category?.ToDTO(locale);
         }
 
         public async Task<CategoryProductDTO> Create(CreateCategoryProductDTO dto)
@@ -42,7 +68,9 @@ namespace CMS.Backend.Services
             if (id != dto.Id)
                 return false;
 
-            var category = await _context.CategoriesProducts.FindAsync(id);
+            var category = await _context.CategoriesProducts
+                .Include(cp => cp.Translations)
+                .FirstOrDefaultAsync(cp => cp.Id == id);
             if (category == null)
                 return false;
 

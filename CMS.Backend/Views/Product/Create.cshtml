@@ -17,10 +17,28 @@
     </div>
 
     <form asp-action="Create" method="post" enctype="multipart/form-data" class="bg-surface-container-lowest border border-outline-variant p-xl space-y-xl">
-        <div class="space-y-md">
-            <label class="text-label-sm uppercase tracking-widest text-secondary font-bold">Item Nomenclature</label>
-            <input asp-for="Name" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-lg py-4 serif text-2xl font-bold placeholder:text-outline-variant" placeholder="Enter product name..." required />
-            <span asp-validation-for="Name" class="text-error text-xs uppercase tracking-widest"></span>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-xl">
+            <div class="space-y-md">
+                <label class="text-label-sm uppercase tracking-widest text-secondary font-bold">Name (English)</label>
+                <input asp-for="NameEn" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-lg py-4 serif text-2xl font-bold placeholder:text-outline-variant" placeholder="Product name..." required />
+                <span asp-validation-for="NameEn" class="text-error text-xs uppercase tracking-widest"></span>
+            </div>
+            <div class="space-y-md">
+                <label class="text-label-sm uppercase tracking-widest text-secondary font-bold">Name (Vietnamese)</label>
+                <input asp-for="NameVi" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-lg py-4 serif text-2xl font-bold placeholder:text-outline-variant" placeholder="Tên sản phẩm..." required />
+                <span asp-validation-for="NameVi" class="text-error text-xs uppercase tracking-widest"></span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-xl">
+            <div class="space-y-md">
+                <label class="text-label-sm uppercase tracking-widest text-secondary font-bold">Slug (English)</label>
+                <input asp-for="SlugEn" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-lg py-3" placeholder="product-name" />
+            </div>
+            <div class="space-y-md">
+                <label class="text-label-sm uppercase tracking-widest text-secondary font-bold">Slug (Vietnamese)</label>
+                <input asp-for="SlugVi" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-lg py-3" placeholder="ten-san-pham" />
+            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-xl">
@@ -47,10 +65,17 @@
             </div>
         </div>
 
-        <div class="space-y-md">
-            <label class="text-label-sm uppercase tracking-widest text-secondary font-bold">Narrative Description</label>
-            <textarea asp-for="Description" rows="6" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-lg py-4 text-body-lg leading-relaxed italic serif placeholder:text-outline-variant" placeholder="Describe the item's luxury essence..."></textarea>
-            <span asp-validation-for="Description" class="text-error text-xs uppercase tracking-widest"></span>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-xl">
+            <div class="space-y-md">
+                <label class="text-label-sm uppercase tracking-widest text-secondary font-bold">Description (English)</label>
+                <textarea asp-for="DescriptionEn" rows="6" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-lg py-4 text-body-lg leading-relaxed italic serif placeholder:text-outline-variant" placeholder="Describe the item's luxury essence..."></textarea>
+                <span asp-validation-for="DescriptionEn" class="text-error text-xs uppercase tracking-widest"></span>
+            </div>
+            <div class="space-y-md">
+                <label class="text-label-sm uppercase tracking-widest text-secondary font-bold">Description (Vietnamese)</label>
+                <textarea asp-for="DescriptionVi" rows="6" class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-lg py-4 text-body-lg leading-relaxed italic serif placeholder:text-outline-variant" placeholder="Mô tả sản phẩm..."></textarea>
+                <span asp-validation-for="DescriptionVi" class="text-error text-xs uppercase tracking-widest"></span>
+            </div>
         </div>
 
         <div class="pt-lg border-t border-outline-variant flex gap-md">
