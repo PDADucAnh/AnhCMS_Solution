@@ -137,6 +137,7 @@ builder.Services.Configure<CMS.Backend.Models.EmailSettings>(builder.Configurati
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IEmailService, CMS.Backend.Services.EmailService>();
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<CMS.Backend.Services.StockLockService>();
+builder.Services.AddHostedService<CMS.Backend.Services.OrderExpiryBackgroundService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
 builder.Services.AddSignalR();
