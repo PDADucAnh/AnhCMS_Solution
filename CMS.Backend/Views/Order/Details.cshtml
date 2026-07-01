@@ -81,10 +81,24 @@
                     @switch (Model.Status)
                     {
                         case OrderStatus.Pending: <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 border border-outline bg-surface-container-low text-secondary">Chờ xử lý</span> break;
+                        case OrderStatus.PendingVerification: <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 border border-warning bg-warning/10 text-warning">Chờ xác minh</span> break;
+                        case OrderStatus.Confirmed: <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 border border-info bg-info/10 text-info">Đã xác nhận</span> break;
+                        case OrderStatus.Preparing: <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 border border-secondary text-secondary">Đang cắm hoa</span> break;
                         case OrderStatus.Shipping: <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 border border-primary text-primary">Đang giao</span> break;
                         case OrderStatus.Completed: <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 bg-primary text-on-primary">Đã giao</span> break;
+                        case OrderStatus.Cancelled: <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 bg-error text-on-error">Đã hủy</span> break;
                     }
                 </div>
+                @if (Model.Status == OrderStatus.PendingVerification)
+                {
+                    <div class="pt-4 border-t border-outline-variant">
+                        <form asp-action="ConfirmCOD" asp-route-id="@Model.Id" method="post">
+                            <button type="submit" class="w-full bg-primary text-on-primary text-center py-2 text-[11px] uppercase tracking-widest font-bold hover:bg-neutral-800 transition-all">
+                                Đã gọi điện - Xác nhận đơn
+                            </button>
+                        </form>
+                    </div>
+                }
             </div>
 
             <div class="bg-surface-container-lowest border border-outline-variant p-lg space-y-md">

@@ -64,6 +64,7 @@ namespace CMS.Backend.Services
             {
                 var orderWithDetails = await _context.Orders
                     .Include(o => o.OrderDetails)
+                        .ThenInclude(od => od.Product)
                     .Include(o => o.Customer)
                     .FirstOrDefaultAsync(o => o.Id == request.OrderId);
 
@@ -96,7 +97,7 @@ namespace CMS.Backend.Services
                     orderWithDetails.PaymentStatus = PaymentStatus.Completed;
                     orderWithDetails.PaymentTransactionId = request.TransactionId;
                     orderWithDetails.PaymentPaidAt = DateTime.Now;
-                    await _emailService.SendOrderConfirmationAsync(orderWithDetails, orderWithDetails.Customer.Email, orderWithDetails.Customer.FullName);
+                    await _emailService.SendOrderConfirmedEmailAsync(orderWithDetails, orderWithDetails.Customer.Email, orderWithDetails.Customer.FullName);
                 }
 
                 return true;

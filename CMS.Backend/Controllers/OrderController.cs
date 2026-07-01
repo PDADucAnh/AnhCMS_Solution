@@ -98,6 +98,21 @@ namespace CMS.Backend.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> ConfirmCOD(int id)
+        {
+            var (success, message) = await _orderService.ProcessCODOrder(id);
+            if (success)
+            {
+                TempData["Success"] = "Đơn hàng đã được xác nhận thành công.";
+            }
+            else
+            {
+                TempData["Error"] = message;
+            }
+            return RedirectToAction("Details", new { id });
+        }
+
         public async Task<IActionResult> Details(int id)
         {
             var order = await _orderService.GetDetail(id);

@@ -22,6 +22,7 @@ namespace CMS.Backend.Services
         private readonly IPaymentService _paymentService;
         private readonly IFraudDetectionService _fraudDetectionService;
         private readonly StockLockService _stockLockService;
+        private readonly IEmailService _emailService;
 
         public OrderService(
             IApplicationDbContext context,
@@ -30,7 +31,8 @@ namespace CMS.Backend.Services
             IDeliverySlotService deliverySlotService,
             IPaymentService paymentService,
             IFraudDetectionService fraudDetectionService,
-            StockLockService stockLockService)
+            StockLockService stockLockService,
+            IEmailService emailService)
         {
             _context = context;
             _logger = logger;
@@ -39,6 +41,7 @@ namespace CMS.Backend.Services
             _paymentService = paymentService;
             _fraudDetectionService = fraudDetectionService;
             _stockLockService = stockLockService;
+            _emailService = emailService;
         }
 
         private async Task<int?> GetCurrentCustomerId()
@@ -275,11 +278,41 @@ namespace CMS.Backend.Services
             var order = await _context.Orders.FindAsync(id);
             if (order == null) return false;
 
+            var oldStatus = order.Status;
             dto.UpdateEntity(order);
 
             try
             {
                 await _context.SaveChangesAsync();
+
+                var statusChangedToConfirmed = oldStatus != OrderStatus.Confirmed && order.Status == OrderStatus.Confirmed;
+                var statusChangedToCompleted = oldStatus != OrderStatus.Completed && order.Status == OrderStatus.Completed;
+
+                if (statusChangedToConfirmed || statusChangedToCompleted)
+                {
+                    await _context.Entry(order).Reference(o => o.Customer).LoadAsync();
+                    await _context.Entry(order).Collection(o => o.OrderDetails).LoadAsync();
+                    if (order.OrderDetails != null)
+                    {
+                        foreach (var detail in order.OrderDetails)
+                        {
+                            await _context.Entry(detail).Reference(d => d.Product).LoadAsync();
+                        }
+                    }
+
+                    if (order.Customer != null && !string.IsNullOrEmpty(order.Customer.Email))
+                    {
+                        if (statusChangedToConfirmed)
+                        {
+                            await _emailService.SendOrderConfirmedEmailAsync(order, order.Customer.Email, order.Customer.FullName);
+                        }
+                        else if (statusChangedToCompleted)
+                        {
+                            await _emailService.SendOrderCompletedEmailAsync(order, order.Customer.Email, order.Customer.FullName);
+                        }
+                    }
+                }
+
                 return true;
             }
             catch (DbUpdateConcurrencyException)
@@ -452,6 +485,8 @@ namespace CMS.Backend.Services
         {
             var order = await _context.Orders
                 .Include(o => o.Customer)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Product)
                 .FirstOrDefaultAsync(o => o.Id == orderId);
 
             if (order == null)
@@ -467,21 +502,22 @@ namespace CMS.Backend.Services
             {
                 var requiresVerification = await _fraudDetectionService.RequiresVerification(order.Customer);
 
-                if (!requiresVerification)
-                {
-                    order.Status = OrderStatus.Confirmed;
-                    order.IsVerified = true;
-                    order.VerifiedAt = DateTime.Now;
-                    order.Customer.TotalOrders++;
-                    await _context.SaveChangesAsync();
-                    return (true, "Đơn hàng đã được xác nhận tự động");
-                }
-
                 order.Status = OrderStatus.Confirmed;
                 order.IsVerified = true;
                 order.VerifiedAt = DateTime.Now;
                 order.Customer.TotalOrders++;
                 await _context.SaveChangesAsync();
+
+                if (!string.IsNullOrEmpty(order.Customer.Email))
+                {
+                    await _emailService.SendOrderConfirmedEmailAsync(order, order.Customer.Email, order.Customer.FullName);
+                }
+
+                if (!requiresVerification)
+                {
+                    return (true, "Đơn hàng đã được xác nhận tự động");
+                }
+
                 return (true, "Đơn hàng đã được xác nhận qua xác minh thủ công");
             }
 
