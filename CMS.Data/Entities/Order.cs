@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -79,5 +79,7 @@ namespace CMS.Data.Entities
         public DateTime? VerifiedAt { get; set; }
 
         public decimal RefundAmount { get; set; }
+
+        public DateTime? TargetFinishedTime { get; set; }
     }
 }

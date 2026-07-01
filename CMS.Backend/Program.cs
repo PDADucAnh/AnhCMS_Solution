@@ -134,6 +134,8 @@ builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IDeliverySlotService,
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IPaymentService, CMS.Backend.Services.PaymentService>();
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IFraudDetectionService, CMS.Backend.Services.FraudDetectionService>();
 builder.Services.Configure<CMS.Backend.Models.EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+var timeSettings = builder.Configuration.GetSection("TimeSettings").Get<TimeSettings>() ?? new TimeSettings();
+builder.Services.AddSingleton(timeSettings);
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IEmailService, CMS.Backend.Services.EmailService>();
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<CMS.Backend.Services.StockLockService>();

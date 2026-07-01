@@ -258,6 +258,9 @@ namespace CMS.Data.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("TargetFinishedTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime?>("VerifiedAt")
                         .HasColumnType("datetime2");
 
