@@ -133,6 +133,8 @@ builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IAdvertisementService
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IDeliverySlotService, CMS.Backend.Services.DeliverySlotService>();
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IPaymentService, CMS.Backend.Services.PaymentService>();
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IFraudDetectionService, CMS.Backend.Services.FraudDetectionService>();
+builder.Services.Configure<CMS.Backend.Models.EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IEmailService, CMS.Backend.Services.EmailService>();
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<CMS.Backend.Services.StockLockService>();
 builder.Services.AddHttpContextAccessor();

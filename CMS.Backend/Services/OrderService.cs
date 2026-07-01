@@ -341,14 +341,19 @@ namespace CMS.Backend.Services
 
         public async Task<bool> CancelWithReason(int id, string? reason)
         {
-            var order = await _context.Orders.FindAsync(id);
+            var order = await _context.Orders
+                .Include(o => o.OrderDetails)
+                .FirstOrDefaultAsync(o => o.Id == id);
             if (order == null) return false;
 
             order.Status = OrderStatus.Cancelled;
             order.CancelledAt = DateTime.Now;
             order.CancellationReason = reason;
 
-            if (order.OrderDetails != null)
+            bool wasDeducted = order.PaymentMethod == PaymentMethod.COD 
+                || (order.PaymentMethod == PaymentMethod.OnlinePayment && order.PaymentStatus == PaymentStatus.Completed);
+
+            if (wasDeducted && order.OrderDetails != null)
             {
                 var productIds = order.OrderDetails.Select(od => od.ProductId).ToList();
                 var products = await _context.Products

@@ -4,6 +4,7 @@ using CMS.Backend.Models.DTOs;
 using CMS.Backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CMS.Backend.Services
@@ -12,11 +13,22 @@ namespace CMS.Backend.Services
     {
         private readonly IApplicationDbContext _context;
         private readonly IOrderService _orderService;
+        private readonly StockLockService _stockLockService;
+        private readonly IDeliverySlotService _deliverySlotService;
+        private readonly IEmailService _emailService;
 
-        public PaymentService(IApplicationDbContext context, IOrderService orderService)
+        public PaymentService(
+            IApplicationDbContext context, 
+            IOrderService orderService,
+            StockLockService stockLockService,
+            IDeliverySlotService deliverySlotService,
+            IEmailService emailService)
         {
             _context = context;
             _orderService = orderService;
+            _stockLockService = stockLockService;
+            _deliverySlotService = deliverySlotService;
+            _emailService = emailService;
         }
 
         public async Task<PaymentDTO> RecordPayment(int orderId, decimal amount, PaymentMethod method, string? transactionId = null)
@@ -48,28 +60,75 @@ namespace CMS.Backend.Services
 
         public async Task<bool> ProcessWebhook(PaymentWebhookRequest request)
         {
-            var order = await _context.Orders.FindAsync(request.OrderId);
-            if (order == null) return false;
-
             if (request.Status == "success" || request.Status == "completed")
             {
+                var orderWithDetails = await _context.Orders
+                    .Include(o => o.OrderDetails)
+                    .Include(o => o.Customer)
+                    .FirstOrDefaultAsync(o => o.Id == request.OrderId);
+
+                if (orderWithDetails == null) return false;
+
+                if (orderWithDetails.OrderDetails != null)
+                {
+                    var productIds = orderWithDetails.OrderDetails.Select(od => od.ProductId).ToList();
+                    var products = await _context.Products
+                        .Where(p => productIds.Contains(p.Id))
+                        .ToListAsync();
+
+                    foreach (var item in orderWithDetails.OrderDetails)
+                    {
+                        var product = products.FirstOrDefault(p => p.Id == item.ProductId);
+                        if (product != null)
+                        {
+                            product.StockQuantity -= item.Quantity;
+                        }
+                        
+                        _stockLockService.ReleaseReservedStock(item.ProductId, item.Quantity);
+                    }
+                }
+
                 await RecordPayment(request.OrderId, request.Amount, PaymentMethod.OnlinePayment, request.TransactionId);
+
+                if (orderWithDetails.Customer != null && !string.IsNullOrEmpty(orderWithDetails.Customer.Email))
+                {
+                    orderWithDetails.Status = OrderStatus.Confirmed;
+                    orderWithDetails.PaymentStatus = PaymentStatus.Completed;
+                    orderWithDetails.PaymentTransactionId = request.TransactionId;
+                    orderWithDetails.PaymentPaidAt = DateTime.Now;
+                    await _emailService.SendOrderConfirmationAsync(orderWithDetails, orderWithDetails.Customer.Email, orderWithDetails.Customer.FullName);
+                }
+
                 return true;
             }
 
             if (request.Status == "failed" || request.Status == "cancelled")
             {
-                order.PaymentStatus = PaymentStatus.Failed;
-                await _context.SaveChangesAsync();
+                var orderWithDetails = await _context.Orders
+                    .Include(o => o.OrderDetails)
+                    .FirstOrDefaultAsync(o => o.Id == request.OrderId);
 
-                await _orderService.CancelWithReason(request.OrderId, "Thanh toán thất bại");
+                if (orderWithDetails != null)
+                {
+                    orderWithDetails.PaymentStatus = PaymentStatus.Failed;
+                    await _context.SaveChangesAsync();
 
-                var slot = await _context.DeliverySlots
-                    .FirstOrDefaultAsync(s => s.Id == order.Id);
-                if (slot != null && slot.CurrentBooked > 0)
-                    slot.CurrentBooked--;
+                    if (orderWithDetails.OrderDetails != null)
+                    {
+                        foreach (var item in orderWithDetails.OrderDetails)
+                        {
+                            _stockLockService.ReleaseReservedStock(item.ProductId, item.Quantity);
 
-                await _context.SaveChangesAsync();
+                            if (orderWithDetails.DeliveryDate.HasValue && !string.IsNullOrEmpty(orderWithDetails.DeliveryTimeSlot))
+                            {
+                                await _deliverySlotService.ReleaseSlot(item.ProductId, orderWithDetails.DeliveryDate.Value, orderWithDetails.DeliveryTimeSlot);
+                            }
+                        }
+                    }
+
+                    await _orderService.CancelWithReason(request.OrderId, "Thanh toán thất bại");
+                }
+
                 return true;
             }
 
