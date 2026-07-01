@@ -20,7 +20,7 @@ export const checkoutSchema = z.object({
   notes: z.string().optional(),
 
   // Phương thức thanh toán
-  paymentMethod: z.string().default('COD'),
+  paymentMethod: z.string(),
 });
 
 export type CheckoutFormData = z.infer<typeof checkoutSchema>;

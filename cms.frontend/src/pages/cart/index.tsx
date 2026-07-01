@@ -104,7 +104,7 @@ const ShoppingCartPage: React.FC = () => {
           setIsLocationModalOpen(false);
           navigate('/checkout');
         }}
-        items={cartItems}
+        items={cartItems.map(item => ({ productId: item.id, quantity: item.quantity }))}
       />
     </div>
   );
