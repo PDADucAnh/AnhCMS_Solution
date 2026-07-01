@@ -101,6 +101,11 @@ namespace CMS.Backend.Services
             if (product == null)
                 return false;
 
+            if (string.IsNullOrEmpty(dto.ImageUrl))
+            {
+                dto.ImageUrl = product.ImageUrl;
+            }
+
             dto.UpdateEntity(product);
 
             try
