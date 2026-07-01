@@ -52,10 +52,10 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="w-full top-0 sticky z-50 bg-background/80 backdrop-blur-md">
+    <header className="sticky top-0 z-50 shadow-sm bg-surface w-full shadow-[0px_4px_20px_rgba(171,44,93,0.02)]">
       <div className="flex justify-between items-center h-20 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
         <Link
-          className="font-headline-md text-headline-md text-primary tracking-tight no-underline"
+          className="text-headline-md font-headline-md text-primary tracking-tight no-underline"
           to="/"
         >
           PDA FLOWER
@@ -64,6 +64,17 @@ const Header: React.FC = () => {
         <nav className="hidden md:flex gap-stack-md items-center">
           <Link className={navLinkClass('/')} to="/">Trang chủ</Link>
           <Link className={navLinkClass('/shop')} to="/shop">Cửa hàng</Link>
+          <div className="relative group py-2">
+            <span className="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors duration-300 flex items-center gap-1 cursor-pointer">
+              Danh mục
+              <span className="material-symbols-outlined text-[18px]">expand_more</span>
+            </span>
+            <div className="absolute left-0 top-full w-48 bg-surface-container-lowest shadow-lg rounded-lg border border-outline-variant/20 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 overflow-hidden transform origin-top-left scale-95 group-hover:scale-100">
+              <Link className="block px-4 py-3 text-label-md text-on-surface hover:bg-surface-container-low hover:text-primary transition-colors no-underline" to="/shop?category=Sinh%20nhật">Hoa sinh nhật</Link>
+              <Link className="block px-4 py-3 text-label-md text-on-surface hover:bg-surface-container-low hover:text-primary transition-colors border-t border-outline-variant/10 no-underline" to="/shop?category=Khai%20trương">Hoa khai trương</Link>
+              <Link className="block px-4 py-3 text-label-md text-on-surface hover:bg-surface-container-low hover:text-primary transition-colors border-t border-outline-variant/10 no-underline" to="/shop?category=Hoa%20cưới">Hoa cưới</Link>
+            </div>
+          </div>
           <Link className={navLinkClass('/blog')} to="/blog">Bộ sưu tập</Link>
           <Link className={navLinkClass('/about')} to="/about">Giới thiệu</Link>
           <Link className={navLinkClass('/contact')} to="/contact">Liên hệ</Link>
