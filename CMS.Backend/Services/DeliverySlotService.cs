@@ -65,7 +65,7 @@ namespace CMS.Backend.Services
                             ProductId = productId,
                             DeliveryDate = date,
                             TimeSlot = timeSlot,
-                            Available = 50
+                            Available = 5
                         });
                     }
                 }
@@ -97,7 +97,7 @@ namespace CMS.Backend.Services
                 ProductId = productId,
                 DeliveryDate = deliveryDate.Date,
                 TimeSlot = timeSlot,
-                MaxCapacity = 50,
+                MaxCapacity = 5,
                 CurrentBooked = 1,
                 IsActive = true
             };

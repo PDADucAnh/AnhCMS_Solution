@@ -144,11 +144,25 @@ namespace CMS.Backend.Services
                 var method = paymentMethod ?? PaymentMethod.COD;
                 var initialStatus = status ?? (method == PaymentMethod.COD ? OrderStatus.PendingVerification : OrderStatus.Pending);
 
-                if (method == PaymentMethod.COD && customer != null)
+                if (method == PaymentMethod.COD)
                 {
-                    var isBlacklisted = await _fraudDetectionService.IsPhoneBlacklisted(customer.Phone ?? "");
+                    bool isBlacklisted = false;
+                    if (customer != null && !string.IsNullOrEmpty(customer.Phone))
+                    {
+                        isBlacklisted = await _fraudDetectionService.IsPhoneBlacklisted(customer.Phone);
+                    }
+
+                    if (!isBlacklisted && !string.IsNullOrEmpty(notes))
+                    {
+                        var match = System.Text.RegularExpressions.Regex.Match(notes, @"SĐT:\s*([0-9]+)");
+                        if (match.Success)
+                        {
+                            isBlacklisted = await _fraudDetectionService.IsPhoneBlacklisted(match.Groups[1].Value);
+                        }
+                    }
+
                     if (isBlacklisted)
-                        return (false, "Số điện thoại đã bị khóa do lịch sử bùng hàng. Vui lòng chọn thanh toán chuyển khoản.", 0);
+                        return (false, "Số điện thoại này đã bị chặn thanh toán COD do lịch sử bùng đơn hàng. Vui lòng thanh toán online.", 0);
                 }
 
                 if (deliveryDate.HasValue && !string.IsNullOrEmpty(deliveryTimeSlot))
@@ -157,7 +171,7 @@ namespace CMS.Backend.Services
                     {
                         var locked = await _deliverySlotService.TryLockSlot(item.ProductId, deliveryDate.Value, deliveryTimeSlot);
                         if (!locked)
-                            return (false, $"Khung giờ {deliveryTimeSlot} ngày {deliveryDate:dd/MM/yyyy} đã hết chỗ. Vui lòng chọn khung giờ khác.", 0);
+                            return (false, "Khung giờ này đã bận, vui lòng chọn khung giờ khác.", 0);
                     }
                 }
 
@@ -188,14 +202,19 @@ namespace CMS.Backend.Services
                         if (!productDict.TryGetValue(item.ProductId, out var product))
                             throw new KeyNotFoundException($"Sản phẩm không tồn tại");
 
-                        if (product.StockQuantity < item.Quantity)
-                            return (false, $"Sản phẩm '{product.Name}' không đủ hàng (còn: {product.StockQuantity}, yêu cầu: {item.Quantity})", 0);
+                        int reserved = _stockLockService.GetReservedStock(item.ProductId);
+                        int availableStock = product.StockQuantity - reserved;
+                        if (availableStock < item.Quantity)
+                            return (false, $"Sản phẩm '{product.Name}' không đủ hàng (còn: {availableStock}, yêu cầu: {item.Quantity})", 0);
                     }
 
                     newOrder.OrderDetails = items.Select(item =>
                     {
                         var product = productDict[item.ProductId];
-                        product.StockQuantity -= item.Quantity;
+                        if (method != PaymentMethod.OnlinePayment)
+                        {
+                            product.StockQuantity -= item.Quantity;
+                        }
 
                         return new OrderDetail
                         {
@@ -204,6 +223,14 @@ namespace CMS.Backend.Services
                             UnitPrice = item.UnitPrice
                         };
                     }).ToList();
+
+                    if (method == PaymentMethod.OnlinePayment)
+                    {
+                        foreach (var item in items)
+                        {
+                            _stockLockService.ReserveStock(item.ProductId, item.Quantity, TimeSpan.FromMinutes(15));
+                        }
+                    }
                 }
 
                 _context.Orders.Add(newOrder);
