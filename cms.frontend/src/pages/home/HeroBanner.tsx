@@ -58,18 +58,49 @@ function HeroBanner() {
 
   if (loading) {
     return (
-      <section className="relative h-[819px] min-h-[600px] w-full overflow-hidden flex items-center justify-center mb-xl bg-neutral-100">
+      <section className="relative h-[819px] md:h-[921px] w-full overflow-hidden flex items-center justify-center mb-xl bg-neutral-100">
         <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </section>
     );
   }
 
-  if (error || slides.length === 0) {
-    return null;
+  if (slides.length === 0) {
+    return (
+      <section className="relative h-[819px] md:h-[921px] w-full overflow-hidden mb-xl group/slider">
+        <div className="absolute inset-0 w-full h-full">
+          <img
+            alt="Tuyệt Tác Hoa Tươi Nghệ Thuật"
+            className="w-full h-full object-cover"
+            src="https://images.unsplash.com/photo-1526047932273-341f2a7631f9?q=80&w=1600"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-surface/80 via-surface/40 to-transparent" />
+        </div>
+
+        <div className="absolute inset-0 z-20 flex items-center justify-center">
+          <div className="relative text-center px-margin max-w-3xl flex flex-col items-center">
+            <span className="font-label-sm text-label-sm text-primary uppercase tracking-widest mb-stack-sm bg-surface-container-lowest/80 px-4 py-1 rounded-full backdrop-blur-sm petal-shadow inline-block">
+              Lãng Mạn Đương Đại
+            </span>
+            <h1 className="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-stack-md leading-tight">
+              Tuyệt Tác Hoa Tươi Nghệ Thuật
+            </h1>
+            <p className="font-body-lg text-body-lg text-on-surface-variant mb-lg max-w-xl mx-auto">
+              Khám phá những thiết kế hoa độc đáo, sang trọng mang phong cách châu Âu hiện đại.
+            </p>
+            <Link
+              to="/shop"
+              className="bg-primary text-on-primary px-8 py-4 font-label-sm text-label-sm uppercase tracking-widest border border-primary text-decoration-none btn-luxury btn-primary-luxury inline-block"
+            >
+              Mua ngay
+            </Link>
+          </div>
+        </div>
+      </section>
+    );
   }
 
   return (
-    <section className="relative h-[819px] min-h-[600px] w-full overflow-hidden mb-xl group/slider">
+    <section className="relative h-[819px] md:h-[921px] w-full overflow-hidden mb-xl group/slider">
       {slides.map((slide, index) => (
         <div
           key={slide.id}
@@ -82,12 +113,12 @@ function HeroBanner() {
             className="w-full h-full object-cover"
             src={getImageUrl(slide.imageUrl)}
           />
-          <div className="absolute inset-0 bg-black/20" />
+          <div className="absolute inset-0 bg-gradient-to-t from-surface/80 via-surface/40 to-transparent" />
         </div>
       ))}
 
       <div className="absolute inset-0 z-20 flex items-center justify-center">
-        <div className="relative text-center px-margin max-w-3xl">
+        <div className="relative text-center px-margin max-w-3xl flex flex-col items-center">
           {slides.map((slide, index) => (
             <div
               key={slide.id}
@@ -99,11 +130,14 @@ function HeroBanner() {
             >
               {index === current && (
                 <>
-                  <h1 className="font-display-xl text-display-xl md:text-display-xl text-white mb-md tracking-tighter uppercase drop-shadow-md">
+                  <span className="font-label-sm text-label-sm text-primary uppercase tracking-widest mb-stack-sm bg-surface-container-lowest/80 px-4 py-1 rounded-full backdrop-blur-sm petal-shadow inline-block">
+                    Lãng Mạn Đương Đại
+                  </span>
+                  <h1 className="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-stack-md leading-tight">
                     {slide.title}
                   </h1>
                   {slide.subtitle && (
-                    <p className="font-body-lg text-body-lg text-white mb-lg drop-shadow-md max-w-xl mx-auto">
+                    <p className="font-body-lg text-body-lg text-on-surface-variant mb-lg max-w-xl mx-auto">
                       {slide.subtitle}
                     </p>
                   )}
@@ -164,3 +198,4 @@ function HeroBanner() {
 }
 
 export default HeroBanner;
+

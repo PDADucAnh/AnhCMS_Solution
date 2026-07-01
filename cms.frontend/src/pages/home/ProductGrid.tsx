@@ -4,7 +4,7 @@ import ProductCard from '../../components/ProductCard';
 import Pagination from '../../components/Pagination';
 
 interface ProductGridProps {
-  categoryId: number | null;
+  categoryId?: number | null;
 }
 
 function ProductGrid({ categoryId }: ProductGridProps) {
@@ -14,7 +14,7 @@ function ProductGrid({ categoryId }: ProductGridProps) {
 
   if (isLoading) {
     return (
-      <div className="px-margin my-xl text-center">
+      <div className="py-stack-lg md:py-[80px] px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full border-t border-outline-variant/30 text-center">
         <div className="animate-pulse flex flex-col items-center">
           <div className="size-12 bg-surface-container rounded-full mb-md"></div>
           <p className="font-label-sm text-label-sm uppercase tracking-widest text-secondary">Đang tải...</p>
@@ -23,32 +23,28 @@ function ProductGrid({ categoryId }: ProductGridProps) {
     );
   }
 
-  const displayProducts = categoryId
-    ? (paged?.items ?? []).filter((p: any) => p.categoryProductId === categoryId)
-    : (paged?.items ?? []);
+  const items = paged?.items ?? [];
 
   return (
-    <section className="px-margin mb-xl">
-      <div className="flex justify-between items-end mb-lg">
-        <h2 className="font-display-xl text-headline-lg uppercase tracking-tight">Xu hướng</h2>
-        <span className="font-label-sm text-label-sm uppercase tracking-widest text-secondary">
-          Hiển thị ({paged?.totalCount ?? 0}) Sản phẩm
-        </span>
+    <section className="py-stack-lg md:py-[80px] px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full border-t border-outline-variant/30">
+      <div className="text-center mb-xl">
+        <h2 className="font-display-lg text-headline-md uppercase tracking-tight mb-sm">Tuyệt Tác Ngàn Hoa</h2>
+        <div className="w-12 h-0.5 bg-primary mx-auto mt-md"></div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-gutter">
-        {displayProducts.map((product: any) => (
-          <ProductCard key={product.id} item={product} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-gutter mb-xl">
+        {items.map((product: any) => (
+          <ProductCard key={product.id} item={product} variant="standard" />
         ))}
-        {displayProducts.length === 0 && (
+        {items.length === 0 && (
           <div className="col-span-full text-center py-20 bg-surface-container-low border border-dashed border-outline-variant">
             <span className="material-symbols-outlined text-4xl text-outline mb-md">inventory_2</span>
-            <p className="font-label-sm text-label-sm uppercase tracking-widest text-secondary">Không tìm thấy sản phẩm trong danh mục này</p>
+            <p className="font-label-sm text-label-sm uppercase tracking-widest text-secondary">Không tìm thấy sản phẩm</p>
           </div>
         )}
       </div>
 
-      {!categoryId && paged && (
+      {paged && (
         <Pagination
           page={paged.page}
           totalPages={paged.totalPages}
@@ -60,3 +56,4 @@ function ProductGrid({ categoryId }: ProductGridProps) {
 }
 
 export default ProductGrid;
+

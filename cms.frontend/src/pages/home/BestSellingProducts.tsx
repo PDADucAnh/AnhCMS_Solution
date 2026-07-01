@@ -7,8 +7,12 @@ function BestSellingProducts() {
 
     if (isLoading) {
         return (
-            <section className="px-margin mb-xl">
-                <h2 className="font-display-xl text-headline-lg uppercase tracking-tight mb-lg">Bán chạy</h2>
+            <section className="py-stack-lg md:py-[80px] px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full">
+                <div className="text-center mb-xl">
+                    <h2 className="font-display-lg text-headline-md uppercase tracking-tight mb-sm">Bán Chạy Nhất</h2>
+                    <p className="text-secondary font-body-md max-w-xl mx-auto">Những thiết kế được yêu thích nhất, đích thân tuyển chọn cho bạn.</p>
+                    <div className="w-12 h-0.5 bg-primary mx-auto mt-md animate-pulse"></div>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
                     {[1, 2, 3].map((i) => (
                         <div key={i} className="animate-pulse bg-surface-container rounded-lg h-96" />
@@ -19,19 +23,15 @@ function BestSellingProducts() {
     }
 
     return (
-        <section className="px-margin mb-xl">
-            <div className="flex justify-between items-end mb-lg">
-                <div className="flex items-center gap-3">
-                    <h2 className="font-display-xl text-headline-lg uppercase tracking-tight">Bán chạy</h2>
-                    <span className="bg-error/10 text-error px-3 py-1 rounded-full font-label-sm text-label-sm uppercase tracking-widest animate-pulse">Bán chạy</span>
-                </div>
-                <span className="font-label-sm text-label-sm uppercase tracking-widest text-secondary">
-                    Top ({products.length}) Sản phẩm
-                </span>
+        <section className="py-stack-lg md:py-[80px] px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full">
+            <div className="text-center mb-xl">
+                <h2 className="font-display-lg text-headline-md uppercase tracking-tight mb-sm">Bán Chạy Nhất</h2>
+                <p className="text-secondary font-body-md max-w-xl mx-auto">Những thiết kế được yêu thích nhất, đích thân tuyển chọn cho bạn.</p>
+                <div className="w-12 h-0.5 bg-primary mx-auto mt-md"></div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
                 {products.map((product: any) => (
-                    <ProductCard key={product.id} item={product} />
+                    <ProductCard key={product.id} item={product} variant="featured" />
                 ))}
                 {products.length === 0 && (
                     <div className="col-span-full text-center py-20 bg-surface-container-low border border-dashed border-outline-variant">
@@ -45,3 +45,4 @@ function BestSellingProducts() {
 }
 
 export default BestSellingProducts;
+

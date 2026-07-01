@@ -1,39 +1,24 @@
-import React, { useState } from 'react';
+import React from 'react';
 import HeroBanner from './HeroBanner';
-import CategoryMenu from './CategoryMenu';
+import BestSellingProducts from './BestSellingProducts';
 import ProductGrid from './ProductGrid';
 import LatestBlog from './LatestBlog';
 import { useRealtimeUpdates } from '../../hooks/useRealtimeUpdates';
 
 function Home() {
     useRealtimeUpdates();
-    const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
-
-    const handleSelectCategory = (id: number | null) => {
-        setSelectedCategoryId(id);
-    };
 
     return (
-        <div className="bg-background text-on-background font-body-md antialiased pt-20">
-            <main className="max-w-[1440px] mx-auto">
-                {/* Hero Section */}
+        <div className="bg-surface text-on-surface font-body-md antialiased min-h-screen flex flex-col pt-20">
+            <main className="flex-grow flex flex-col">
                 <HeroBanner />
-
-                {/* Featured Categories / Menu */}
-                <CategoryMenu 
-                    onSelectCategory={handleSelectCategory} 
-                    activeId={selectedCategoryId} 
-                />
-
-                {/* Trending Products Grid */}
-                <ProductGrid categoryId={selectedCategoryId} />
-
-                {/* Blog Section */}
+                <BestSellingProducts />
+                <ProductGrid categoryId={null} />
                 <LatestBlog />
             </main>
-
         </div>
     );
 }
 
 export default Home;
+
