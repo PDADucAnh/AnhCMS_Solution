@@ -7,9 +7,10 @@ import type { Product } from '../types/product';
 
 interface ProductCardProps {
   item: Product;
+  variant?: 'standard' | 'featured';
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ item, variant = 'standard' }) => {
     const { addToCart } = useCart();
     const navigate = useNavigate();
 
@@ -28,49 +29,105 @@ const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
         navigate('/checkout');
     };
 
-    return (
-        <article className="bg-surface-container-lowest rounded-lg overflow-hidden shadow-[0px_4px_20px_rgba(171,44,93,0.02)] transition-shadow duration-300 hover:shadow-[0px_8px_30px_rgba(171,44,93,0.08)] group flex flex-col">
-            <Link to={`/product/${item.id}`} className="no-underline">
-                <div className="relative w-full h-80 overflow-hidden bg-surface-variant">
-                    <img
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                        src={imageUrl}
-                        alt={item.name}
-                    />
+    const handleCardClick = () => {
+        navigate(`/product/${item.id}`);
+    };
+
+    if (variant === 'featured') {
+        return (
+            <div 
+                onClick={handleCardClick}
+                className="group cursor-pointer flex flex-col h-full"
+            >
+                <div className="relative aspect-[4/5] overflow-hidden rounded-xl petal-shadow mb-4">
+                    <Link to={`/product/${item.id}`} onClick={(e) => e.stopPropagation()}>
+                        <img
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            src={imageUrl}
+                            alt={item.name}
+                        />
+                    </Link>
                     {item.stockQuantity <= 5 && (
                         <div className="absolute top-2 left-2 bg-primary/90 text-on-primary px-2 py-1 rounded text-[10px] font-label-sm uppercase tracking-widest">
                             Chỉ còn {item.stockQuantity} sản phẩm
                         </div>
                     )}
                 </div>
-            </Link>
-            <div className="p-4 flex flex-col items-center text-center flex-grow">
-                <Link to={`/product/${item.id}`} className="no-underline">
-                    <h3 className="font-headline-sm text-headline-sm text-on-surface mb-1">{item.name}</h3>
+                <div className="flex flex-col flex-grow">
+                    <h3 className="font-headline-sm text-headline-sm text-on-surface mb-1">
+                        <Link to={`/product/${item.id}`} className="no-underline text-on-surface hover:text-primary transition-colors" onClick={(e) => e.stopPropagation()}>
+                            {item.name}
+                        </Link>
+                    </h3>
+                    <p className="text-primary font-label-md mb-4">{formatCurrency(item.price)}</p>
+                    <div className="flex gap-2 w-full mt-auto" onClick={(e) => e.stopPropagation()}>
+                        <button
+                            onClick={handleAddToCart}
+                            className="flex-1 flex items-center justify-center gap-1 py-2 border border-primary text-primary font-label-sm rounded hover:bg-primary hover:text-on-primary transition-colors cursor-pointer bg-transparent"
+                        >
+                            <span className="material-symbols-outlined text-[18px]">shopping_cart</span>
+                            Thêm vào giỏ
+                        </button>
+                        <button
+                            onClick={handleBuyNow}
+                            className="flex-1 flex items-center justify-center gap-1 py-2 bg-primary-container text-on-primary font-label-sm rounded hover:opacity-90 transition-opacity cursor-pointer border-0"
+                        >
+                            <span className="material-symbols-outlined text-[18px]">bolt</span>
+                            Mua ngay
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Default 'standard' variant
+    return (
+        <div 
+            onClick={handleCardClick}
+            className="group flex flex-col h-full"
+        >
+            <div className="relative aspect-[1/1] aspect-square overflow-hidden rounded-lg bg-surface-container-low mb-4">
+                <Link to={`/product/${item.id}`} onClick={(e) => e.stopPropagation()}>
+                    <img
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        src={imageUrl}
+                        alt={item.name}
+                    />
                 </Link>
-                <p className="font-body-md text-body-md text-on-surface-variant mb-4 flex-grow">
-                    {item.description ? item.description.substring(0, 60) + (item.description.length > 60 ? '...' : '') : 'Sắp xếp hoa cao cấp'}
-                </p>
-                <p className="font-headline-sm text-headline-sm text-primary mb-4">{formatCurrency(item.price)}</p>
-                <div className="flex gap-2 w-full">
+                {item.stockQuantity <= 5 && (
+                    <div className="absolute top-2 left-2 bg-primary/90 text-on-primary px-2 py-1 rounded text-[10px] font-label-sm uppercase tracking-widest">
+                        Chỉ còn {item.stockQuantity} sản phẩm
+                    </div>
+                )}
+            </div>
+            <div className="flex flex-col flex-grow">
+                <h3 className="font-label-md text-on-surface mb-1">
+                    <Link to={`/product/${item.id}`} className="no-underline text-on-surface hover:text-primary transition-colors" onClick={(e) => e.stopPropagation()}>
+                        {item.name}
+                    </Link>
+                </h3>
+                <p className="text-label-sm mb-2" style={{ color: 'rgb(128, 0, 0)' }}>{formatCurrency(item.price)}</p>
+                <div className="flex gap-2 w-full mt-auto" onClick={(e) => e.stopPropagation()}>
                     <button
                         onClick={handleAddToCart}
-                        className="flex-1 px-4 py-3 bg-surface-container-low text-on-surface-variant rounded-lg font-label-sm text-label-sm hover:bg-surface-container hover:text-primary transition-colors border-0 cursor-pointer flex items-center justify-center gap-2"
+                        className="flex-1 flex items-center justify-center gap-1 py-2 border border-primary text-primary font-label-sm rounded hover:bg-primary hover:text-on-primary transition-colors cursor-pointer bg-transparent"
                     >
-                        <span className="material-symbols-outlined text-[18px]">shopping_bag</span>
+                        <span className="material-symbols-outlined text-[18px]">shopping_cart</span>
                         Thêm vào giỏ
                     </button>
                     <button
                         onClick={handleBuyNow}
-                        className="flex-1 px-4 py-3 bg-primary text-on-primary rounded-lg font-label-sm text-label-sm hover:bg-primary/90 transition-colors shadow-sm border-0 cursor-pointer flex items-center justify-center gap-2"
+                        className="flex-1 flex items-center justify-center gap-1 py-2 bg-primary-container text-on-primary font-label-sm rounded hover:opacity-90 transition-opacity cursor-pointer border-0"
                     >
-                        <span className="material-symbols-outlined text-[18px]">flash_on</span>
+                        <span className="material-symbols-outlined text-[18px]">bolt</span>
                         Mua ngay
                     </button>
                 </div>
             </div>
-        </article>
+        </div>
     );
-}
+};
 
 export default ProductCard;
+
