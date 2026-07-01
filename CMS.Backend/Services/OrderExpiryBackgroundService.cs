@@ -50,15 +50,13 @@ namespace CMS.Backend.Services
             using (var scope = _serviceProvider.CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
-                var stockLockService = scope.ServiceProvider.GetRequiredService<StockLockService>();
-                var deliverySlotService = scope.ServiceProvider.GetRequiredService<IDeliverySlotService>();
+                var orderService = scope.ServiceProvider.GetRequiredService<IOrderService>();
 
                 var now = DateTime.Now;
                 var codCutoff = now.AddMinutes(-30);
                 var onlineCutoff = now.AddMinutes(-15);
 
                 var expiredOrders = await context.Orders
-                    .Include(o => o.OrderDetails)
                     .Where(o =>
                         (o.PaymentMethod == PaymentMethod.COD && o.Status == OrderStatus.PendingVerification && o.OrderDate <= codCutoff) ||
                         (o.PaymentMethod == PaymentMethod.OnlinePayment && o.Status == OrderStatus.Pending && o.OrderDate <= onlineCutoff)
@@ -71,53 +69,13 @@ namespace CMS.Backend.Services
 
                     foreach (var order in expiredOrders)
                     {
-                        order.Status = OrderStatus.Cancelled;
-                        order.CancelledAt = now;
+                        string reason = order.PaymentMethod == PaymentMethod.COD
+                            ? "Tự động hủy đơn COD quá hạn 30 phút chưa xác minh"
+                            : "Tự động hủy đơn hàng quá hạn thanh toán 15 phút";
 
-                        if (order.PaymentMethod == PaymentMethod.COD)
-                        {
-                            order.CancellationReason = "Tự động hủy đơn COD quá hạn 30 phút chưa xác minh";
-
-                            // Restore stock in database since it was deducted on creation for COD
-                            if (order.OrderDetails != null && order.OrderDetails.Any())
-                            {
-                                var productIds = order.OrderDetails.Select(od => od.ProductId).ToList();
-                                var products = await context.Products
-                                    .Where(p => productIds.Contains(p.Id))
-                                    .ToListAsync(stoppingToken);
-
-                                foreach (var detail in order.OrderDetails)
-                                {
-                                    var product = products.FirstOrDefault(p => p.Id == detail.ProductId);
-                                    if (product != null)
-                                    {
-                                        product.StockQuantity += detail.Quantity;
-                                    }
-                                }
-                            }
-                        }
-                        else if (order.PaymentMethod == PaymentMethod.OnlinePayment)
-                        {
-                            order.CancellationReason = "Tự động hủy đơn hàng quá hạn thanh toán 15 phút";
-                        }
-
-                        // Release delivery slot and release reserved stock
-                        if (order.OrderDetails != null)
-                        {
-                            foreach (var detail in order.OrderDetails)
-                            {
-                                if (order.DeliveryDate.HasValue && !string.IsNullOrEmpty(order.DeliveryTimeSlot))
-                                {
-                                    await deliverySlotService.ReleaseSlot(detail.ProductId, order.DeliveryDate.Value, order.DeliveryTimeSlot);
-                                }
-
-                                stockLockService.ReleaseReservedStock(detail.ProductId, detail.Quantity);
-                            }
-                        }
+                        await orderService.CancelWithReason(order.Id, reason);
                     }
-
-                    await context.SaveChangesAsync(stoppingToken);
-                    _logger.LogInformation("Successfully cancelled {Count} expired orders and released slots/stock locks.", expiredOrders.Count);
+                    _logger.LogInformation("Successfully cancelled {Count} expired orders centrally.", expiredOrders.Count);
                 }
             }
         }

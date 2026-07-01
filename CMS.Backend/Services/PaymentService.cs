@@ -60,16 +60,19 @@ namespace CMS.Backend.Services
 
         public async Task<bool> ProcessWebhook(PaymentWebhookRequest request)
         {
+            var orderWithDetails = await _context.Orders
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Product)
+                .Include(o => o.Customer)
+                .FirstOrDefaultAsync(o => o.Id == request.OrderId);
+
+            if (orderWithDetails == null) return false;
+
+            // Idempotency check: if order is already paid, do not process again
+            if (orderWithDetails.PaymentStatus == PaymentStatus.Completed) return true;
+
             if (request.Status == "success" || request.Status == "completed")
             {
-                var orderWithDetails = await _context.Orders
-                    .Include(o => o.OrderDetails)
-                        .ThenInclude(od => od.Product)
-                    .Include(o => o.Customer)
-                    .FirstOrDefaultAsync(o => o.Id == request.OrderId);
-
-                if (orderWithDetails == null) return false;
-
                 if (orderWithDetails.OrderDetails != null)
                 {
                     var productIds = orderWithDetails.OrderDetails.Select(od => od.ProductId).ToList();
@@ -105,30 +108,11 @@ namespace CMS.Backend.Services
 
             if (request.Status == "failed" || request.Status == "cancelled")
             {
-                var orderWithDetails = await _context.Orders
-                    .Include(o => o.OrderDetails)
-                    .FirstOrDefaultAsync(o => o.Id == request.OrderId);
+                orderWithDetails.PaymentStatus = PaymentStatus.Failed;
+                await _context.SaveChangesAsync();
 
-                if (orderWithDetails != null)
-                {
-                    orderWithDetails.PaymentStatus = PaymentStatus.Failed;
-                    await _context.SaveChangesAsync();
-
-                    if (orderWithDetails.OrderDetails != null)
-                    {
-                        foreach (var item in orderWithDetails.OrderDetails)
-                        {
-                            _stockLockService.ReleaseReservedStock(item.ProductId, item.Quantity);
-
-                            if (orderWithDetails.DeliveryDate.HasValue && !string.IsNullOrEmpty(orderWithDetails.DeliveryTimeSlot))
-                            {
-                                await _deliverySlotService.ReleaseSlot(item.ProductId, orderWithDetails.DeliveryDate.Value, orderWithDetails.DeliveryTimeSlot);
-                            }
-                        }
-                    }
-
-                    await _orderService.CancelWithReason(request.OrderId, "Thanh toán thất bại");
-                }
+                // OrderService.CancelWithReason handles both cache/lock releasing and slot releasing centrally
+                await _orderService.CancelWithReason(request.OrderId, "Thanh toán thất bại");
 
                 return true;
             }

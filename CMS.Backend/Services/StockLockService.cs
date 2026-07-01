@@ -44,7 +44,7 @@ namespace CMS.Backend.Services
                 if (newReserved == 0)
                     _cache.Remove(key);
                 else
-                    _cache.Set(key, newReserved);
+                    _cache.Set(key, newReserved, TimeSpan.FromMinutes(15));
             }
         }
     }

@@ -23,6 +23,27 @@ namespace CMS.Backend.Services
             _logger = logger;
         }
 
+        private SmtpClient CreateSmtpClient()
+        {
+            var client = new SmtpClient(_settings.SmtpHost, _settings.SmtpPort)
+            {
+                EnableSsl = _settings.EnableSsl,
+                DeliveryMethod = SmtpDeliveryMethod.Network
+            };
+
+            if (!string.IsNullOrEmpty(_settings.Username) && !string.IsNullOrEmpty(_settings.Password))
+            {
+                client.UseDefaultCredentials = false;
+                client.Credentials = new NetworkCredential(_settings.Username, _settings.Password);
+            }
+            else
+            {
+                client.UseDefaultCredentials = true;
+            }
+
+            return client;
+        }
+
         public async Task SendOrderConfirmationAsync(Order order, string customerEmail, string customerName)
         {
             try
@@ -37,12 +58,7 @@ namespace CMS.Backend.Services
                 };
                 message.To.Add(new MailAddress(customerEmail, customerName));
 
-                using var client = new SmtpClient(_settings.SmtpHost, _settings.SmtpPort)
-                {
-                    EnableSsl = _settings.EnableSsl,
-                    DeliveryMethod = SmtpDeliveryMethod.Network,
-                    UseDefaultCredentials = true
-                };
+                using var client = CreateSmtpClient();
 
                 await client.SendMailAsync(message);
                 _logger.LogInformation("Order confirmation email sent for order {OrderId} to {Email}", order.Id, customerEmail);
@@ -114,12 +130,7 @@ namespace CMS.Backend.Services
                 };
                 message.To.Add(new MailAddress(customerEmail, customerName));
 
-                using var client = new SmtpClient(_settings.SmtpHost, _settings.SmtpPort)
-                {
-                    EnableSsl = _settings.EnableSsl,
-                    DeliveryMethod = SmtpDeliveryMethod.Network,
-                    UseDefaultCredentials = true
-                };
+                using var client = CreateSmtpClient();
 
                 await client.SendMailAsync(message);
                 _logger.LogInformation("Order confirmed email sent for order {OrderId} to {Email}", order.Id, customerEmail);
@@ -145,12 +156,7 @@ namespace CMS.Backend.Services
                 };
                 message.To.Add(new MailAddress(customerEmail, customerName));
 
-                using var client = new SmtpClient(_settings.SmtpHost, _settings.SmtpPort)
-                {
-                    EnableSsl = _settings.EnableSsl,
-                    DeliveryMethod = SmtpDeliveryMethod.Network,
-                    UseDefaultCredentials = true
-                };
+                using var client = CreateSmtpClient();
 
                 await client.SendMailAsync(message);
                 _logger.LogInformation("Order completed email sent for order {OrderId} to {Email}", order.Id, customerEmail);

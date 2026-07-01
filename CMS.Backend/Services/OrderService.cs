@@ -379,6 +379,8 @@ namespace CMS.Backend.Services
                 .FirstOrDefaultAsync(o => o.Id == id);
             if (order == null) return false;
 
+            if (order.Status == OrderStatus.Cancelled) return true;
+
             order.Status = OrderStatus.Cancelled;
             order.CancelledAt = DateTime.Now;
             order.CancellationReason = reason;
@@ -386,7 +388,7 @@ namespace CMS.Backend.Services
             bool wasDeducted = order.PaymentMethod == PaymentMethod.COD 
                 || (order.PaymentMethod == PaymentMethod.OnlinePayment && order.PaymentStatus == PaymentStatus.Completed);
 
-            if (wasDeducted && order.OrderDetails != null)
+            if (order.OrderDetails != null)
             {
                 var productIds = order.OrderDetails.Select(od => od.ProductId).ToList();
                 var products = await _context.Products
@@ -395,9 +397,17 @@ namespace CMS.Backend.Services
 
                 foreach (var detail in order.OrderDetails)
                 {
-                    var product = products.FirstOrDefault(p => p.Id == detail.ProductId);
-                    if (product != null)
-                        product.StockQuantity += detail.Quantity;
+                    if (wasDeducted)
+                    {
+                        var product = products.FirstOrDefault(p => p.Id == detail.ProductId);
+                        if (product != null)
+                            product.StockQuantity += detail.Quantity;
+                    }
+
+                    if (!string.IsNullOrEmpty(order.DeliveryTimeSlot) && order.DeliveryDate.HasValue)
+                        await _deliverySlotService.ReleaseSlot(detail.ProductId, order.DeliveryDate.Value, order.DeliveryTimeSlot);
+
+                    _stockLockService.ReleaseReservedStock(detail.ProductId, detail.Quantity);
                 }
             }
 
@@ -453,6 +463,9 @@ namespace CMS.Backend.Services
             order.CancellationReason = reason ?? "Hủy theo yêu cầu";
             order.RefundAmount = refundAmount;
 
+            bool wasDeducted = order.PaymentMethod == PaymentMethod.COD 
+                || (order.PaymentMethod == PaymentMethod.OnlinePayment && order.PaymentStatus == PaymentStatus.Completed);
+
             if (order.OrderDetails != null)
             {
                 var productIds = order.OrderDetails.Select(od => od.ProductId).ToList();
@@ -462,12 +475,17 @@ namespace CMS.Backend.Services
 
                 foreach (var detail in order.OrderDetails)
                 {
-                    var product = products.FirstOrDefault(p => p.Id == detail.ProductId);
-                    if (product != null)
-                        product.StockQuantity += detail.Quantity;
+                    if (wasDeducted)
+                    {
+                        var product = products.FirstOrDefault(p => p.Id == detail.ProductId);
+                        if (product != null)
+                            product.StockQuantity += detail.Quantity;
+                    }
 
                     if (!string.IsNullOrEmpty(order.DeliveryTimeSlot) && order.DeliveryDate.HasValue)
                         await _deliverySlotService.ReleaseSlot(detail.ProductId, order.DeliveryDate.Value, order.DeliveryTimeSlot);
+
+                    _stockLockService.ReleaseReservedStock(detail.ProductId, detail.Quantity);
                 }
             }
 
