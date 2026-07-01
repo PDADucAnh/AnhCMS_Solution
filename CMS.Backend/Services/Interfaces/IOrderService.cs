@@ -28,5 +28,7 @@ namespace CMS.Backend.Services.Interfaces
         Task<(bool Success, string Message)> ProcessCODOrder(int orderId);
 
         Task<bool> AutoCancelUnverifiedOrders(int timeoutMinutes = 30);
+
+        Task<bool> IsPhoneBlacklisted(string phone);
     }
 }

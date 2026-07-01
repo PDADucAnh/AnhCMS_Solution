@@ -496,5 +496,11 @@ namespace CMS.Backend.Services
 
             return expiredOrders.Any();
         }
+
+        public async Task<bool> IsPhoneBlacklisted(string phone)
+        {
+            if (string.IsNullOrEmpty(phone)) return false;
+            return await _fraudDetectionService.IsPhoneBlacklisted(phone);
+        }
     }
 }

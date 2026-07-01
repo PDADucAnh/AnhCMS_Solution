@@ -130,5 +130,14 @@ namespace CMS.Backend.Controllers.Api
 
             return Ok(new { message });
         }
+
+        [HttpGet("check-blacklist")]
+        [AllowAnonymous]
+        public async Task<IActionResult> CheckBlacklist([FromQuery] string phone)
+        {
+            if (string.IsNullOrEmpty(phone)) return BadRequest("SĐT không hợp lệ");
+            var isBlacklisted = await _orderService.IsPhoneBlacklisted(phone);
+            return Ok(new { isBlacklisted });
+        }
     }
 }
