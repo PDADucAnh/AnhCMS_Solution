@@ -133,6 +133,8 @@ builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IAdvertisementService
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IDeliverySlotService, CMS.Backend.Services.DeliverySlotService>();
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IPaymentService, CMS.Backend.Services.PaymentService>();
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IFraudDetectionService, CMS.Backend.Services.FraudDetectionService>();
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<CMS.Backend.Services.StockLockService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
 builder.Services.AddSignalR();

@@ -21,6 +21,7 @@ namespace CMS.Backend.Services
         private readonly IDeliverySlotService _deliverySlotService;
         private readonly IPaymentService _paymentService;
         private readonly IFraudDetectionService _fraudDetectionService;
+        private readonly StockLockService _stockLockService;
 
         public OrderService(
             IApplicationDbContext context,
@@ -28,7 +29,8 @@ namespace CMS.Backend.Services
             IHttpContextAccessor httpContextAccessor,
             IDeliverySlotService deliverySlotService,
             IPaymentService paymentService,
-            IFraudDetectionService fraudDetectionService)
+            IFraudDetectionService fraudDetectionService,
+            StockLockService stockLockService)
         {
             _context = context;
             _logger = logger;
@@ -36,6 +38,7 @@ namespace CMS.Backend.Services
             _deliverySlotService = deliverySlotService;
             _paymentService = paymentService;
             _fraudDetectionService = fraudDetectionService;
+            _stockLockService = stockLockService;
         }
 
         private async Task<int?> GetCurrentCustomerId()
