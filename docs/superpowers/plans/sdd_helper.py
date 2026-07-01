@@ -4,7 +4,7 @@ import subprocess
 
 def get_git_path():
     try:
-        res = subprocess.run(["git", "rev-parse", "--git-path", "sdd"], capture_output=True, text=True, check=True)
+        res = subprocess.run(["git", "rev-parse", "--git-path", "sdd"], capture_output=True, text=True, encoding='utf-8', check=True)
         return res.stdout.strip()
     except Exception:
         return ".git/sdd"
@@ -81,24 +81,24 @@ def create_review_package(base, head, out_path=None):
         git_sdd = get_git_path()
         os.makedirs(git_sdd, exist_ok=True)
         # short shas
-        base_short = subprocess.run(["git", "rev-parse", "--short", base], capture_output=True, text=True, check=True).stdout.strip()
-        head_short = subprocess.run(["git", "rev-parse", "--short", head], capture_output=True, text=True, check=True).stdout.strip()
+        base_short = subprocess.run(["git", "rev-parse", "--short", base], capture_output=True, text=True, encoding='utf-8', check=True).stdout.strip()
+        head_short = subprocess.run(["git", "rev-parse", "--short", head], capture_output=True, text=True, encoding='utf-8', check=True).stdout.strip()
         out_path = os.path.join(git_sdd, f"review-{base_short}..{head_short}.diff")
         
-    log_res = subprocess.run(["git", "log", "--oneline", f"{base}..{head}"], capture_output=True, text=True, check=True)
-    stat_res = subprocess.run(["git", "diff", "--stat", f"{base}..{head}"], capture_output=True, text=True, check=True)
-    diff_res = subprocess.run(["git", "diff", "-U10", f"{base}..{head}"], capture_output=True, text=True, check=True)
+    log_res = subprocess.run(["git", "log", "--oneline", f"{base}..{head}"], capture_output=True, text=True, encoding='utf-8', errors='replace')
+    stat_res = subprocess.run(["git", "diff", "--stat", f"{base}..{head}"], capture_output=True, text=True, encoding='utf-8', errors='replace')
+    diff_res = subprocess.run(["git", "diff", "-U10", f"{base}..{head}"], capture_output=True, text=True, encoding='utf-8', errors='replace')
     
     with open(out_path, 'w', encoding='utf-8') as f:
         f.write(f"# Review package: {base}..{head}\n\n")
         f.write("## Commits\n")
-        f.write(log_res.stdout)
+        f.write(log_res.stdout or "")
         f.write("\n\n## Files changed\n")
-        f.write(stat_res.stdout)
+        f.write(stat_res.stdout or "")
         f.write("\n\n## Diff\n")
-        f.write(diff_res.stdout)
+        f.write(diff_res.stdout or "")
         
-    commits_count = len(log_res.stdout.strip().split('\n')) if log_res.stdout.strip() else 0
+    commits_count = len(log_res.stdout.strip().split('\n')) if log_res.stdout and log_res.stdout.strip() else 0
     print(f"wrote {out_path}: {commits_count} commit(s)")
     return out_path
 
