@@ -3,6 +3,7 @@ using CMS.Data.Entities;
 using CMS.Backend.Models.DTOs;
 using CMS.Backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,20 +13,20 @@ namespace CMS.Backend.Services
     public class PaymentService : IPaymentService
     {
         private readonly IApplicationDbContext _context;
-        private readonly IOrderService _orderService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly StockLockService _stockLockService;
         private readonly IDeliverySlotService _deliverySlotService;
         private readonly IEmailService _emailService;
 
         public PaymentService(
             IApplicationDbContext context, 
-            IOrderService orderService,
+            IServiceProvider serviceProvider,
             StockLockService stockLockService,
             IDeliverySlotService deliverySlotService,
             IEmailService emailService)
         {
             _context = context;
-            _orderService = orderService;
+            _serviceProvider = serviceProvider;
             _stockLockService = stockLockService;
             _deliverySlotService = deliverySlotService;
             _emailService = emailService;
@@ -112,7 +113,8 @@ namespace CMS.Backend.Services
                 await _context.SaveChangesAsync();
 
                 // OrderService.CancelWithReason handles both cache/lock releasing and slot releasing centrally
-                await _orderService.CancelWithReason(request.OrderId, "Thanh toán thất bại");
+                var orderService = _serviceProvider.GetRequiredService<IOrderService>();
+                await orderService.CancelWithReason(request.OrderId, "Thanh toán thất bại");
 
                 return true;
             }
