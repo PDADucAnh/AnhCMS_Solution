@@ -1,15 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import CartTable from './CartTable';
 import { formatCurrency } from '../../utils/currency';
+import { LocationGatingModal } from '../../components/LocationGatingModal';
 
 const ShoppingCartPage: React.FC = () => {
   const navigate = useNavigate();
   const { cartItems, removeFromCart, updateQuantity, cartTotal } = useCart();
+  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
 
   const handleCheckout = () => {
-    navigate('/checkout');
+    const savedDistrict = localStorage.getItem('delivery_district');
+    if (savedDistrict) {
+      navigate('/checkout');
+    } else {
+      setIsLocationModalOpen(true);
+    }
   };
 
   if (cartItems.length === 0) {
@@ -89,6 +96,16 @@ const ShoppingCartPage: React.FC = () => {
           </aside>
         </div>
       </main>
+
+      <LocationGatingModal
+        isOpen={isLocationModalOpen}
+        onClose={() => setIsLocationModalOpen(false)}
+        onSuccess={(district) => {
+          setIsLocationModalOpen(false);
+          navigate('/checkout');
+        }}
+        items={cartItems}
+      />
     </div>
   );
 };
