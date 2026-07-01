@@ -10,6 +10,21 @@ import { checkoutSchema, type CheckoutFormData } from '../../schemas/checkoutSch
 import axiosClient from '../../api/axiosClient';
 import toast from 'react-hot-toast';
 
+const getVietnamTodayString = () => {
+  const options = { timeZone: 'Asia/Ho_Chi_Minh', year: 'numeric' as const, month: '2-digit' as const, day: '2-digit' as const };
+  const formatter = new Intl.DateTimeFormat('en-CA', options);
+  return formatter.format(new Date());
+};
+
+const DEFAULT_SLOTS = [
+  { value: '08:00-10:00', label: '08:00 - 10:00 (Sáng)', startHour: 8 },
+  { value: '10:00-12:00', label: '10:00 - 12:00 (Sáng)', startHour: 10 },
+  { value: '13:00-15:00', label: '13:00 - 15:00 (Chiều)', startHour: 13 },
+  { value: '15:00-17:00', label: '15:00 - 17:00 (Chiều)', startHour: 15 },
+  { value: '17:00-19:00', label: '17:00 - 19:00 (Tối)', startHour: 17 },
+  { value: '19:00-21:00', label: '19:00 - 21:00 (Tối)', startHour: 19 },
+];
+
 const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
   const { cartItems, cartTotal, clearCart } = useCart();
@@ -29,6 +44,32 @@ const CheckoutPage: React.FC = () => {
   });
 
   const watchPaymentMethod = watch('paymentMethod');
+  const selectedDate = watch('deliveryDate');
+
+  const getFilteredSlots = () => {
+    const todayStr = getVietnamTodayString();
+    if (selectedDate === todayStr) {
+      const now = new Date();
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Asia/Ho_Chi_Minh',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: false
+      });
+      const parts = formatter.formatToParts(now);
+      const hourPart = parts.find(p => p.type === 'hour')?.value;
+      const minutePart = parts.find(p => p.type === 'minute')?.value;
+      
+      const currentVnHour = hourPart ? parseInt(hourPart, 10) : now.getHours();
+      const currentVnMinute = minutePart ? parseInt(minutePart, 10) : now.getMinutes();
+      
+      const currentVnTime = currentVnHour + (currentVnMinute / 60.0);
+      const limitTime = currentVnTime + 2.0; // Lead-Time Rule = 2 hours
+
+      return DEFAULT_SLOTS.filter(slot => slot.startHour >= limitTime);
+    }
+    return DEFAULT_SLOTS;
+  };
 
   useEffect(() => {
     refreshProfile();
@@ -268,7 +309,7 @@ const CheckoutPage: React.FC = () => {
                             <input
                                 type="date"
                                 {...register('deliveryDate')}
-                                min={new Date().toISOString().split('T')[0]}
+                                min={getVietnamTodayString()}
                                 className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm font-semibold tracking-widest text-on-surface"
                             />
                             {errors.deliveryDate && <p className="text-error text-[10px] mt-1">{errors.deliveryDate.message}</p>}
@@ -280,12 +321,9 @@ const CheckoutPage: React.FC = () => {
                                 className="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary px-md py-4 text-sm font-semibold tracking-widest text-on-surface"
                             >
                                 <option value="">-- CHỌN KHUNG GIỜ --</option>
-                                <option value="08:00-10:00">08:00 - 10:00 (Sáng)</option>
-                                <option value="10:00-12:00">10:00 - 12:00 (Sáng)</option>
-                                <option value="13:00-15:00">13:00 - 15:00 (Chiều)</option>
-                                <option value="15:00-17:00">15:00 - 17:00 (Chiều)</option>
-                                <option value="17:00-19:00">17:00 - 19:00 (Tối)</option>
-                                <option value="19:00-21:00">19:00 - 21:00 (Tối)</option>
+                                {getFilteredSlots().map(slot => (
+                                    <option key={slot.value} value={slot.value}>{slot.label}</option>
+                                ))}
                             </select>
                             {errors.deliveryTimeSlot && <p className="text-error text-[10px] mt-1">{errors.deliveryTimeSlot.message}</p>}
                         </div>
