@@ -1,6 +1,7 @@
 using CMS.Data;
 using CMS.Data.Entities;
 using CMS.Backend.Services.Interfaces;
+using CMS.Backend.Models;
 using CMS.Backend.Models.DTOs;
 using CMS.Backend.Utils;
 using Microsoft.AspNetCore.Http;
@@ -23,6 +24,7 @@ namespace CMS.Backend.Services
         private readonly IFraudDetectionService _fraudDetectionService;
         private readonly StockLockService _stockLockService;
         private readonly IEmailService _emailService;
+        private readonly TimeSettings _timeSettings;
 
         public OrderService(
             IApplicationDbContext context,
@@ -32,7 +34,8 @@ namespace CMS.Backend.Services
             IPaymentService paymentService,
             IFraudDetectionService fraudDetectionService,
             StockLockService stockLockService,
-            IEmailService emailService)
+            IEmailService emailService,
+            TimeSettings timeSettings)
         {
             _context = context;
             _logger = logger;
@@ -42,6 +45,7 @@ namespace CMS.Backend.Services
             _fraudDetectionService = fraudDetectionService;
             _stockLockService = stockLockService;
             _emailService = emailService;
+            _timeSettings = timeSettings;
         }
 
         private async Task<int?> GetCurrentCustomerId()
@@ -168,6 +172,31 @@ namespace CMS.Backend.Services
                         return (false, "Số điện thoại này đã bị chặn thanh toán COD do lịch sử bùng đơn hàng. Vui lòng thanh toán online.", 0);
                 }
 
+                var vnNow = DateTimeUtils.GetVietnamTime();
+                if (deliveryDate.HasValue)
+                {
+                    if (deliveryDate.Value.Date < vnNow.Date)
+                    {
+                        return (false, "Ngày giao hàng không hợp lệ", 0);
+                    }
+
+                    if (deliveryDate.Value.Date == vnNow.Date)
+                    {
+                        if (!string.IsNullOrEmpty(deliveryTimeSlot))
+                        {
+                            var parts = deliveryTimeSlot.Split('-');
+                            if (parts.Length > 0 && TimeSpan.TryParse(parts[0], out var slotStartTime))
+                            {
+                                var minAllowedTime = vnNow.TimeOfDay.Add(TimeSpan.FromHours(_timeSettings.LeadTimeHours));
+                                if (slotStartTime < minAllowedTime)
+                                {
+                                    return (false, "Khung giờ chọn không khả dụng, vui lòng chọn khung giờ khác.", 0);
+                                }
+                            }
+                        }
+                    }
+                }
+
                 if (deliveryDate.HasValue && !string.IsNullOrEmpty(deliveryTimeSlot))
                 {
                     foreach (var item in items ?? new List<OrderItemInput>())
@@ -175,6 +204,16 @@ namespace CMS.Backend.Services
                         var locked = await _deliverySlotService.TryLockSlot(item.ProductId, deliveryDate.Value, deliveryTimeSlot);
                         if (!locked)
                             return (false, "Khung giờ này đã bận, vui lòng chọn khung giờ khác.", 0);
+                    }
+                }
+
+                DateTime? targetFinishedTime = null;
+                if (deliveryDate.HasValue && !string.IsNullOrEmpty(deliveryTimeSlot))
+                {
+                    var parts = deliveryTimeSlot.Split('-');
+                    if (parts.Length > 0 && TimeSpan.TryParse(parts[0], out var slotStartTime))
+                    {
+                        targetFinishedTime = deliveryDate.Value.Date.Add(slotStartTime).AddMinutes(-_timeSettings.PreShippingMinutes);
                     }
                 }
 
@@ -189,7 +228,8 @@ namespace CMS.Backend.Services
                     DeliveryDate = deliveryDate,
                     DeliveryTimeSlot = deliveryTimeSlot,
                     DeliveryDistrict = deliveryDistrict,
-                    DeliveryAddress = deliveryAddress
+                    DeliveryAddress = deliveryAddress,
+                    TargetFinishedTime = targetFinishedTime
                 };
 
                 if (items != null && items.Count > 0)

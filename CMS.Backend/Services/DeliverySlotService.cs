@@ -1,4 +1,5 @@
 using CMS.Data;
+using CMS.Backend.Models;
 using CMS.Backend.Models.DTOs;
 using CMS.Backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ namespace CMS.Backend.Services
     public class DeliverySlotService : IDeliverySlotService
     {
         private readonly IApplicationDbContext _context;
+        private readonly TimeSettings _timeSettings;
 
         private static readonly string[] DefaultTimeSlots =
         {
@@ -23,9 +25,10 @@ namespace CMS.Backend.Services
             "19:00-21:00"
         };
 
-        public DeliverySlotService(IApplicationDbContext context)
+        public DeliverySlotService(IApplicationDbContext context, TimeSettings timeSettings)
         {
             _context = context;
+            _timeSettings = timeSettings;
         }
 
         public async Task<List<AvailableSlotDTO>> GetAvailableSlots(int productId, int daysAhead = 7)
@@ -65,7 +68,7 @@ namespace CMS.Backend.Services
                             ProductId = productId,
                             DeliveryDate = date,
                             TimeSlot = timeSlot,
-                            Available = 5
+                            Available = _timeSettings.MaxOrdersPerSlot
                         });
                     }
                 }
@@ -97,7 +100,7 @@ namespace CMS.Backend.Services
                 ProductId = productId,
                 DeliveryDate = deliveryDate.Date,
                 TimeSlot = timeSlot,
-                MaxCapacity = 5,
+                MaxCapacity = _timeSettings.MaxOrdersPerSlot,
                 CurrentBooked = 1,
                 IsActive = true
             };
