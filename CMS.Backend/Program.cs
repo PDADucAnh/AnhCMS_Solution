@@ -24,9 +24,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Globalization;
 
-var cultureInfo = new CultureInfo("en-US");
+var cultureInfo = new CultureInfo("vi-VN");
 CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
 CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
@@ -104,7 +105,11 @@ builder.Services.AddControllersWithViews(options =>
 });
 
 // Swagger
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -124,7 +129,10 @@ builder.Services.AddScoped<CMS.Backend.Services.Interfaces.ICustomerService, CMS
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IOrderService, CMS.Backend.Services.OrderService>();
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IOrderDetailService, CMS.Backend.Services.OrderDetailService>();
 builder.Services.AddScoped<CMS.Backend.Services.Interfaces.INotificationService, CMS.Backend.Services.NotificationService>();
-builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IExchangeRateService, CMS.Backend.Services.ExchangeRateService>();
+builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IAdvertisementService, CMS.Backend.Services.AdvertisementService>();
+builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IDeliverySlotService, CMS.Backend.Services.DeliverySlotService>();
+builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IPaymentService, CMS.Backend.Services.PaymentService>();
+builder.Services.AddScoped<CMS.Backend.Services.Interfaces.IFraudDetectionService, CMS.Backend.Services.FraudDetectionService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
 builder.Services.AddSignalR();
@@ -151,6 +159,23 @@ builder.Services.AddAuthorization(options =>
 
 var app = builder.Build();
 
+// Seed admin account
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    if (!context.Users.Any(u => u.Username == "admin"))
+    {
+        var hasher = new Microsoft.AspNetCore.Identity.PasswordHasher<CMS.Data.Entities.User>();
+        context.Users.Add(new CMS.Data.Entities.User
+        {
+            Username = "admin",
+            PasswordHash = hasher.HashPassword(null!, "123456"),
+            FullName = "Administrator",
+            Role = "Admin"
+        });
+        context.SaveChanges();
+    }
+}
 
 if (app.Environment.IsDevelopment())
 {

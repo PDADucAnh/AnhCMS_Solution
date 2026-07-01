@@ -1,3 +1,5 @@
+using CMS.Data.Entities;
+using System;
 using System.Collections.Generic;
 
 namespace CMS.Backend.Models.DTOs
@@ -6,7 +8,11 @@ namespace CMS.Backend.Models.DTOs
     {
         public int CustomerId { get; set; }
         public string? Notes { get; set; }
-        public string? Currency { get; set; }
         public List<OrderItemDTO>? Items { get; set; }
+        public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.COD;
+        public DateTime? DeliveryDate { get; set; }
+        public string? DeliveryTimeSlot { get; set; }
+        public string? DeliveryDistrict { get; set; }
+        public string? DeliveryAddress { get; set; }
     }
 }

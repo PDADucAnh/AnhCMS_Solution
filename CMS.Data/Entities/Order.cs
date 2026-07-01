@@ -1,17 +1,7 @@
-﻿/* Họ tên: Phạm Đức Anh
- * Mã SV: 2123110135
- * Lớp: CCQ2311D
- * Ngày tạo: 16/05/2026
- * Mô tả: tạo thực thể Order
- */
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CMS.Data.Entities
 {
@@ -19,7 +9,26 @@ namespace CMS.Data.Entities
     {
         Pending = 0,
         Shipping = 1,
-        Completed = 2
+        Completed = 2,
+        Cancelled = 3,
+        PendingVerification = 4,
+        Confirmed = 5,
+        Preparing = 6
+    }
+
+    public enum PaymentMethod
+    {
+        OnlinePayment = 0,
+        COD = 1
+    }
+
+    public enum PaymentStatus
+    {
+        Pending = 0,
+        Completed = 1,
+        Failed = 2,
+        Refunded = 3,
+        PartialRefund = 4
     }
 
     public class Order
@@ -35,15 +44,40 @@ namespace CMS.Data.Entities
 
         public string? Notes { get; set; }
 
-        [MaxLength(3)]
-        public string Currency { get; set; } = "USD";
-
-        [Column(TypeName = "decimal(18,6)")]
-        public decimal ExchangeRate { get; set; } = 1m;
-
         [ForeignKey("CustomerId")]
         public virtual Customer? Customer { get; set; }
 
         public virtual ICollection<OrderDetail>? OrderDetails { get; set; }
+
+        public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.COD;
+
+        public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Pending;
+
+        [MaxLength(200)]
+        public string? PaymentTransactionId { get; set; }
+
+        public DateTime? PaymentPaidAt { get; set; }
+
+        public DateTime? DeliveryDate { get; set; }
+
+        [MaxLength(50)]
+        public string? DeliveryTimeSlot { get; set; }
+
+        [MaxLength(100)]
+        public string? DeliveryDistrict { get; set; }
+
+        [MaxLength(500)]
+        public string? DeliveryAddress { get; set; }
+
+        public DateTime? CancelledAt { get; set; }
+
+        [MaxLength(500)]
+        public string? CancellationReason { get; set; }
+
+        public bool IsVerified { get; set; }
+
+        public DateTime? VerifiedAt { get; set; }
+
+        public decimal RefundAmount { get; set; }
     }
 }

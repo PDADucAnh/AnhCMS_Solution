@@ -7,7 +7,6 @@ namespace CMS.Backend.Models.DTOs
 {
     public static class MappingExtensions
     {
-        // === User Mapping ===
         public static UserDTO ToDTO(this User user)
         {
             if (user == null) return null;
@@ -34,201 +33,116 @@ namespace CMS.Backend.Models.DTOs
             };
         }
 
-        // === Category Mapping ===
-        public static CategoryDTO ToDTO(this Category category, string? locale = "en")
+        public static CategoryDTO ToDTO(this Category category)
         {
             if (category == null) return null;
-            var translation = category.Translations?.FirstOrDefault(t => t.Locale == locale);
             return new CategoryDTO
             {
                 Id = category.Id,
-                Name = translation?.Name ?? "",
-                Description = translation?.Description,
-                Slug = translation?.Slug,
-                Locale = locale ?? "en",
-                Posts = category.Posts?.Select(p => p.ToDTO(locale)).ToList()
+                Name = category.Name ?? "",
+                Description = category.Description,
+                Slug = category.Slug,
+                Posts = category.Posts?.Select(p => p.ToDTO()).ToList()
             };
         }
 
         public static Category ToEntity(this CreateCategoryDTO dto)
         {
             if (dto == null) return null;
-            var category = new Category();
-            if (dto.NameEn != null)
+            return new Category
             {
-                category.Translations.Add(new CategoryTranslation
-                {
-                    Locale = "en",
-                    Name = dto.NameEn,
-                    Description = dto.DescriptionEn,
-                    Slug = dto.SlugEn
-                });
-            }
-            if (dto.NameVi != null)
-            {
-                category.Translations.Add(new CategoryTranslation
-                {
-                    Locale = "vi",
-                    Name = dto.NameVi,
-                    Description = dto.DescriptionVi,
-                    Slug = dto.SlugVi
-                });
-            }
-            return category;
+                Name = dto.Name,
+                Description = dto.Description,
+                Slug = dto.Slug
+            };
         }
 
         public static void UpdateEntity(this UpdateCategoryDTO dto, Category entity)
         {
             if (dto == null || entity == null) return;
-            UpdateTranslation(entity.Translations, "en", t =>
-            {
-                t.Name = dto.NameEn;
-                t.Description = dto.DescriptionEn;
-                t.Slug = dto.SlugEn;
-            });
-            UpdateTranslation(entity.Translations, "vi", t =>
-            {
-                t.Name = dto.NameVi;
-                t.Description = dto.DescriptionVi;
-                t.Slug = dto.SlugVi;
-            });
+            entity.Name = dto.Name;
+            entity.Description = dto.Description;
+            entity.Slug = dto.Slug;
         }
 
-        // === CategoryProduct Mapping ===
-        public static CategoryProductDTO ToDTO(this CategoryProduct categoryProduct, string? locale = "en")
+        public static CategoryProductDTO ToDTO(this CategoryProduct categoryProduct)
         {
             if (categoryProduct == null) return null;
-            var translation = categoryProduct.Translations?.FirstOrDefault(t => t.Locale == locale);
             return new CategoryProductDTO
             {
                 Id = categoryProduct.Id,
-                Name = translation?.Name ?? "",
-                Description = translation?.Description,
-                Slug = translation?.Slug,
-                Locale = locale ?? "en"
+                Name = categoryProduct.Name ?? "",
+                Description = categoryProduct.Description,
+                Slug = categoryProduct.Slug
             };
         }
 
         public static CategoryProduct ToEntity(this CreateCategoryProductDTO dto)
         {
             if (dto == null) return null;
-            var category = new CategoryProduct();
-            if (dto.NameEn != null)
+            return new CategoryProduct
             {
-                category.Translations.Add(new CategoryProductTranslation
-                {
-                    Locale = "en",
-                    Name = dto.NameEn,
-                    Description = dto.DescriptionEn,
-                    Slug = dto.SlugEn
-                });
-            }
-            if (dto.NameVi != null)
-            {
-                category.Translations.Add(new CategoryProductTranslation
-                {
-                    Locale = "vi",
-                    Name = dto.NameVi,
-                    Description = dto.DescriptionVi,
-                    Slug = dto.SlugVi
-                });
-            }
-            return category;
+                Name = dto.Name,
+                Description = dto.Description,
+                Slug = dto.Slug
+            };
         }
 
         public static void UpdateEntity(this UpdateCategoryProductDTO dto, CategoryProduct entity)
         {
             if (dto == null || entity == null) return;
-            UpdateTranslation(entity.Translations, "en", t =>
-            {
-                t.Name = dto.NameEn;
-                t.Description = dto.DescriptionEn;
-                t.Slug = dto.SlugEn;
-            });
-            UpdateTranslation(entity.Translations, "vi", t =>
-            {
-                t.Name = dto.NameVi;
-                t.Description = dto.DescriptionVi;
-                t.Slug = dto.SlugVi;
-            });
+            entity.Name = dto.Name;
+            entity.Description = dto.Description;
+            entity.Slug = dto.Slug;
         }
 
-        // === Product Mapping ===
-        public static ProductDTO ToDTO(this Product product, string? locale = "en")
+        public static ProductDTO ToDTO(this Product product)
         {
             if (product == null) return null;
-            var translation = product.Translations?.FirstOrDefault(t => t.Locale == locale);
             return new ProductDTO
             {
                 Id = product.Id,
-                Name = translation?.Name ?? "",
-                Description = translation?.Description,
-                Slug = translation?.Slug,
-                Locale = locale ?? "en",
+                Sku = product.Sku,
+                Name = product.Name ?? "",
+                Description = product.Description,
+                Slug = product.Slug,
                 Price = product.Price,
                 StockQuantity = product.StockQuantity,
                 ImageUrl = product.ImageUrl,
                 CategoryProductId = product.CategoryProductId,
-                CategoryProductName = product.CategoryProduct?.Translations
-                    ?.FirstOrDefault(t => t.Locale == locale)?.Name
+                CategoryProductName = product.CategoryProduct?.Name
             };
         }
 
         public static Product ToEntity(this CreateProductDTO dto)
         {
             if (dto == null) return null;
-            var product = new Product
+            return new Product
             {
+                Sku = dto.Sku,
+                Name = dto.Name,
+                Description = dto.Description,
+                Slug = dto.Slug,
                 Price = dto.Price,
                 StockQuantity = dto.StockQuantity,
                 ImageUrl = dto.ImageUrl,
                 CategoryProductId = dto.CategoryProductId
             };
-            if (dto.NameEn != null)
-            {
-                product.Translations.Add(new ProductTranslation
-                {
-                    Locale = "en",
-                    Name = dto.NameEn,
-                    Description = dto.DescriptionEn,
-                    Slug = dto.SlugEn
-                });
-            }
-            if (dto.NameVi != null)
-            {
-                product.Translations.Add(new ProductTranslation
-                {
-                    Locale = "vi",
-                    Name = dto.NameVi,
-                    Description = dto.DescriptionVi,
-                    Slug = dto.SlugVi
-                });
-            }
-            return product;
         }
 
         public static void UpdateEntity(this UpdateProductDTO dto, Product entity)
         {
             if (dto == null || entity == null) return;
+            entity.Sku = dto.Sku;
+            entity.Name = dto.Name;
+            entity.Description = dto.Description;
+            entity.Slug = dto.Slug;
             entity.Price = dto.Price;
             entity.StockQuantity = dto.StockQuantity;
             entity.ImageUrl = dto.ImageUrl;
             entity.CategoryProductId = dto.CategoryProductId;
-            UpdateTranslation(entity.Translations, "en", t =>
-            {
-                t.Name = dto.NameEn;
-                t.Description = dto.DescriptionEn;
-                t.Slug = dto.SlugEn;
-            });
-            UpdateTranslation(entity.Translations, "vi", t =>
-            {
-                t.Name = dto.NameVi;
-                t.Description = dto.DescriptionVi;
-                t.Slug = dto.SlugVi;
-            });
         }
 
-        // === Customer Mapping ===
         public static CustomerDTO ToDTO(this Customer customer)
         {
             if (customer == null) return null;
@@ -238,7 +152,12 @@ namespace CMS.Backend.Models.DTOs
                 FullName = customer.FullName,
                 Email = customer.Email,
                 Phone = customer.Phone,
-                Address = customer.Address
+                Address = customer.Address,
+                TotalOrders = customer.TotalOrders,
+                SuccessfulDeliveries = customer.SuccessfulDeliveries,
+                FailedDeliveries = customer.FailedDeliveries,
+                IsBlacklisted = customer.IsBlacklisted,
+                FraudScore = customer.FraudScore
             };
         }
 
@@ -268,7 +187,6 @@ namespace CMS.Backend.Models.DTOs
             }
         }
 
-        // === Order Mapping ===
         public static OrderDTO ToDTO(this Order order)
         {
             if (order == null) return null;
@@ -289,10 +207,22 @@ namespace CMS.Backend.Models.DTOs
                 CustomerId = order.CustomerId,
                 CustomerName = order.Customer?.FullName,
                 CustomerEmail = order.Customer?.Email,
+                CustomerPhone = order.Customer?.Phone,
                 Status = order.Status,
                 Notes = order.Notes,
-                Currency = order.Currency,
-                OrderDetails = details
+                OrderDetails = details,
+                PaymentMethod = order.PaymentMethod,
+                PaymentStatus = order.PaymentStatus,
+                PaymentTransactionId = order.PaymentTransactionId,
+                PaymentPaidAt = order.PaymentPaidAt,
+                DeliveryDate = order.DeliveryDate,
+                DeliveryTimeSlot = order.DeliveryTimeSlot,
+                DeliveryDistrict = order.DeliveryDistrict,
+                DeliveryAddress = order.DeliveryAddress,
+                CancelledAt = order.CancelledAt,
+                CancellationReason = order.CancellationReason,
+                IsVerified = order.IsVerified,
+                RefundAmount = order.RefundAmount
             };
         }
 
@@ -304,17 +234,11 @@ namespace CMS.Backend.Models.DTOs
                 Id = detail.Id,
                 OrderId = detail.OrderId,
                 ProductId = detail.ProductId,
-                ProductName = detail.Product != null
-                    ? (detail.Product.Translations?.FirstOrDefault(t => t.Locale == "en")?.Name
-                       ?? detail.Product.Translations?.FirstOrDefault()?.Name
-                       ?? $"Sản phẩm #{detail.Product.Id}")
-                    : null,
+                ProductName = detail.Product?.Name ?? $"Sản phẩm #{detail.Product.Id}",
                 ProductImageUrl = detail.Product?.ImageUrl,
                 CustomerName = detail.Order?.Customer?.FullName,
                 Quantity = detail.Quantity,
-                UnitPrice = detail.UnitPrice,
-                UnitPriceUsd = detail.UnitPriceUsd,
-                Currency = detail.Currency
+                UnitPrice = detail.UnitPrice
             };
         }
 
@@ -325,26 +249,73 @@ namespace CMS.Backend.Models.DTOs
             entity.OrderDate = dto.OrderDate;
             entity.Status = dto.Status;
             entity.Notes = dto.Notes;
+            entity.DeliveryDate = dto.DeliveryDate;
+            entity.DeliveryTimeSlot = dto.DeliveryTimeSlot;
+            entity.DeliveryDistrict = dto.DeliveryDistrict;
+            entity.DeliveryAddress = dto.DeliveryAddress;
         }
 
-        // === Post Mapping ===
-        public static PostDTO ToDTO(this Post post, string? locale = "en")
+        public static PaymentDTO ToDTO(this Payment payment)
+        {
+            if (payment == null) return null;
+            return new PaymentDTO
+            {
+                Id = payment.Id,
+                OrderId = payment.OrderId,
+                Amount = payment.Amount,
+                Method = payment.Method,
+                Status = payment.Status,
+                TransactionId = payment.TransactionId,
+                PaidAt = payment.PaidAt,
+                RefundedAt = payment.RefundedAt,
+                Notes = payment.Notes
+            };
+        }
+
+        public static DeliverySlotDTO ToDTO(this DeliverySlot slot)
+        {
+            if (slot == null) return null;
+            return new DeliverySlotDTO
+            {
+                Id = slot.Id,
+                ProductId = slot.ProductId,
+                DeliveryDate = slot.DeliveryDate,
+                TimeSlot = slot.TimeSlot,
+                MaxCapacity = slot.MaxCapacity,
+                CurrentBooked = slot.CurrentBooked
+            };
+        }
+
+        public static AdvertisementDTO ToDTO(this Advertisement ad)
+        {
+            if (ad == null) return null;
+            return new AdvertisementDTO
+            {
+                Id = ad.Id,
+                Title = ad.Title,
+                Subtitle = ad.Subtitle,
+                ImageUrl = ad.ImageUrl,
+                LinkUrl = ad.LinkUrl,
+                SortOrder = ad.SortOrder,
+                IsActive = ad.IsActive,
+                CreatedDate = ad.CreatedDate
+            };
+        }
+
+        public static PostDTO ToDTO(this Post post)
         {
             if (post == null) return null;
-            var translation = post.Translations?.FirstOrDefault(t => t.Locale == locale);
             return new PostDTO
             {
                 Id = post.Id,
-                Title = translation?.Title ?? "",
-                Content = translation?.Content ?? "",
-                Summary = translation?.Summary,
-                Slug = translation?.Slug,
-                Locale = locale ?? "en",
+                Title = post.Title ?? "",
+                Content = post.Content ?? "",
+                Summary = TruncateSummary(post.Summary, post.Content),
+                Slug = post.Slug,
                 ImageUrl = post.ImageUrl,
                 CreatedDate = post.CreatedDate,
                 CategoryId = post.CategoryId,
-                CategoryName = post.Category?.Translations
-                    ?.FirstOrDefault(t => t.Locale == locale)?.Name
+                CategoryName = post.Category?.Name
             };
         }
 
@@ -360,73 +331,26 @@ namespace CMS.Backend.Models.DTOs
         public static Post ToEntity(this CreatePostDTO dto)
         {
             if (dto == null) return null;
-            var post = new Post
+            return new Post
             {
+                Title = dto.Title,
+                Content = dto.Content,
+                Summary = TruncateSummary(dto.Summary, dto.Content),
+                Slug = dto.Slug,
                 ImageUrl = dto.ImageUrl,
                 CategoryId = dto.CategoryId
             };
-            if (dto.TitleEn != null)
-            {
-                post.Translations.Add(new PostTranslation
-                {
-                    Locale = "en",
-                    Title = dto.TitleEn,
-                    Content = dto.ContentEn,
-                    Summary = TruncateSummary(dto.SummaryEn, dto.ContentEn),
-                    Slug = dto.SlugEn
-                });
-            }
-            if (dto.TitleVi != null)
-            {
-                post.Translations.Add(new PostTranslation
-                {
-                    Locale = "vi",
-                    Title = dto.TitleVi,
-                    Content = dto.ContentVi,
-                    Summary = TruncateSummary(dto.SummaryVi, dto.ContentVi),
-                    Slug = dto.SlugVi
-                });
-            }
-            return post;
         }
 
         public static void UpdateEntity(this UpdatePostDTO dto, Post entity)
         {
             if (dto == null || entity == null) return;
+            entity.Title = dto.Title;
+            entity.Content = dto.Content;
+            entity.Summary = TruncateSummary(dto.Summary, dto.Content);
+            entity.Slug = dto.Slug;
             entity.ImageUrl = dto.ImageUrl;
             entity.CategoryId = dto.CategoryId;
-            UpdateTranslation(entity.Translations, "en", t =>
-            {
-                t.Title = dto.TitleEn;
-                t.Content = dto.ContentEn;
-                t.Summary = TruncateSummary(dto.SummaryEn, dto.ContentEn);
-                t.Slug = dto.SlugEn;
-            });
-            UpdateTranslation(entity.Translations, "vi", t =>
-            {
-                t.Title = dto.TitleVi;
-                t.Content = dto.ContentVi;
-                t.Summary = TruncateSummary(dto.SummaryVi, dto.ContentVi);
-                t.Slug = dto.SlugVi;
-            });
-        }
-
-        // === Helper: Find or Create Translation ===
-        private static void UpdateTranslation<T>(ICollection<T> translations, string locale, System.Action<T> update) where T : class, new()
-        {
-            var translation = translations.FirstOrDefault(t =>
-            {
-                var prop = t.GetType().GetProperty("Locale");
-                return prop != null && (prop.GetValue(t) as string) == locale;
-            });
-            if (translation == null)
-            {
-                translation = new T();
-                var localeProp = translation.GetType().GetProperty("Locale");
-                localeProp?.SetValue(translation, locale);
-                translations.Add(translation);
-            }
-            update(translation);
         }
     }
 }

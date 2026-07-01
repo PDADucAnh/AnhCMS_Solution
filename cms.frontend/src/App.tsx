@@ -7,7 +7,6 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
-import { LocaleProvider } from './context/LocaleContext';
 import { authEvents } from './utils/eventEmitter';
 import ErrorFallback from './components/ErrorFallback';
 import { Toaster } from 'react-hot-toast';
@@ -28,14 +27,16 @@ const MyOrders = lazy(() => import('./pages/auth/MyOrders'));
 const Wishlist = lazy(() => import('./pages/wishlist/index'));
 const About = lazy(() => import('./pages/about/index'));
 const Contact = lazy(() => import('./pages/contact/index'));
+const OrderConfirmation = lazy(() => import('./pages/order-confirmation/index'));
+const OrderDetail = lazy(() => import('./pages/auth/OrderDetail'));
 
 const PageLoader: React.FC = () => (
   <div className="flex justify-center items-center min-h-screen bg-surface">
     <div className="text-center">
       <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-md mx-auto" role="status">
-        <span className="sr-only">Loading...</span>
+        <span className="sr-only">Đang tải...</span>
       </div>
-      <p className="font-label-sm text-label-sm text-secondary uppercase tracking-widest">Curating Narrative...</p>
+      <p className="font-label-sm text-label-sm text-secondary uppercase tracking-widest">Đang tải...</p>
     </div>
   </div>
 );
@@ -54,16 +55,15 @@ const NotFound: React.FC = () => (
     <div className="w-24 h-24 mx-auto mb-md opacity-60 flex items-center justify-center">
       <span className="material-symbols-outlined text-6xl text-outline">error_outline</span>
     </div>
-    <h2 className="font-headline-lg text-headline-lg text-secondary uppercase tracking-tight mb-sm">404 - Page Not Found</h2>
-    <p className="text-secondary font-body-md mb-lg">The page you're looking for doesn't exist.</p>
-    <Link to="/" className="bg-primary text-on-primary px-8 py-3 font-label-sm text-label-sm uppercase tracking-widest border border-primary inline-block text-decoration-none btn-luxury btn-primary-luxury">Back to Home</Link>
+    <h2 className="font-headline-lg text-headline-lg text-secondary uppercase tracking-tight mb-sm">404 - Không tìm thấy trang</h2>
+    <p className="text-secondary font-body-md mb-lg">Trang bạn đang tìm không tồn tại.</p>
+    <Link to="/" className="bg-primary text-on-primary px-8 py-3 font-label-sm text-label-sm uppercase tracking-widest border border-primary inline-block text-decoration-none btn-luxury btn-primary-luxury">Về trang chủ</Link>
   </div>
 );
 
 const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
-    <LocaleProvider>
     <AuthProvider>
       <CartProvider>
         <WishlistProvider>
@@ -96,7 +96,9 @@ const App: React.FC = () => {
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                    <Route path="/order-confirmation" element={<OrderConfirmation />} />
                     <Route path="/my-orders" element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
+                    <Route path="/my-orders/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
                     <Route path="/wishlist" element={<Wishlist />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/contact" element={<Contact />} />
@@ -111,7 +113,6 @@ const App: React.FC = () => {
         </WishlistProvider>
       </CartProvider>
     </AuthProvider>
-    </LocaleProvider>
     </QueryClientProvider>
   );
 };

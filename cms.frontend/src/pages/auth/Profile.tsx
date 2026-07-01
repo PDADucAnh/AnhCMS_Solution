@@ -1,10 +1,13 @@
 import React, { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { AccountSidebar } from '../../components/OrderComponents';
+import { useScrollReveal } from '../../hooks/useScrollReveal';
 
 const Profile: React.FC = () => {
   const { user, logout, refreshProfile } = useAuth();
   const navigate = useNavigate();
+  const { ref, isVisible } = useScrollReveal({ threshold: 0 });
 
   useEffect(() => {
     refreshProfile();
@@ -17,86 +20,55 @@ const Profile: React.FC = () => {
 
   return (
     <div className="bg-background text-on-background font-body-md antialiased pt-20 min-h-screen">
-      <main className="flex-grow w-full max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop py-xl">
-        <div className="mb-xl pb-8 border-b border-primary">
-          <h1 className="font-display-xl-mobile md:font-display-xl text-display-xl-mobile md:text-display-xl text-primary uppercase text-center md:text-left">
-            MEMBER PROFILE
-          </h1>
-          <p className="font-label-sm text-label-sm text-secondary uppercase tracking-[0.2em] text-center md:text-left mt-4">
-            Personal Account
-          </p>
-        </div>
+      <main className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg min-h-[calc(100vh-200px)]">
+        <div className="flex flex-col md:flex-row gap-stack-lg">
+          <AccountSidebar />
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-gutter">
-          <aside className="md:col-span-3 border-r border-primary pr-8 hidden md:block">
-            <ul className="space-y-6">
-              <li>
-                <span className="font-label-sm text-label-sm uppercase tracking-[0.2em] text-primary font-bold border-l-2 border-primary pl-4 block cursor-default">
-                  General Info
-                </span>
-              </li>
-              <li>
-                <Link to="/my-orders" className="font-label-sm text-label-sm uppercase tracking-[0.2em] text-secondary hover:text-primary transition-colors duration-150 pl-4 block text-decoration-none">
-                  Order History
-                </Link>
-              </li>
-              <li>
-                <Link to="/wishlist" className="font-label-sm text-label-sm uppercase tracking-[0.2em] text-secondary hover:text-primary transition-colors duration-150 pl-4 block text-decoration-none">
-                  Wishlist
-                </Link>
-              </li>
-              <li className="mt-12 pt-12 border-t border-outline-variant">
-                <button
-                  onClick={handleLogout}
-                  className="font-label-sm text-label-sm uppercase tracking-[0.2em] text-secondary hover:text-error transition-colors duration-150 pl-4 block w-full text-left"
-                >
-                  Sign Out
-                </button>
-              </li>
-            </ul>
-          </aside>
-
-          <div className="md:col-span-9 md:pl-12">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-xl">
-              <div className="space-y-12">
-                <div className="border-b border-outline-variant pb-4 group hover:border-primary transition-colors duration-300">
-                  <label className="font-label-sm text-label-sm text-secondary uppercase tracking-[0.2em] block mb-2">Full Name</label>
-                  <p className="font-body-lg text-lg text-primary">{user?.fullName || '—'}</p>
-                </div>
-
-                <div className="border-b border-outline-variant pb-4 group hover:border-primary transition-colors duration-300">
-                  <label className="font-label-sm text-label-sm text-secondary uppercase tracking-[0.2em] block mb-2">Username</label>
-                  <p className="font-body-lg text-lg text-primary">{user?.username || '—'}</p>
-                </div>
-
-                <div className="border-b border-outline-variant pb-4 group hover:border-primary transition-colors duration-300">
-                  <label className="font-label-sm text-label-sm text-secondary uppercase tracking-[0.2em] block mb-2">Email Address</label>
-                  <p className="font-body-lg text-lg text-primary">{user?.email || '—'}</p>
-                </div>
-
-                <div className="border-b border-outline-variant pb-4 group hover:border-primary transition-colors duration-300">
-                  <label className="font-label-sm text-label-sm text-secondary uppercase tracking-[0.2em] block mb-2">Phone Number</label>
-                  <p className="font-body-lg text-lg text-primary">{user?.phone || '—'}</p>
-                </div>
-
-                <div className="border-b border-outline-variant pb-4 group hover:border-primary transition-colors duration-300">
-                  <label className="font-label-sm text-label-sm text-secondary uppercase tracking-[0.2em] block mb-2">Default Shipping Address</label>
-                  <p className="font-body-lg text-lg text-primary whitespace-pre-line">{user?.address || '—'}</p>
-                </div>
-
-                <div className="pt-8 flex gap-4">
-                  <button className="bg-primary text-on-primary font-label-sm text-label-sm uppercase tracking-[0.2em] px-8 py-4 hover:bg-surface hover:text-primary hover:border-primary border border-transparent transition-all duration-150">
-                    Edit Profile
-                  </button>
-                  <button className="bg-transparent text-primary border border-primary font-label-sm text-label-sm uppercase tracking-[0.2em] px-8 py-4 hover:bg-primary hover:text-on-primary transition-all duration-150">
-                    Change Password
-                  </button>
+          <section
+            ref={ref}
+            className="flex-grow transition-all duration-700"
+            style={{
+              opacity: isVisible ? 1 : 0,
+              transform: isVisible ? 'translateY(0)' : 'translateY(16px)',
+              transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+          >
+            <div className="bg-surface-container-lowest p-stack-lg rounded-xl petal-shadow">
+              <h2 className="font-headline-sm text-headline-sm text-on-surface mb-stack-lg">Thông tin cá nhân</h2>
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-stack-lg mb-stack-lg">
+                <div>
+                  <h3 className="font-headline-sm text-headline-sm text-on-surface">{user?.fullName || '—'}</h3>
+                  <p className="text-on-surface-variant font-body-md italic">Thành viên</p>
                 </div>
               </div>
-
-              <div className="hidden lg:block" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
+                <div className="space-y-base">
+                  <label className="font-label-md text-on-surface-variant">Họ và tên</label>
+                  <div className="p-stack-sm rounded-lg border border-outline-variant bg-surface-container-low text-on-surface">{user?.fullName || '—'}</div>
+                </div>
+                <div className="space-y-base">
+                  <label className="font-label-md text-on-surface-variant">Tên đăng nhập</label>
+                  <div className="p-stack-sm rounded-lg border border-outline-variant bg-surface-container-low text-on-surface">{user?.username || '—'}</div>
+                </div>
+                <div className="space-y-base">
+                  <label className="font-label-md text-on-surface-variant">Email</label>
+                  <div className="p-stack-sm rounded-lg border border-outline-variant bg-surface-container-low text-on-surface">{user?.email || '—'}</div>
+                </div>
+                <div className="space-y-base">
+                  <label className="font-label-md text-on-surface-variant">Số điện thoại</label>
+                  <div className="p-stack-sm rounded-lg border border-outline-variant bg-surface-container-low text-on-surface">{user?.phone || '—'}</div>
+                </div>
+                <div className="space-y-base md:col-span-2">
+                  <label className="font-label-md text-on-surface-variant">Địa chỉ</label>
+                  <div className="p-stack-sm rounded-lg border border-outline-variant bg-surface-container-low text-on-surface whitespace-pre-line">{user?.address || '—'}</div>
+                </div>
+              </div>
+              <div className="mt-stack-lg flex gap-stack-md">
+                <button className="px-stack-md py-stack-sm bg-primary text-on-primary rounded-lg font-label-md hover:bg-surface-tint transition-colors shadow-md">Chỉnh sửa</button>
+                <button onClick={handleLogout} className="px-stack-md py-stack-sm border border-error/30 text-error rounded-lg font-label-md hover:bg-error-container/20 transition-colors bg-transparent cursor-pointer">Đăng xuất</button>
+              </div>
             </div>
-          </div>
+          </section>
         </div>
       </main>
     </div>

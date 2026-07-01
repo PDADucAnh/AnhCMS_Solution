@@ -18,19 +18,15 @@ namespace CMS.Backend.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<CategoryDTO>> GetAll(string? locale = "en")
+        public async Task<IEnumerable<CategoryDTO>> GetAll()
         {
-            var categories = await _context.Categories
-                .Include(c => c.Translations.Where(t => t.Locale == locale))
-                .ToListAsync();
-            return categories.Select(c => c.ToDTO(locale));
+            var categories = await _context.Categories.ToListAsync();
+            return categories.Select(c => c.ToDTO());
         }
 
-        public async Task<PagedResult<CategoryDTO>> GetPaged(int page, int pageSize, string? locale = "en")
+        public async Task<PagedResult<CategoryDTO>> GetPaged(int page, int pageSize)
         {
-            var query = _context.Categories
-                .Include(c => c.Translations.Where(t => t.Locale == locale))
-                .OrderByDescending(c => c.Id);
+            var query = _context.Categories.OrderByDescending(c => c.Id);
 
             var totalCount = await query.CountAsync();
             var items = await query
@@ -40,21 +36,19 @@ namespace CMS.Backend.Services
 
             return new PagedResult<CategoryDTO>
             {
-                Items = items.Select(c => c.ToDTO(locale)).ToList(),
+                Items = items.Select(c => c.ToDTO()).ToList(),
                 TotalCount = totalCount,
                 Page = page,
                 PageSize = pageSize
             };
         }
 
-        public async Task<CategoryDTO?> GetById(int id, string? locale = "en")
+        public async Task<CategoryDTO?> GetById(int id)
         {
             var category = await _context.Categories
-                .Include(c => c.Translations.Where(t => t.Locale == locale))
                 .Include(c => c.Posts)
-                    .ThenInclude(p => p.Translations.Where(t => t.Locale == locale))
                 .FirstOrDefaultAsync(c => c.Id == id);
-            return category?.ToDTO(locale);
+            return category?.ToDTO();
         }
 
         public async Task<CategoryDTO> Create(CreateCategoryDTO dto)
@@ -70,9 +64,7 @@ namespace CMS.Backend.Services
             if (id != dto.Id)
                 return false;
 
-            var category = await _context.Categories
-                .Include(c => c.Translations)
-                .FirstOrDefaultAsync(c => c.Id == id);
+            var category = await _context.Categories.FindAsync(id);
             if (category == null)
                 return false;
 

@@ -19,23 +19,19 @@ namespace CMS.Backend.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<PostDTO>> GetAll(string? locale = "en")
+        public async Task<IEnumerable<PostDTO>> GetAll()
         {
             var list = await _context.Posts
-                .Include(p => p.Translations.Where(t => t.Locale == locale))
                 .Include(p => p.Category)
-                    .ThenInclude(c => c.Translations.Where(t => t.Locale == locale))
                 .OrderByDescending(p => p.Id)
                 .ToListAsync();
-            return list.Select(p => p.ToDTO(locale));
+            return list.Select(p => p.ToDTO());
         }
 
-        public async Task<PagedResult<PostDTO>> GetPaged(int page, int pageSize, string? locale = "en")
+        public async Task<PagedResult<PostDTO>> GetPaged(int page, int pageSize)
         {
             var query = _context.Posts
-                .Include(p => p.Translations.Where(t => t.Locale == locale))
                 .Include(p => p.Category)
-                    .ThenInclude(c => c.Translations.Where(t => t.Locale == locale))
                 .OrderByDescending(p => p.Id);
 
             var totalCount = await query.CountAsync();
@@ -46,33 +42,29 @@ namespace CMS.Backend.Services
 
             return new PagedResult<PostDTO>
             {
-                Items = items.Select(p => p.ToDTO(locale)).ToList(),
+                Items = items.Select(p => p.ToDTO()).ToList(),
                 TotalCount = totalCount,
                 Page = page,
                 PageSize = pageSize
             };
         }
 
-        public async Task<PostDTO?> GetById(int id, string? locale = "en")
+        public async Task<PostDTO?> GetById(int id)
         {
             var post = await _context.Posts
-                .Include(p => p.Translations.Where(t => t.Locale == locale))
                 .Include(p => p.Category)
-                    .ThenInclude(c => c.Translations.Where(t => t.Locale == locale))
                 .FirstOrDefaultAsync(p => p.Id == id);
-            return post?.ToDTO(locale);
+            return post?.ToDTO();
         }
 
-        public async Task<IEnumerable<PostDTO>> GetByCategory(int categoryId, string? locale = "en")
+        public async Task<IEnumerable<PostDTO>> GetByCategory(int categoryId)
         {
             var posts = await _context.Posts
                 .Where(p => p.CategoryId == categoryId)
-                .Include(p => p.Translations.Where(t => t.Locale == locale))
                 .Include(p => p.Category)
-                    .ThenInclude(c => c.Translations.Where(t => t.Locale == locale))
                 .OrderByDescending(p => p.Id)
                 .ToListAsync();
-            return posts.Select(p => p.ToDTO(locale));
+            return posts.Select(p => p.ToDTO());
         }
 
         public async Task<PostDTO> Create(CreatePostDTO dto)
@@ -83,12 +75,7 @@ namespace CMS.Backend.Services
             await _context.SaveChangesAsync();
 
             await _context.Entry(post)
-                .Collection(p => p.Translations)
-                .LoadAsync();
-            await _context.Entry(post)
                 .Reference(p => p.Category)
-                .Query()
-                .Include(c => c.Translations)
                 .LoadAsync();
 
             return post.ToDTO();
@@ -100,7 +87,6 @@ namespace CMS.Backend.Services
                 return false;
 
             var post = await _context.Posts
-                .Include(p => p.Translations)
                 .FirstOrDefaultAsync(p => p.Id == id);
             if (post == null)
                 return false;

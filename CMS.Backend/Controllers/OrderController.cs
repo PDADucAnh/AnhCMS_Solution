@@ -47,19 +47,9 @@ namespace CMS.Backend.Controllers
                 return View(model);
             }
 
-            // Admin creates order shell — items added later via OrderDetails admin
             var (success, message, orderId) = await _orderService.CreateOrder(
-                model.CustomerId, model.Notes, new List<OrderItemInput>());
-
-            if (success && model.Status != OrderStatus.Pending)
-            {
-                await _orderService.Update(orderId, new UpdateOrderDTO
-                {
-                    Id = orderId,
-                    Status = model.Status,
-                    Notes = model.Notes
-                });
-            }
+                model.CustomerId, model.Notes, new List<OrderItemInput>(),
+                model.OrderDate, model.Status);
 
             TempData["Success"] = "Đơn hàng đã được tạo thành công.";
             return RedirectToAction("Index");

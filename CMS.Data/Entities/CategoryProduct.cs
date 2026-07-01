@@ -8,8 +8,16 @@ namespace CMS.Data.Entities
         [Key]
         public int Id { get; set; }
 
-        public virtual ICollection<Product>? Products { get; set; }
+        [Required(ErrorMessage = "Tên danh mục không được để trống")]
+        [MaxLength(200)]
+        public string Name { get; set; }
 
-        public virtual ICollection<CategoryProductTranslation> Translations { get; set; } = new List<CategoryProductTranslation>();
+        [MaxLength(2000)]
+        public string? Description { get; set; }
+
+        [MaxLength(300)]
+        public string? Slug { get; set; }
+
+        public virtual ICollection<Product>? Products { get; set; }
     }
 }

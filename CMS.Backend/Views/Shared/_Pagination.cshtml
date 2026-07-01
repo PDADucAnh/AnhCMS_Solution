@@ -35,12 +35,12 @@
 {
     <div class="px-lg py-4 border-t border-outline-variant/20 flex items-center justify-between bg-surface-container-lowest">
         <span class="font-label-sm text-label-sm text-on-surface-variant">
-            Showing @((currentPage - 1) * pageSize + 1)-@Math.Min(currentPage * pageSize, totalCount) of @totalCount entries
+            Hiển thị @((currentPage - 1) * pageSize + 1)-@Math.Min(currentPage * pageSize, totalCount) trên tổng số @totalCount bản ghi
         </span>
         <div class="flex gap-1">
             <a href="@getUrl(currentPage - 1)"
                class="p-1 rounded-md text-on-surface-variant hover:bg-surface-variant transition-colors flex items-center justify-center @(currentPage <= 1 ? "disabled pointer-events-none opacity-40" : "")"
-               aria-label="Previous page">
+               aria-label="Trang trước">
                 <span class="material-symbols-outlined">chevron_left</span>
             </a>
 
@@ -61,7 +61,7 @@
 
             <a href="@getUrl(currentPage + 1)"
                class="p-1 rounded-md text-on-surface-variant hover:bg-surface-variant transition-colors flex items-center justify-center @(currentPage >= totalPages ? "disabled pointer-events-none opacity-40" : "")"
-               aria-label="Next page">
+               aria-label="Trang sau">
                 <span class="material-symbols-outlined">chevron_right</span>
             </a>
         </div>

@@ -30,14 +30,14 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
             </h3>
             {/* Safe-truncated summary */}
                 <p className="card-text text-secondary text-justify mb-4" style={{ fontSize: '14px', lineHeight: '1.6' }}>
-                    {post.summary ? `${post.summary.substring(0, 100)}...` : 'Discover style tips and fashion insights to elevate your look...'}
+                    {post.summary ? `${post.summary.substring(0, 100)}...` : 'Khám phá mẹo phong cách và xu hướng thời trang để nâng tầm phong cách của bạn...'}
                 </p>
             <div className="mt-auto">
                 <Link 
                     to={`/blog/${post.id}`}
                     className="font-label-sm text-[10px] uppercase tracking-[0.3em] pb-1 text-decoration-none text-primary font-bold btn-link-luxury"
                 >
-                    Read Narrative →
+                    Đọc thêm →
                 </Link>
             </div>
         </div>

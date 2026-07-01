@@ -17,14 +17,14 @@ const BlogSidebar = ({ onCategoryChange, activeId }: BlogSidebarProps) => {
   return (
     <div className="space-y-xl">
       <div className="space-y-md">
-        <h6 className="text-[10px] uppercase tracking-[0.3em] font-bold text-secondary border-b border-outline-variant pb-2">Editorial Pillars</h6>
+        <h6 className="text-[10px] uppercase tracking-[0.3em] font-bold text-secondary border-b border-outline-variant pb-2">Danh mục</h6>
         <ul className="space-y-sm list-none p-0">
           <li>
             <button
               className={`bg-transparent border-0 p-0 text-label-sm uppercase tracking-widest transition-all ${activeId === null ? 'text-primary font-bold' : 'text-secondary hover:text-primary'}`}
               onClick={() => onCategoryChange(null)}
             >
-              The Full Narrative
+              Tất cả
             </button>
           </li>
           {(categories as Category[]).map((cat) => (
@@ -41,7 +41,7 @@ const BlogSidebar = ({ onCategoryChange, activeId }: BlogSidebarProps) => {
       </div>
 
       <div className="space-y-md">
-        <h6 className="text-[10px] uppercase tracking-[0.3em] font-bold text-secondary border-b border-outline-variant pb-2">Journal Highlights</h6>
+        <h6 className="text-[10px] uppercase tracking-[0.3em] font-bold text-secondary border-b border-outline-variant pb-2">Bài viết mới</h6>
         <div className="space-y-lg">
           {latestPosts.map((p: any) => (
             <div key={p.id} className="group cursor-pointer">

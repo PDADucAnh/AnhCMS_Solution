@@ -28,7 +28,7 @@ const ShopPage: React.FC = () => {
       </aside>
       <section className="flex-grow">
         <ShopHeader count={paged?.totalCount ?? 0} page={paged?.page} pageSize={paged?.pageSize} />
-        <ProductList products={filteredProducts} isLoading={isLoading} error={error ? "Unable to curate the collection at this time." : null} />
+        <ProductList products={filteredProducts} isLoading={isLoading} error={error ? "Không thể tải bộ sưu tập vào lúc này." : null} />
         {!selectedCategoryId && paged && paged.totalPages > 1 && (
           <Pagination
             page={paged.page}

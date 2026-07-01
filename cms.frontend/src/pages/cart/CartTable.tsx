@@ -16,10 +16,10 @@ const CartTable = ({ items, onUpdateQuantity, onRemove }: CartTableProps) => {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="border-b border-outline-variant text-[10px] uppercase text-secondary tracking-[0.2em] bg-surface-container-low font-bold">
-              <th className="px-lg py-4">Item Nomenclature</th>
-              <th className="px-lg py-4 text-center">Acquisition Value</th>
-              <th className="px-lg py-4 text-center">Manifest Quantity</th>
-              <th className="px-lg py-4 text-right">Total</th>
+              <th className="px-lg py-4">Sản phẩm</th>
+              <th className="px-lg py-4 text-center">Đơn giá</th>
+              <th className="px-lg py-4 text-center">Số lượng</th>
+              <th className="px-lg py-4 text-right">Tổng</th>
               <th className="px-lg py-4"></th>
             </tr>
           </thead>
@@ -34,14 +34,14 @@ const CartTable = ({ items, onUpdateQuantity, onRemove }: CartTableProps) => {
                         <img 
                           src={imageUrl} 
                           alt={item.name} 
-                          className="w-full h-full object-cover grayscale"
+                          className="w-full h-full object-cover"
                         />
                       </div>
                       <div className="space-y-1">
                         <span className="text-body-md font-bold uppercase tracking-tight block">
                             {item.name}
                         </span>
-                        <span className="text-[10px] text-outline uppercase tracking-widest block">ID: #LX-PRD-{item.id}</span>
+                        <span className="text-[10px] text-outline uppercase tracking-widest block">Mã: #{item.id}</span>
                       </div>
                     </div>
                   </td>

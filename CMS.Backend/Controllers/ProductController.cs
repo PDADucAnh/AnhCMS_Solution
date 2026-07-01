@@ -94,23 +94,17 @@ namespace CMS.Backend.Controllers
             ViewBag.CategoryProductList = new SelectList(categories, "Id", "Name");
 
             var product = await _context.Products
-                .Include(p => p.Translations)
                 .FirstOrDefaultAsync(p => p.Id == id);
             if (product == null) return NotFound();
-
-            var transEn = product.Translations.FirstOrDefault(t => t.Locale == "en");
-            var transVi = product.Translations.FirstOrDefault(t => t.Locale == "vi");
 
             var model = new UpdateProductDTO
             {
                 Id = product.Id,
-                NameEn = transEn?.Name ?? "",
-                NameVi = transVi?.Name ?? "",
-                DescriptionEn = transEn?.Description,
-                DescriptionVi = transVi?.Description,
-                SlugEn = transEn?.Slug,
-                SlugVi = transVi?.Slug,
+                Name = product.Name,
+                Description = product.Description,
+                Slug = product.Slug,
                 Price = product.Price,
+                Sku = product.Sku,
                 StockQuantity = product.StockQuantity,
                 ImageUrl = product.ImageUrl ?? string.Empty,
                 CategoryProductId = product.CategoryProductId

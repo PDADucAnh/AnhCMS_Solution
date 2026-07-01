@@ -63,22 +63,15 @@ namespace CMS.Backend.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var category = await _context.CategoriesProducts
-                .Include(cp => cp.Translations)
                 .FirstOrDefaultAsync(cp => cp.Id == id);
             if (category == null) return NotFound();
-
-            var transEn = category.Translations.FirstOrDefault(t => t.Locale == "en");
-            var transVi = category.Translations.FirstOrDefault(t => t.Locale == "vi");
 
             var model = new UpdateCategoryProductDTO
             {
                 Id = category.Id,
-                NameEn = transEn?.Name ?? "",
-                NameVi = transVi?.Name ?? "",
-                DescriptionEn = transEn?.Description,
-                DescriptionVi = transVi?.Description,
-                SlugEn = transEn?.Slug,
-                SlugVi = transVi?.Slug
+                Name = category.Name,
+                Description = category.Description,
+                Slug = category.Slug
             };
 
             return View(model);

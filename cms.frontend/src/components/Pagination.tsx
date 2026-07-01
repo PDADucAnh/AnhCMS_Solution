@@ -25,12 +25,12 @@ function Pagination({ page, totalPages, onPageChange }: PaginationProps) {
   };
 
   return (
-    <nav className="flex items-center justify-center gap-1 mt-xl" aria-label="Pagination">
+    <nav className="flex items-center justify-center gap-1 mt-xl" aria-label="Phân trang">
       <button
         onClick={() => onPageChange(page - 1)}
         disabled={page <= 1}
         className="flex items-center justify-center size-10 rounded-full text-label-sm transition-colors duration-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-surface-container text-on-background"
-        aria-label="Previous page"
+        aria-label="Trang trước"
       >
         <span className="material-symbols-outlined text-lg">chevron_left</span>
       </button>
@@ -60,7 +60,7 @@ function Pagination({ page, totalPages, onPageChange }: PaginationProps) {
         onClick={() => onPageChange(page + 1)}
         disabled={page >= totalPages}
         className="flex items-center justify-center size-10 rounded-full text-label-sm transition-colors duration-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-surface-container text-on-background"
-        aria-label="Next page"
+        aria-label="Trang sau"
       >
         <span className="material-symbols-outlined text-lg">chevron_right</span>
       </button>

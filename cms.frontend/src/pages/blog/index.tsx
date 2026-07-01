@@ -25,8 +25,8 @@ const BlogPage: React.FC = () => {
     <div className="bg-background text-on-background font-body-md antialiased pt-20">
       <main className="max-w-[1440px] mx-auto px-margin py-xl">
         <header className="mb-xl text-center space-y-md">
-            <h3 className="text-label-sm uppercase tracking-[0.3em] text-secondary">Editorial Narrative</h3>
-            <h2 className="font-display-xl text-display-xl uppercase tracking-tighter text-primary">The Fashion Journal</h2>
+            <h3 className="text-label-sm uppercase tracking-[0.3em] text-secondary">Bài viết</h3>
+            <h2 className="font-display-xl text-display-xl uppercase tracking-tighter text-primary">Bài viết thời trang</h2>
             <div className="w-12 h-0.5 bg-primary mx-auto"></div>
         </header>
 
@@ -36,15 +36,15 @@ const BlogPage: React.FC = () => {
               <div className="text-center py-20">
                 <div className="animate-pulse flex flex-col items-center">
                     <div className="size-12 bg-surface-container rounded-full mb-md"></div>
-                    <p className="text-label-sm uppercase tracking-widest text-secondary">Retrieving Narratives...</p>
+                    <p className="text-label-sm uppercase tracking-widest text-secondary">Đang tải...</p>
                 </div>
               </div>
             ) : error ? (
-              <div className="p-lg bg-error-container text-error text-label-sm uppercase tracking-widest font-bold text-center border border-error">Unable to retrieve editorial stories at this time.</div>
+              <div className="p-lg bg-error-container text-error text-label-sm uppercase tracking-widest font-bold text-center border border-error">Không thể tải bài viết vào lúc này.</div>
             ) : filteredPosts.length === 0 ? (
               <div className="text-center py-20 bg-surface-container-low border border-dashed border-outline-variant">
                 <span className="material-symbols-outlined text-4xl text-outline mb-md">article</span>
-                <p className="text-label-sm uppercase tracking-widest text-secondary">No editorial stories found in this pillar.</p>
+                <p className="text-label-sm uppercase tracking-widest text-secondary">Không tìm thấy bài viết trong danh mục này.</p>
               </div>
             ) : (
               <>

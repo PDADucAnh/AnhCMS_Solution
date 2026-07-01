@@ -22,7 +22,7 @@ const ProductList = ({ products, isLoading, error }: ProductListProps) => {
   }
 
   if (!products || products.length === 0) {
-    return <LoadingOrEmpty isLoading={false} message="No products found in this collection." />;
+    return <LoadingOrEmpty isLoading={false} message="Không tìm thấy sản phẩm trong danh mục này." />;
   }
 
   return (

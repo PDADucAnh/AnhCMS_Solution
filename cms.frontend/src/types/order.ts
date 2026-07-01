@@ -1,10 +1,11 @@
-export type OrderStatus = 'Pending' | 'Shipping' | 'Completed';
+export type OrderStatus = 'Pending' | 'Shipping' | 'Completed' | 'Cancelled';
 
 export interface OrderDetail {
   id: number;
   orderId: number;
   productId: number;
   productName?: string;
+  productImageUrl?: string;
   quantity: number;
   unitPrice: number;
   customerName?: string;
@@ -13,13 +14,16 @@ export interface OrderDetail {
 export interface Order {
   id: number;
   customerId: number;
+  customerName?: string;
+  customerEmail?: string;
   orderDate: string;
   status: OrderStatus;
-  totalAmount: number;
+  notes?: string;
   orderDetails?: OrderDetail[];
 }
 
 export interface OrderInput {
   customerId: number;
-  items: { productId: number; quantity: number }[];
+  notes?: string;
+  items: { productId: number; quantity: number; unitPrice: number }[];
 }

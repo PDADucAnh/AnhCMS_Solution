@@ -30,13 +30,16 @@ namespace CMS.Backend.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(int? orderId)
         {
             var orders = await _orderService.GetAll();
             var products = await _productService.GetAll();
-            ViewBag.OrderList = new SelectList(orders, "Id", "Id");
+            ViewBag.OrderList = new SelectList(orders, "Id", "Id", orderId);
             ViewBag.ProductList = new SelectList(products, "Id", "Name");
-            return View();
+            var model = new OrderDetailDTO();
+            if (orderId.HasValue)
+                model.OrderId = orderId.Value;
+            return View(model);
         }
 
         [HttpPost]

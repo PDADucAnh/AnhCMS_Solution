@@ -1,20 +1,24 @@
 @using CMS.Data.Entities
 @model IEnumerable<OrderDTO>
 @{
-    ViewData["Title"] = "Orders";
+    ViewData["Title"] = "Đơn hàng";
     Layout = "_LayoutAdmin";
 }
 
 <div class="space-y-stack-lg">
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-            <h2 class="font-display-lg text-display-lg text-on-background mb-2">Orders Overview</h2>
-            <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Manage and track all incoming floral arrangements, deliveries, and customer requests.</p>
+            <h2 class="font-display-lg text-display-lg text-on-background mb-2">Tổng quan đơn hàng</h2>
+            <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Quản lý và theo dõi tất cả đơn hàng, giao dịch và yêu cầu của khách hàng.</p>
         </div>
         <div class="flex gap-3">
+            <a asp-action="Create" class="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:bg-primary/90 transition-colors shadow-sm no-underline">
+                <span class="material-symbols-outlined text-[18px]">add</span>
+                Đơn hàng mới
+            </a>
             <button class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg text-primary font-label-md text-label-md hover:bg-primary-container/10 transition-colors bg-surface">
                 <span class="material-symbols-outlined text-[18px]">download</span>
-                Export CSV
+                Xuất CSV
             </button>
         </div>
     </div>
@@ -22,17 +26,17 @@
     <!-- Filters & Controls -->
     <div class="flex flex-wrap items-center justify-between gap-4">
         <div class="flex bg-surface-container-low p-1 rounded-lg border border-outline-variant/20">
-            <button class="px-6 py-2 rounded-md bg-surface text-primary font-label-md text-label-md shadow-sm transition-all">All Orders</button>
-            <button class="px-6 py-2 rounded-md text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all">Pending</button>
-            <button class="px-6 py-2 rounded-md text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all">Shipped</button>
-            <button class="px-6 py-2 rounded-md text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all">Delivered</button>
+            <button class="px-6 py-2 rounded-md bg-surface text-primary font-label-md text-label-md shadow-sm transition-all">Tất cả</button>
+            <button class="px-6 py-2 rounded-md text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all">Chờ xử lý</button>
+            <button class="px-6 py-2 rounded-md text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all">Đang giao</button>
+            <button class="px-6 py-2 rounded-md text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all">Đã giao</button>
         </div>
         <div class="flex gap-3">
             <div class="relative">
                 <select class="appearance-none bg-surface border border-outline-variant/40 rounded-lg pl-4 pr-10 py-2 font-label-sm text-label-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer">
-                    <option>Last 7 Days</option>
-                    <option>Last 30 Days</option>
-                    <option>This Month</option>
+                    <option>7 ngày qua</option>
+                    <option>30 ngày qua</option>
+                    <option>Tháng này</option>
                 </select>
                 <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[18px] text-on-surface-variant pointer-events-none">expand_more</span>
             </div>
@@ -45,11 +49,11 @@
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="border-b border-outline-variant/20 bg-surface-container-lowest">
-                        <th class="py-4 px-6 font-label-md text-label-md text-on-surface-variant font-medium">Order ID</th>
-                        <th class="py-4 px-6 font-label-md text-label-md text-on-surface-variant font-medium">Customer</th>
-                        <th class="py-4 px-6 font-label-md text-label-md text-on-surface-variant font-medium">Date</th>
-                        <th class="py-4 px-6 font-label-md text-label-md text-on-surface-variant font-medium">Status</th>
-                        <th class="py-4 px-6 font-label-md text-label-md text-on-surface-variant font-medium text-right">Action</th>
+                        <th class="py-4 px-6 font-label-md text-label-md text-on-surface-variant font-medium">Mã đơn hàng</th>
+                        <th class="py-4 px-6 font-label-md text-label-md text-on-surface-variant font-medium">Khách hàng</th>
+                        <th class="py-4 px-6 font-label-md text-label-md text-on-surface-variant font-medium">Ngày</th>
+                        <th class="py-4 px-6 font-label-md text-label-md text-on-surface-variant font-medium">Trạng thái</th>
+                        <th class="py-4 px-6 font-label-md text-label-md text-on-surface-variant font-medium text-right">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-outline-variant/10">
@@ -62,35 +66,35 @@
                                     <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-primary font-headline-sm text-headline-sm text-[14px] font-bold">
                                         @(order.CustomerName?.Length >= 2 ? order.CustomerName.Substring(0, 2).ToUpper() : "??")
                                     </div>
-                                    <span class="font-body-md text-body-md font-medium text-on-surface">@(order.CustomerName ?? "Unknown")</span>
+                                    <span class="font-body-md text-body-md font-medium text-on-surface">@(order.CustomerName ?? "Không xác định")</span>
                                 </div>
                             </td>
-                            <td class="py-4 px-6 font-body-md text-body-md text-on-surface-variant">@order.OrderDate.ToString("MMM dd, yyyy")</td>
+                            <td class="py-4 px-6 font-body-md text-body-md text-on-surface-variant">@order.OrderDate.ToString("dd/MM/yyyy")</td>
                             <td class="py-4 px-6">
                                 @switch (order.Status)
                                 {
                                     case OrderStatus.Pending:
                                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-variant text-on-surface-variant font-label-sm text-label-sm border border-outline-variant/30">
                                             <span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
-                                            Pending
+                                            Chờ xử lý
                                         </span>
                                         break;
                                     case OrderStatus.Shipping:
                                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#E3F2FD] text-[#1565C0] font-label-sm text-label-sm border border-[#90CAF9]/50">
                                             <span class="w-1.5 h-1.5 rounded-full bg-[#1E88E5]"></span>
-                                            Shipped
+                                            Đang giao
                                         </span>
                                         break;
                                     case OrderStatus.Completed:
                                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#E8F5E9] text-[#2E7D32] font-label-sm text-label-sm border border-[#A5D6A7]/50">
                                             <span class="w-1.5 h-1.5 rounded-full bg-[#43A047]"></span>
-                                            Delivered
+                                            Đã giao
                                         </span>
                                         break;
                                     default:
                                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-variant text-on-surface-variant font-label-sm text-label-sm border border-outline-variant/30">
                                             <span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
-                                            Unknown
+                                            Không xác định
                                         </span>
                                         break;
                                 }
@@ -103,7 +107,7 @@
                                     <a asp-action="Edit" asp-route-id="@order.Id" class="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-full hover:bg-primary-container/10 no-underline">
                                         <span class="material-symbols-outlined text-[20px]">edit</span>
                                     </a>
-                                    <a asp-action="Delete" asp-route-id="@order.Id" class="text-on-surface-variant hover:text-error transition-colors p-2 rounded-full hover:bg-error-container/30 no-underline" onclick="return confirm('Delete this order?')">
+                                    <a asp-action="Delete" asp-route-id="@order.Id" class="text-on-surface-variant hover:text-error transition-colors p-2 rounded-full hover:bg-error-container/30 no-underline" onclick="return confirm('Xóa đơn hàng này?')">
                                         <span class="material-symbols-outlined text-[20px]">delete</span>
                                     </a>
                                 </div>

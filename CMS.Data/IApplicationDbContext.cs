@@ -17,11 +17,10 @@ namespace CMS.Data
         DbSet<Order> Orders { get; set; }
         DbSet<OrderDetail> OrderDetails { get; set; }
         DbSet<RefreshToken> RefreshTokens { get; set; }
-        DbSet<ExchangeRate> ExchangeRates { get; set; }
-        DbSet<ProductTranslation> ProductTranslations { get; set; }
-        DbSet<CategoryProductTranslation> CategoryProductTranslations { get; set; }
-        DbSet<CategoryTranslation> CategoryTranslations { get; set; }
-        DbSet<PostTranslation> PostTranslations { get; set; }
+        DbSet<Advertisement> Advertisements { get; set; }
+        DbSet<DeliverySlot> DeliverySlots { get; set; }
+        DbSet<Payment> Payments { get; set; }
+        DbSet<PhoneBlacklist> PhoneBlacklists { get; set; }
 
         EntityEntry Entry(object entity);
         EntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class;

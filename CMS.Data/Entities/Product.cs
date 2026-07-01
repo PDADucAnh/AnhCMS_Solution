@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CMS.Data.Entities
@@ -9,8 +8,20 @@ namespace CMS.Data.Entities
         [Key]
         public int Id { get; set; }
 
+        [MaxLength(50)]
+        public string? Sku { get; set; }
+
+        [Required(ErrorMessage = "Tên sản phẩm không được để trống")]
+        [MaxLength(200)]
+        public string Name { get; set; }
+
+        public string? Description { get; set; }
+
+        [MaxLength(300)]
+        public string? Slug { get; set; }
+
         [Range(0, double.MaxValue)]
-        [Column(TypeName = "decimal(18,2)")]
+        [Column(TypeName = "decimal(18,0)")]
         public decimal Price { get; set; }
 
         public int StockQuantity { get; set; }
@@ -21,7 +32,5 @@ namespace CMS.Data.Entities
 
         [ForeignKey("CategoryProductId")]
         public virtual CategoryProduct? CategoryProduct { get; set; }
-
-        public virtual ICollection<ProductTranslation> Translations { get; set; } = new List<ProductTranslation>();
     }
 }

@@ -49,7 +49,7 @@ const LoginPage: React.FC = () => {
                     {/* Brand */}
                     <div className="text-center mb-8">
                         <h1 className="font-display-xl text-display-xl text-primary tracking-tight leading-none">PDA FLOWER</h1>
-                        <p className="font-body-md text-body-md text-on-surface-variant/70 mt-3">Secure Customer Access</p>
+                        <p className="font-body-md text-body-md text-on-surface-variant/70 mt-3">Đăng nhập khách hàng</p>
                     </div>
 
                     {/* Login card */}
@@ -65,7 +65,7 @@ const LoginPage: React.FC = () => {
                             </label>
                             <input id="username" type="email" {...register('username')}
                                    className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3.5 font-body-md text-body-md text-on-surface placeholder:text-outline/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                                   placeholder="Enter your email" required autoComplete="email" />
+                                    placeholder="Nhập email của bạn" required autoComplete="email" />
                             {errors.username && (
                                 <p className="font-label-sm text-label-sm text-error mt-1">{errors.username.message}</p>
                             )}
@@ -75,11 +75,11 @@ const LoginPage: React.FC = () => {
                         <div className="space-y-2">
                             <label htmlFor="password" className="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-2">
                                 <span className="material-symbols-outlined text-[16px] text-outline">lock</span>
-                                Password
+                                Mật khẩu
                             </label>
                             <input id="password" type="password" {...register('password')}
                                    className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3.5 font-body-md text-body-md text-on-surface placeholder:text-outline/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                                   placeholder="Enter your password" required autoComplete="current-password" />
+                                    placeholder="Nhập mật khẩu" required autoComplete="current-password" />
                             {errors.password && (
                                 <p className="font-label-sm text-label-sm text-error mt-1">{errors.password.message}</p>
                             )}
@@ -97,15 +97,15 @@ const LoginPage: React.FC = () => {
                         <button type="submit" disabled={loading}
                                 className="w-full bg-primary text-on-primary py-3.5 rounded-xl font-label-md text-label-md hover:bg-primary/90 active:scale-[0.98] transition-all duration-200 disabled:opacity-50 cursor-pointer border-0 flex items-center justify-center gap-2"
                                 style={{ boxShadow: '0 4px 24px rgba(171,44,93,0.06)' }}>
-                            <span>{loading ? 'Signing In...' : 'Sign In'}</span>
+                            <span>{loading ? 'Đang đăng nhập...' : 'Đăng nhập'}</span>
                             <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
                         </button>
 
                         {/* Register link */}
                         <div className="text-center pt-4 border-t border-outline-variant/20">
                             <p className="font-label-sm text-label-sm text-on-surface-variant">
-                                New Member?{' '}
-                                <Link to="/register" className="text-primary font-semibold hover:underline ml-1">Create Account</Link>
+                                Chưa có tài khoản?{' '}
+                                <Link to="/register" className="text-primary font-semibold hover:underline ml-1">Đăng ký</Link>
                             </p>
                         </div>
                     </form>
@@ -113,7 +113,7 @@ const LoginPage: React.FC = () => {
                     {/* Footer */}
                     <div className="text-center mt-8">
                         <p className="font-label-sm text-label-sm text-on-surface-variant/40">
-                            &copy; {new Date().getFullYear()} PDA FLOWER. All rights reserved.
+                            &copy; {new Date().getFullYear()} PDA FLOWER. Đã đăng ký bản quyền.
                         </p>
                     </div>
 

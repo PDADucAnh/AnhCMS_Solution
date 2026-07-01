@@ -12,17 +12,17 @@ const ShopSidebar = ({ onCategoryChange, activeId }: ShopSidebarProps) => {
   return (
     <div className="flex flex-col gap-stack-md">
       <div className="mb-stack-sm border-b border-surface-variant pb-4">
-        <h2 className="font-headline-sm text-headline-sm text-on-surface mb-4">Filter By</h2>
+        <h2 className="font-headline-sm text-headline-sm text-on-surface mb-4">Lọc theo</h2>
         <button
           className="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors underline bg-transparent border-0 p-0 cursor-pointer"
           onClick={() => onCategoryChange(null)}
         >
-          Clear All
+          Xóa tất cả
         </button>
       </div>
 
       <div className="flex flex-col gap-stack-sm">
-        <h3 className="font-label-md text-label-md text-on-surface uppercase tracking-widest">Division</h3>
+        <h3 className="font-label-md text-label-md text-on-surface uppercase tracking-widest">Danh mục</h3>
         <div className="flex flex-col gap-2">
           <button
             className={`text-left bg-transparent border-0 p-0 font-body-md text-body-md transition-colors cursor-pointer ${
@@ -30,7 +30,7 @@ const ShopSidebar = ({ onCategoryChange, activeId }: ShopSidebarProps) => {
             }`}
             onClick={() => onCategoryChange(null)}
           >
-            The Full Collection
+            Tất cả
           </button>
           {(categories as any[]).map((cat: any) => (
             <button
@@ -47,11 +47,11 @@ const ShopSidebar = ({ onCategoryChange, activeId }: ShopSidebarProps) => {
       </div>
 
       <div className="flex flex-col gap-stack-sm mt-4">
-        <h3 className="font-label-md text-label-md text-on-surface uppercase tracking-widest">Price Range</h3>
+        <h3 className="font-label-md text-label-md text-on-surface uppercase tracking-widest">Khoảng giá</h3>
         <div className="flex flex-col gap-2">
           <label className="flex items-center gap-3 cursor-pointer group">
             <input className="border-outline-variant text-primary focus:ring-primary/20 w-4 h-4 transition-colors" name="price" type="radio" />
-            <span className="font-body-md text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Under $50</span>
+            <span className="font-body-md text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Dưới $50</span>
           </label>
           <label className="flex items-center gap-3 cursor-pointer group">
             <input className="border-outline-variant text-primary focus:ring-primary/20 w-4 h-4 transition-colors" name="price" type="radio" />
@@ -63,29 +63,29 @@ const ShopSidebar = ({ onCategoryChange, activeId }: ShopSidebarProps) => {
           </label>
           <label className="flex items-center gap-3 cursor-pointer group">
             <input className="border-outline-variant text-primary focus:ring-primary/20 w-4 h-4 transition-colors" name="price" type="radio" />
-            <span className="font-body-md text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Over $150</span>
+            <span className="font-body-md text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Trên $150</span>
           </label>
         </div>
       </div>
 
       <div className="flex flex-col gap-stack-sm mt-4">
-        <h3 className="font-label-md text-label-md text-on-surface uppercase tracking-widest">Occasion</h3>
+        <h3 className="font-label-md text-label-md text-on-surface uppercase tracking-widest">Dịp</h3>
         <div className="flex flex-col gap-2">
           <label className="flex items-center gap-3 cursor-pointer group">
             <input className="rounded border-outline-variant text-primary focus:ring-primary/20 w-4 h-4 transition-colors" type="checkbox" />
-            <span className="font-body-md text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Anniversary</span>
+            <span className="font-body-md text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Kỷ niệm</span>
           </label>
           <label className="flex items-center gap-3 cursor-pointer group">
             <input className="rounded border-outline-variant text-primary focus:ring-primary/20 w-4 h-4 transition-colors" type="checkbox" />
-            <span className="font-body-md text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Birthday</span>
+            <span className="font-body-md text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Sinh nhật</span>
           </label>
           <label className="flex items-center gap-3 cursor-pointer group">
             <input className="rounded border-outline-variant text-primary focus:ring-primary/20 w-4 h-4 transition-colors" type="checkbox" />
-            <span className="font-body-md text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Sympathy</span>
+            <span className="font-body-md text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Chia buồn</span>
           </label>
           <label className="flex items-center gap-3 cursor-pointer group">
             <input className="rounded border-outline-variant text-primary focus:ring-primary/20 w-4 h-4 transition-colors" type="checkbox" />
-            <span className="font-body-md text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Just Because</span>
+            <span className="font-body-md text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Bất ngờ</span>
           </label>
         </div>
       </div>

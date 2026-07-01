@@ -27,8 +27,8 @@ function CategoryMenu({ onSelectCategory, activeId }: CategoryMenuProps) {
     return (
         <section className="px-margin mb-xl">
             <div className="flex justify-between items-end mb-lg">
-                <h2 className="font-display-xl text-headline-lg uppercase tracking-tight">Explore Collections</h2>
-                <Link to="/shop" className="font-label-sm text-label-sm uppercase tracking-widest hover:text-secondary transition-colors border-b border-primary pb-1 text-decoration-none text-primary">View All</Link>
+                <h2 className="font-display-xl text-headline-lg uppercase tracking-tight">Khám phá bộ sưu tập</h2>
+                <Link to="/shop" className="font-label-sm text-label-sm uppercase tracking-widest hover:text-secondary transition-colors border-b border-primary pb-1 text-decoration-none text-primary">Xem tất cả</Link>
             </div>
 
             <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
@@ -36,7 +36,7 @@ function CategoryMenu({ onSelectCategory, activeId }: CategoryMenuProps) {
                     onClick={() => handleCategoryClick(null)}
                     className={btnClass(activeId === null)}
                 >
-                    All Collections
+                    Tất cả
                 </button>
                 {(categories as any[]).map((cat: any) => (
                     <button

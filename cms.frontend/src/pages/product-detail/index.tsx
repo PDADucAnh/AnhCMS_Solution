@@ -70,9 +70,9 @@ const ProductDetailPage = () => {
       <div className="bg-background min-h-screen flex items-center justify-center">
         <div className="animate-pulse flex flex-col items-center">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-md" role="status">
-            <span className="sr-only">Loading...</span>
+            <span className="sr-only">Đang tải...</span>
           </div>
-          <p className="font-label-sm text-label-sm uppercase tracking-widest text-secondary">Curating Product...</p>
+          <p className="font-label-sm text-label-sm uppercase tracking-widest text-secondary">Đang tải...</p>
         </div>
       </div>
     );
@@ -81,8 +81,8 @@ const ProductDetailPage = () => {
   if (!product) {
     return (
       <div className="text-center py-xl px-margin">
-        <h2 className="font-display-xl text-headline-lg uppercase tracking-tight">Product Not Found</h2>
-        <Link to="/shop" className="text-primary font-label-sm uppercase tracking-widest mt-4 inline-block text-decoration-none btn-link-luxury">Back to Shop</Link>
+        <h2 className="font-display-xl text-headline-lg uppercase tracking-tight">Không tìm thấy sản phẩm</h2>
+        <Link to="/shop" className="text-primary font-label-sm uppercase tracking-widest mt-4 inline-block text-decoration-none btn-link-luxury">Quay lại cửa hàng</Link>
       </div>
     );
   }
@@ -91,9 +91,9 @@ const ProductDetailPage = () => {
     <div className="bg-background text-on-background font-body-md text-body-md antialiased overflow-x-hidden pt-20">
       <main className="w-full max-w-[1200px] mx-auto px-5 md:px-margin pt-lg pb-xl grid grid-cols-1 md:grid-cols-12 gap-8 relative">
         <div className="md:col-span-12 font-label-sm text-label-sm text-secondary uppercase tracking-widest flex items-center space-x-2 mb-md">
-          <Link className="hover:text-primary transition-colors text-decoration-none" to="/">Home</Link>
+          <Link className="hover:text-primary transition-colors text-decoration-none" to="/">Trang chủ</Link>
           <span>/</span>
-          <Link className="hover:text-primary transition-colors text-decoration-none" to="/shop">Shop</Link>
+          <Link className="hover:text-primary transition-colors text-decoration-none" to="/shop">Cửa hàng</Link>
           <span>/</span>
           <span className="text-primary truncate">{product.name}</span>
         </div>
@@ -115,7 +115,7 @@ const ProductDetailPage = () => {
 
         <div className="md:col-span-5 md:sticky md:top-32 h-fit flex flex-col gap-6">
           <div>
-            <span className="font-label-sm text-label-sm text-secondary uppercase tracking-widest block mb-2">SKU: ANH-{product.id}</span>
+            <span className="font-label-sm text-label-sm text-secondary uppercase tracking-widest block mb-2">Mã: ANH-{product.id}</span>
             <h1 className="font-display-xl-mobile md:font-headline-lg text-display-xl-mobile md:text-headline-lg text-primary mb-3">{product.name}</h1>
             <div className="flex gap-3 items-center mb-3">
               <p className="font-body-lg text-body-lg text-primary mb-0 font-semibold">
@@ -140,7 +140,7 @@ const ProductDetailPage = () => {
             <div className="flex gap-3 h-14">
               <div className="w-[140px] border border-primary flex items-center justify-between px-3">
                 <button
-                  aria-label="Decrease quantity"
+                  aria-label="Giảm số lượng"
                   className="text-primary hover:text-secondary p-1 bg-transparent border-0 disabled:opacity-30 disabled:cursor-not-allowed"
                   disabled={quantity <= 1}
                   onClick={() => handleQuantityChange(-1)}
@@ -149,7 +149,7 @@ const ProductDetailPage = () => {
                 </button>
                 <span className="font-body-md text-body-md font-medium">{quantity}</span>
                 <button
-                  aria-label="Increase quantity"
+                  aria-label="Tăng số lượng"
                   className="text-primary hover:text-secondary p-1 bg-transparent border-0 disabled:opacity-30 disabled:cursor-not-allowed"
                   disabled={quantity >= product.stockQuantity}
                   onClick={() => handleQuantityChange(1)}

@@ -10,7 +10,6 @@ namespace CMS.Backend.Models.DTOs
         public string Content { get; set; } = string.Empty;
         public string? Summary { get; set; }
         public string? Slug { get; set; }
-        public string Locale { get; set; } = "en";
         public string ImageUrl { get; set; } = string.Empty;
         public DateTime CreatedDate { get; set; }
         public int CategoryId { get; set; }
@@ -19,30 +18,20 @@ namespace CMS.Backend.Models.DTOs
 
     public class CreatePostDTO
     {
-        [Required(ErrorMessage = "Title (EN) is required")]
-        public string TitleEn { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Tiêu đề không được để trống")]
+        public string Title { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Title (VI) is required")]
-        public string TitleVi { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Nội dung không được để trống")]
+        public string Content { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Content (EN) is required")]
-        public string ContentEn { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Content (VI) is required")]
-        public string ContentVi { get; set; } = string.Empty;
-
-        public string? SummaryEn { get; set; }
-        public string? SummaryVi { get; set; }
+        public string? Summary { get; set; }
 
         [MaxLength(300)]
-        public string? SlugEn { get; set; }
-
-        [MaxLength(300)]
-        public string? SlugVi { get; set; }
+        public string? Slug { get; set; }
 
         public string ImageUrl { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Category is required")]
+        [Required(ErrorMessage = "Danh mục không được để trống")]
         public int CategoryId { get; set; }
     }
 
@@ -50,30 +39,20 @@ namespace CMS.Backend.Models.DTOs
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Title (EN) is required")]
-        public string TitleEn { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Tiêu đề không được để trống")]
+        public string Title { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Title (VI) is required")]
-        public string TitleVi { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Nội dung không được để trống")]
+        public string Content { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Content (EN) is required")]
-        public string ContentEn { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Content (VI) is required")]
-        public string ContentVi { get; set; } = string.Empty;
-
-        public string? SummaryEn { get; set; }
-        public string? SummaryVi { get; set; }
+        public string? Summary { get; set; }
 
         [MaxLength(300)]
-        public string? SlugEn { get; set; }
-
-        [MaxLength(300)]
-        public string? SlugVi { get; set; }
+        public string? Slug { get; set; }
 
         public string ImageUrl { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Category is required")]
+        [Required(ErrorMessage = "Danh mục không được để trống")]
         public int CategoryId { get; set; }
     }
 }

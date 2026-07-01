@@ -22,33 +22,33 @@ namespace CMS.Backend.Controllers.Api
 
         [AllowAnonymous]
         [HttpGet("paged")]
-        public async Task<IActionResult> GetPaged([FromQuery] int page = 1, [FromQuery] int pageSize = 6, [FromQuery] string? locale = "en")
+        public async Task<IActionResult> GetPaged([FromQuery] int page = 1, [FromQuery] int pageSize = 6)
         {
-            var result = await _postService.GetPaged(page, pageSize, locale);
+            var result = await _postService.GetPaged(page, pageSize);
             return Ok(result);
         }
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] string? locale = "en")
+        public async Task<IActionResult> GetAll()
         {
-            var posts = await _postService.GetAll(locale);
+            var posts = await _postService.GetAll();
             return Ok(posts);
         }
 
         [AllowAnonymous]
         [HttpGet("category/{categoryId}")]
-        public async Task<IActionResult> GetByCategory(int categoryId, [FromQuery] string? locale = "en")
+        public async Task<IActionResult> GetByCategory(int categoryId)
         {
-            var posts = await _postService.GetByCategory(categoryId, locale);
+            var posts = await _postService.GetByCategory(categoryId);
             return Ok(posts);
         }
 
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetDetail(int id, [FromQuery] string? locale = "en")
+        public async Task<IActionResult> GetDetail(int id)
         {
-            var post = await _postService.GetById(id, locale);
+            var post = await _postService.GetById(id);
 
             if (post == null)
             {

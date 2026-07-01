@@ -39,7 +39,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
                     />
                     {item.stockQuantity <= 5 && (
                         <div className="absolute top-2 left-2 bg-primary/90 text-on-primary px-2 py-1 rounded text-[10px] font-label-sm uppercase tracking-widest">
-                            Only {item.stockQuantity} left
+                            Chỉ còn {item.stockQuantity} sản phẩm
                         </div>
                     )}
                 </div>
@@ -49,7 +49,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
                     <h3 className="font-headline-sm text-headline-sm text-on-surface mb-1">{item.name}</h3>
                 </Link>
                 <p className="font-body-md text-body-md text-on-surface-variant mb-4 flex-grow">
-                    {item.description ? item.description.substring(0, 60) + (item.description.length > 60 ? '...' : '') : 'Premium floral arrangement'}
+                    {item.description ? item.description.substring(0, 60) + (item.description.length > 60 ? '...' : '') : 'Sắp xếp hoa cao cấp'}
                 </p>
                 <p className="font-headline-sm text-headline-sm text-primary mb-4">{formatCurrency(item.price)}</p>
                 <div className="flex gap-2 w-full">
@@ -58,14 +58,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
                         className="flex-1 px-4 py-3 bg-surface-container-low text-on-surface-variant rounded-lg font-label-sm text-label-sm hover:bg-surface-container hover:text-primary transition-colors border-0 cursor-pointer flex items-center justify-center gap-2"
                     >
                         <span className="material-symbols-outlined text-[18px]">shopping_bag</span>
-                        Add to Cart
+                        Thêm vào giỏ
                     </button>
                     <button
                         onClick={handleBuyNow}
                         className="flex-1 px-4 py-3 bg-primary text-on-primary rounded-lg font-label-sm text-label-sm hover:bg-primary/90 transition-colors shadow-sm border-0 cursor-pointer flex items-center justify-center gap-2"
                     >
                         <span className="material-symbols-outlined text-[18px]">flash_on</span>
-                        Buy Now
+                        Mua ngay
                     </button>
                 </div>
             </div>

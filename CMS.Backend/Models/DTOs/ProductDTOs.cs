@@ -1,19 +1,15 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel;
 
 namespace CMS.Backend.Models.DTOs
 {
     public class ProductDTO
     {
         public int Id { get; set; }
+        public string? Sku { get; set; }
         public string Name { get; set; }
         public string? Description { get; set; }
         public string? Slug { get; set; }
-        public string Locale { get; set; } = "en";
         public decimal Price { get; set; }
-        public decimal PriceUsd { get; set; }
-        public decimal? PriceVnd { get; set; }
-        public string Currency { get; set; } = "USD";
         public int StockQuantity { get; set; }
         public string? ImageUrl { get; set; }
         public int CategoryProductId { get; set; }
@@ -22,22 +18,17 @@ namespace CMS.Backend.Models.DTOs
 
     public class CreateProductDTO
     {
-        [Required(ErrorMessage = "Tên sản phẩm (EN) không được để trống")]
-        [MaxLength(200)]
-        public string NameEn { get; set; }
+        [MaxLength(50)]
+        public string? Sku { get; set; }
 
-        [Required(ErrorMessage = "Tên sản phẩm (VI) không được để trống")]
+        [Required(ErrorMessage = "Tên sản phẩm không được để trống")]
         [MaxLength(200)]
-        public string NameVi { get; set; }
+        public string Name { get; set; }
 
-        public string? DescriptionEn { get; set; }
-        public string? DescriptionVi { get; set; }
+        public string? Description { get; set; }
 
         [MaxLength(300)]
-        public string? SlugEn { get; set; }
-
-        [MaxLength(300)]
-        public string? SlugVi { get; set; }
+        public string? Slug { get; set; }
 
         [Required(ErrorMessage = "Giá sản phẩm không được để trống")]
         [Range(0, double.MaxValue, ErrorMessage = "Giá phải lớn hơn 0")]
@@ -55,24 +46,19 @@ namespace CMS.Backend.Models.DTOs
     {
         public int Id { get; set; }
 
-        [Required]
-        [MaxLength(200)]
-        public string NameEn { get; set; }
+        [MaxLength(50)]
+        public string? Sku { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Tên sản phẩm không được để trống")]
         [MaxLength(200)]
-        public string NameVi { get; set; }
+        public string Name { get; set; }
 
-        public string? DescriptionEn { get; set; }
-        public string? DescriptionVi { get; set; }
+        public string? Description { get; set; }
 
         [MaxLength(300)]
-        public string? SlugEn { get; set; }
+        public string? Slug { get; set; }
 
-        [MaxLength(300)]
-        public string? SlugVi { get; set; }
-
-        [Required]
+        [Required(ErrorMessage = "Giá sản phẩm không được để trống")]
         [Range(0, double.MaxValue)]
         public decimal Price { get; set; }
 

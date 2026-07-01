@@ -22,6 +22,44 @@ namespace CMS.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("CMS.Data.Entities.Advertisement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LinkUrl")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Subtitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Advertisements");
+                });
+
             modelBuilder.Entity("CMS.Data.Entities.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -29,6 +67,19 @@ namespace CMS.Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Slug")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.HasKey("Id");
 
@@ -43,83 +94,22 @@ namespace CMS.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Slug")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
                     b.HasKey("Id");
 
                     b.ToTable("CategoriesProducts");
-                });
-
-            modelBuilder.Entity("CMS.Data.Entities.CategoryProductTranslation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CategoryProductId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<string>("Locale")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("Slug")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryProductId", "Locale")
-                        .IsUnique();
-
-                    b.ToTable("CategoryProductTranslations");
-                });
-
-            modelBuilder.Entity("CMS.Data.Entities.CategoryTranslation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<string>("Locale")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("Slug")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId", "Locale")
-                        .IsUnique();
-
-                    b.ToTable("CategoryTranslations");
                 });
 
             modelBuilder.Entity("CMS.Data.Entities.Customer", b =>
@@ -157,38 +147,6 @@ namespace CMS.Data.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("CMS.Data.Entities.ExchangeRate", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("FromCurrency")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("nvarchar(3)");
-
-                    b.Property<bool>("IsAutoUpdated")
-                        .HasColumnType("bit");
-
-                    b.Property<decimal>("Rate")
-                        .HasColumnType("decimal(18,6)");
-
-                    b.Property<string>("ToCurrency")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("nvarchar(3)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ExchangeRates");
-                });
-
             modelBuilder.Entity("CMS.Data.Entities.Order", b =>
                 {
                     b.Property<int>("Id")
@@ -197,16 +155,8 @@ namespace CMS.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Currency")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("nvarchar(3)");
-
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
-
-                    b.Property<decimal>("ExchangeRate")
-                        .HasColumnType("decimal(18,6)");
 
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
@@ -232,11 +182,6 @@ namespace CMS.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Currency")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("nvarchar(3)");
-
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
@@ -247,10 +192,7 @@ namespace CMS.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("UnitPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("UnitPriceUsd")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18,0)");
 
                     b.HasKey("Id");
 
@@ -272,39 +214,16 @@ namespace CMS.Data.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ImageUrl")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("Posts");
-                });
-
-            modelBuilder.Entity("CMS.Data.Entities.PostTranslation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Locale")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<int>("PostId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Slug")
                         .HasMaxLength(300)
@@ -321,10 +240,9 @@ namespace CMS.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PostId", "Locale")
-                        .IsUnique();
+                    b.HasIndex("CategoryId");
 
-                    b.ToTable("PostTranslations");
+                    b.ToTable("Posts");
                 });
 
             modelBuilder.Entity("CMS.Data.Entities.Product", b =>
@@ -338,11 +256,27 @@ namespace CMS.Data.Migrations
                     b.Property<int>("CategoryProductId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18,0)");
+
+                    b.Property<string>("Sku")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Slug")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<int>("StockQuantity")
                         .HasColumnType("int");
@@ -351,43 +285,11 @@ namespace CMS.Data.Migrations
 
                     b.HasIndex("CategoryProductId");
 
+                    b.HasIndex("Sku")
+                        .IsUnique()
+                        .HasFilter("[Sku] IS NOT NULL");
+
                     b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("CMS.Data.Entities.ProductTranslation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Locale")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Slug")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId", "Locale")
-                        .IsUnique();
-
-                    b.ToTable("ProductTranslations");
                 });
 
             modelBuilder.Entity("CMS.Data.Entities.RefreshToken", b =>
@@ -473,28 +375,6 @@ namespace CMS.Data.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("CMS.Data.Entities.CategoryProductTranslation", b =>
-                {
-                    b.HasOne("CMS.Data.Entities.CategoryProduct", "CategoryProduct")
-                        .WithMany("Translations")
-                        .HasForeignKey("CategoryProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CategoryProduct");
-                });
-
-            modelBuilder.Entity("CMS.Data.Entities.CategoryTranslation", b =>
-                {
-                    b.HasOne("CMS.Data.Entities.Category", "Category")
-                        .WithMany("Translations")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-                });
-
             modelBuilder.Entity("CMS.Data.Entities.Order", b =>
                 {
                     b.HasOne("CMS.Data.Entities.Customer", "Customer")
@@ -536,17 +416,6 @@ namespace CMS.Data.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("CMS.Data.Entities.PostTranslation", b =>
-                {
-                    b.HasOne("CMS.Data.Entities.Post", "Post")
-                        .WithMany("Translations")
-                        .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Post");
-                });
-
             modelBuilder.Entity("CMS.Data.Entities.Product", b =>
                 {
                     b.HasOne("CMS.Data.Entities.CategoryProduct", "CategoryProduct")
@@ -556,17 +425,6 @@ namespace CMS.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("CategoryProduct");
-                });
-
-            modelBuilder.Entity("CMS.Data.Entities.ProductTranslation", b =>
-                {
-                    b.HasOne("CMS.Data.Entities.Product", "Product")
-                        .WithMany("Translations")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("CMS.Data.Entities.RefreshToken", b =>
@@ -583,15 +441,11 @@ namespace CMS.Data.Migrations
             modelBuilder.Entity("CMS.Data.Entities.Category", b =>
                 {
                     b.Navigation("Posts");
-
-                    b.Navigation("Translations");
                 });
 
             modelBuilder.Entity("CMS.Data.Entities.CategoryProduct", b =>
                 {
                     b.Navigation("Products");
-
-                    b.Navigation("Translations");
                 });
 
             modelBuilder.Entity("CMS.Data.Entities.Customer", b =>
@@ -602,16 +456,6 @@ namespace CMS.Data.Migrations
             modelBuilder.Entity("CMS.Data.Entities.Order", b =>
                 {
                     b.Navigation("OrderDetails");
-                });
-
-            modelBuilder.Entity("CMS.Data.Entities.Post", b =>
-                {
-                    b.Navigation("Translations");
-                });
-
-            modelBuilder.Entity("CMS.Data.Entities.Product", b =>
-                {
-                    b.Navigation("Translations");
                 });
 #pragma warning restore 612, 618
         }

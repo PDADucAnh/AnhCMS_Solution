@@ -22,56 +22,49 @@ namespace CMS.Backend.Controllers.Api
 
         [AllowAnonymous]
         [HttpGet("paged")]
-        public async Task<IActionResult> GetPaged([FromQuery] int page = 1, [FromQuery] int pageSize = 8, [FromQuery] string? currency = null, [FromQuery] string? locale = "en")
+        public async Task<IActionResult> GetPaged([FromQuery] int page = 1, [FromQuery] int pageSize = 8)
         {
-            var result = await _productService.GetPaged(page, pageSize, locale);
-            if (!string.IsNullOrEmpty(currency) && currency.ToUpper() != "USD")
-            {
-                result.Items = (await _productService.ToCurrency(result.Items, currency)).ToList();
-            }
+            var result = await _productService.GetPaged(page, pageSize);
             return Ok(result);
         }
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] string? currency, [FromQuery] string? locale = "en")
+        public async Task<IActionResult> GetAll()
         {
-            var products = await _productService.GetAll(locale);
-            var result = await _productService.ToCurrency(products, currency);
-            return Ok(result);
+            var products = await _productService.GetAll();
+            return Ok(products);
         }
 
         [AllowAnonymous]
         [HttpGet("categoryproduct/{categoryProductId}")]
-        public async Task<IActionResult> GetByCategoryProduct(int categoryProductId, [FromQuery] string? currency, [FromQuery] string? locale = "en")
+        public async Task<IActionResult> GetByCategoryProduct(int categoryProductId)
         {
-            var products = await _productService.GetByCategoryProduct(categoryProductId, locale);
-            var result = await _productService.ToCurrency(products, currency);
-            return Ok(result);
+            var products = await _productService.GetByCategoryProduct(categoryProductId);
+            return Ok(products);
         }
 
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetDetail(int id, [FromQuery] string? currency, [FromQuery] string? locale = "en")
+        public async Task<IActionResult> GetDetail(int id)
         {
-            var product = await _productService.GetDetail(id, locale);
+            var product = await _productService.GetDetail(id);
 
             if (product == null)
             {
                 return NotFound(new { message = "Không tìm thấy sản phẩm này trong hệ thống" });
             }
 
-            var result = await _productService.ToCurrency(product, currency);
-            return Ok(result);
+            return Ok(product);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateProductDTO dto, [FromQuery] string? locale = "en")
+        public async Task<IActionResult> Create([FromBody] CreateProductDTO dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var created = await _productService.Create(dto, locale);
+            var created = await _productService.Create(dto);
             await _notificationService.NotifyEntityChanged("Product");
             return CreatedAtAction(nameof(GetDetail), new { id = created.Id }, created);
         }

@@ -2,12 +2,11 @@
 import axiosClient from '../api/axiosClient';
 
 const postService = {
-    getPostsPaged: async (page: number, pageSize: number, locale?: string) => {
+    getPostsPaged: async (page: number, pageSize: number) => {
         try {
             const searchParams = new URLSearchParams();
             searchParams.set('page', page.toString());
             searchParams.set('pageSize', pageSize.toString());
-            if (locale) searchParams.set('locale', locale);
             const response = await axiosClient.get(`/Posts/paged?${searchParams.toString()}`);
             return response.data || response;
         } catch (error) {

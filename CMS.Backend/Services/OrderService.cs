@@ -5,11 +5,11 @@ using CMS.Backend.Models.DTOs;
 using CMS.Backend.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using System;
 
 namespace CMS.Backend.Services
 {
@@ -18,18 +18,24 @@ namespace CMS.Backend.Services
         private readonly IApplicationDbContext _context;
         private readonly ILogger<OrderService> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IExchangeRateService _exchangeRateService;
+        private readonly IDeliverySlotService _deliverySlotService;
+        private readonly IPaymentService _paymentService;
+        private readonly IFraudDetectionService _fraudDetectionService;
 
         public OrderService(
             IApplicationDbContext context,
             ILogger<OrderService> logger,
             IHttpContextAccessor httpContextAccessor,
-            IExchangeRateService exchangeRateService)
+            IDeliverySlotService deliverySlotService,
+            IPaymentService paymentService,
+            IFraudDetectionService fraudDetectionService)
         {
             _context = context;
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
-            _exchangeRateService = exchangeRateService;
+            _deliverySlotService = deliverySlotService;
+            _paymentService = paymentService;
+            _fraudDetectionService = fraudDetectionService;
         }
 
         private async Task<int?> GetCurrentCustomerId()
@@ -118,18 +124,11 @@ namespace CMS.Backend.Services
             return order?.ToDTO();
         }
 
-        private async Task<(string Currency, decimal Rate)> ResolveCurrency(string? currency)
-        {
-            if (currency?.ToUpper() == "VND")
-            {
-                var rate = await _exchangeRateService.GetUsdToVndRate();
-                return ("VND", rate.Rate);
-            }
-            return ("USD", 1m);
-        }
-
         public async Task<(bool Success, string Message, int OrderId)> CreateOrder(
-            int customerId, string? notes, List<OrderItemInput> items, string? currency = null)
+            int customerId, string? notes, List<OrderItemInput> items, DateTime? orderDate = null,
+            OrderStatus? status = null, PaymentMethod? paymentMethod = null,
+            DateTime? deliveryDate = null, string? deliveryTimeSlot = null,
+            string? deliveryDistrict = null, string? deliveryAddress = null)
         {
             try
             {
@@ -137,23 +136,46 @@ namespace CMS.Backend.Services
                 if (!customerExists)
                     return (false, "Khách hàng không tồn tại", 0);
 
-                var (orderCurrency, exchangeRate) = await ResolveCurrency(currency);
+                var customer = await _context.Customers.FindAsync(customerId);
+
+                var method = paymentMethod ?? PaymentMethod.COD;
+                var initialStatus = status ?? (method == PaymentMethod.COD ? OrderStatus.PendingVerification : OrderStatus.Pending);
+
+                if (method == PaymentMethod.COD && customer != null)
+                {
+                    var isBlacklisted = await _fraudDetectionService.IsPhoneBlacklisted(customer.Phone ?? "");
+                    if (isBlacklisted)
+                        return (false, "Số điện thoại đã bị khóa do lịch sử bùng hàng. Vui lòng chọn thanh toán chuyển khoản.", 0);
+                }
+
+                if (deliveryDate.HasValue && !string.IsNullOrEmpty(deliveryTimeSlot))
+                {
+                    foreach (var item in items ?? new List<OrderItemInput>())
+                    {
+                        var locked = await _deliverySlotService.TryLockSlot(item.ProductId, deliveryDate.Value, deliveryTimeSlot);
+                        if (!locked)
+                            return (false, $"Khung giờ {deliveryTimeSlot} ngày {deliveryDate:dd/MM/yyyy} đã hết chỗ. Vui lòng chọn khung giờ khác.", 0);
+                    }
+                }
 
                 var newOrder = new Order
                 {
-                    OrderDate = DateTime.Now,
+                    OrderDate = orderDate ?? DateTime.Now,
                     CustomerId = customerId,
-                    Status = OrderStatus.Pending,
+                    Status = initialStatus,
                     Notes = notes,
-                    Currency = orderCurrency,
-                    ExchangeRate = exchangeRate
+                    PaymentMethod = method,
+                    PaymentStatus = PaymentStatus.Pending,
+                    DeliveryDate = deliveryDate,
+                    DeliveryTimeSlot = deliveryTimeSlot,
+                    DeliveryDistrict = deliveryDistrict,
+                    DeliveryAddress = deliveryAddress
                 };
 
                 if (items != null && items.Count > 0)
                 {
                     var productIds = items.Select(i => i.ProductId).ToList();
                     var products = await _context.Products
-                        .Include(p => p.Translations)
                         .Where(p => productIds.Contains(p.Id))
                         .ToListAsync();
                     var productDict = products.ToDictionary(p => p.Id);
@@ -161,15 +183,10 @@ namespace CMS.Backend.Services
                     foreach (var item in items)
                     {
                         if (!productDict.TryGetValue(item.ProductId, out var product))
-                        {
                             throw new KeyNotFoundException($"Sản phẩm không tồn tại");
-                        }
 
                         if (product.StockQuantity < item.Quantity)
-                        {
-                            var productName = product.Translations.FirstOrDefault(t => t.Locale == "en")?.Name ?? product.Translations.FirstOrDefault()?.Name ?? $"Sản phẩm #{product.Id}";
-                            return (false, $"Sản phẩm '{productName}' không đủ hàng (còn: {product.StockQuantity}, yêu cầu: {item.Quantity})", 0);
-                        }
+                            return (false, $"Sản phẩm '{product.Name}' không đủ hàng (còn: {product.StockQuantity}, yêu cầu: {item.Quantity})", 0);
                     }
 
                     newOrder.OrderDetails = items.Select(item =>
@@ -181,17 +198,26 @@ namespace CMS.Backend.Services
                         {
                             ProductId = item.ProductId,
                             Quantity = item.Quantity,
-                            UnitPrice = orderCurrency == "VND"
-                                ? PriceHelper.ConvertPrice(product.Price, exchangeRate, "VND")
-                                : product.Price,
-                            UnitPriceUsd = product.Price,
-                            Currency = orderCurrency
+                            UnitPrice = item.UnitPrice
                         };
                     }).ToList();
                 }
 
                 _context.Orders.Add(newOrder);
                 await _context.SaveChangesAsync();
+
+                if (method == PaymentMethod.COD && customer != null)
+                {
+                    var requiresVerification = await _fraudDetectionService.RequiresVerification(customer);
+                    if (!requiresVerification)
+                    {
+                        newOrder.Status = OrderStatus.Confirmed;
+                        newOrder.IsVerified = true;
+                        newOrder.VerifiedAt = DateTime.Now;
+                        customer.TotalOrders++;
+                        await _context.SaveChangesAsync();
+                    }
+                }
 
                 return (true, "Đặt hàng thành công!", newOrder.Id);
             }
@@ -214,12 +240,10 @@ namespace CMS.Backend.Services
 
         public async Task<bool> Update(int id, UpdateOrderDTO dto)
         {
-            if (id != dto.Id)
-                return false;
+            if (id != dto.Id) return false;
 
             var order = await _context.Orders.FindAsync(id);
-            if (order == null)
-                return false;
+            if (order == null) return false;
 
             dto.UpdateEntity(order);
 
@@ -239,12 +263,235 @@ namespace CMS.Backend.Services
         public async Task<bool> Delete(int id)
         {
             var order = await _context.Orders.FindAsync(id);
-            if (order == null)
-                return false;
+            if (order == null) return false;
 
             _context.Orders.Remove(order);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<bool> Cancel(int id)
+        {
+            IQueryable<Order> query = _context.Orders
+                .Include(o => o.OrderDetails)
+                .Where(o => o.Id == id);
+
+            query = ApplyOwnershipFilter(query);
+
+            var order = await query.FirstOrDefaultAsync();
+            if (order == null) return false;
+
+            if (order.Status != OrderStatus.Pending && order.Status != OrderStatus.PendingVerification && order.Status != OrderStatus.Confirmed)
+                return false;
+
+            order.Status = OrderStatus.Cancelled;
+            order.CancelledAt = DateTime.Now;
+
+            if (order.OrderDetails != null)
+            {
+                var productIds = order.OrderDetails.Select(od => od.ProductId).ToList();
+                var products = await _context.Products
+                    .Where(p => productIds.Contains(p.Id))
+                    .ToListAsync();
+
+                foreach (var detail in order.OrderDetails)
+                {
+                    var product = products.FirstOrDefault(p => p.Id == detail.ProductId);
+                    if (product != null)
+                        product.StockQuantity += detail.Quantity;
+
+                    if (!string.IsNullOrEmpty(order.DeliveryTimeSlot) && order.DeliveryDate.HasValue)
+                        await _deliverySlotService.ReleaseSlot(detail.ProductId, order.DeliveryDate.Value, order.DeliveryTimeSlot);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> CancelWithReason(int id, string? reason)
+        {
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null) return false;
+
+            order.Status = OrderStatus.Cancelled;
+            order.CancelledAt = DateTime.Now;
+            order.CancellationReason = reason;
+
+            if (order.OrderDetails != null)
+            {
+                var productIds = order.OrderDetails.Select(od => od.ProductId).ToList();
+                var products = await _context.Products
+                    .Where(p => productIds.Contains(p.Id))
+                    .ToListAsync();
+
+                foreach (var detail in order.OrderDetails)
+                {
+                    var product = products.FirstOrDefault(p => p.Id == detail.ProductId);
+                    if (product != null)
+                        product.StockQuantity += detail.Quantity;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<(bool Success, string Message)> CancelWithPolicy(int id, string? reason = null)
+        {
+            IQueryable<Order> query = _context.Orders
+                .Include(o => o.OrderDetails)
+                .Include(o => o.Customer)
+                .Where(o => o.Id == id);
+
+            query = ApplyOwnershipFilter(query);
+
+            var order = await query.FirstOrDefaultAsync();
+            if (order == null)
+                return (false, "Đơn hàng không tồn tại");
+
+            if (order.Status == OrderStatus.Cancelled || order.Status == OrderStatus.Completed)
+                return (false, "Đơn hàng đã được xử lý trước đó");
+
+            if (order.Status == OrderStatus.Preparing || order.Status == OrderStatus.Shipping)
+                return (false, "Đơn hàng đang trong quá trình sản xuất/giao hàng, không thể hủy");
+
+            var delta = order.DeliveryDate.HasValue
+                ? (order.DeliveryDate.Value - DateTime.Now).TotalHours
+                : 999;
+
+            if (delta <= 4)
+                return (false, "Đơn hàng cách thời gian giao dưới 4 giờ, không thể hủy. Vui lòng liên hệ hotline để được hỗ trợ.");
+
+            decimal refundPercent;
+            string message;
+
+            if (delta > 24)
+            {
+                refundPercent = 1.0m;
+                message = "Hủy đơn thành công. Tiền sẽ được hoàn lại 100%.";
+            }
+            else
+            {
+                refundPercent = 0.5m;
+                message = "Hủy đơn thành công. Phí hủy 50% giá trị đơn hàng sẽ được khấu trừ do nguyên liệu hoa tươi đã được chuẩn bị.";
+            }
+
+            var totalAmount = order.OrderDetails?.Sum(od => od.Quantity * od.UnitPrice) ?? 0;
+            var refundAmount = totalAmount * refundPercent;
+
+            order.Status = OrderStatus.Cancelled;
+            order.CancelledAt = DateTime.Now;
+            order.CancellationReason = reason ?? "Hủy theo yêu cầu";
+            order.RefundAmount = refundAmount;
+
+            if (order.OrderDetails != null)
+            {
+                var productIds = order.OrderDetails.Select(od => od.ProductId).ToList();
+                var products = await _context.Products
+                    .Where(p => productIds.Contains(p.Id))
+                    .ToListAsync();
+
+                foreach (var detail in order.OrderDetails)
+                {
+                    var product = products.FirstOrDefault(p => p.Id == detail.ProductId);
+                    if (product != null)
+                        product.StockQuantity += detail.Quantity;
+
+                    if (!string.IsNullOrEmpty(order.DeliveryTimeSlot) && order.DeliveryDate.HasValue)
+                        await _deliverySlotService.ReleaseSlot(detail.ProductId, order.DeliveryDate.Value, order.DeliveryTimeSlot);
+                }
+            }
+
+            if (order.PaymentStatus == PaymentStatus.Completed && refundAmount > 0)
+            {
+                await _paymentService.RefundPayment(id, refundAmount);
+                message += $" Số tiền hoàn: {refundAmount:N0} VND.";
+            }
+
+            await _context.SaveChangesAsync();
+            return (true, message);
+        }
+
+        public async Task<(bool Success, string Message)> ProcessCODOrder(int orderId)
+        {
+            var order = await _context.Orders
+                .Include(o => o.Customer)
+                .FirstOrDefaultAsync(o => o.Id == orderId);
+
+            if (order == null)
+                return (false, "Đơn hàng không tồn tại");
+
+            if (order.PaymentMethod != PaymentMethod.COD)
+                return (false, "Đơn hàng không phải COD");
+
+            if (order.Status != OrderStatus.PendingVerification)
+                return (false, "Đơn hàng không ở trạng thái chờ xác minh");
+
+            if (order.Customer != null)
+            {
+                var requiresVerification = await _fraudDetectionService.RequiresVerification(order.Customer);
+
+                if (!requiresVerification)
+                {
+                    order.Status = OrderStatus.Confirmed;
+                    order.IsVerified = true;
+                    order.VerifiedAt = DateTime.Now;
+                    order.Customer.TotalOrders++;
+                    await _context.SaveChangesAsync();
+                    return (true, "Đơn hàng đã được xác nhận tự động");
+                }
+
+                order.Status = OrderStatus.Confirmed;
+                order.IsVerified = true;
+                order.VerifiedAt = DateTime.Now;
+                order.Customer.TotalOrders++;
+                await _context.SaveChangesAsync();
+                return (true, "Đơn hàng đã được xác nhận qua xác minh thủ công");
+            }
+
+            return (false, "Không tìm thấy thông tin khách hàng");
+        }
+
+        public async Task<bool> AutoCancelUnverifiedOrders(int timeoutMinutes = 30)
+        {
+            var cutoff = DateTime.Now.AddMinutes(-timeoutMinutes);
+
+            var expiredOrders = await _context.Orders
+                .Include(o => o.OrderDetails)
+                .Where(o => o.Status == OrderStatus.PendingVerification
+                    && o.OrderDate <= cutoff)
+                .ToListAsync();
+
+            foreach (var order in expiredOrders)
+            {
+                order.Status = OrderStatus.Cancelled;
+                order.CancelledAt = DateTime.Now;
+                order.CancellationReason = "Tự động hủy do quá thời gian xác minh";
+
+                if (order.OrderDetails != null)
+                {
+                    var productIds = order.OrderDetails.Select(od => od.ProductId).ToList();
+                    var products = await _context.Products
+                        .Where(p => productIds.Contains(p.Id))
+                        .ToListAsync();
+
+                    foreach (var detail in order.OrderDetails)
+                    {
+                        var product = products.FirstOrDefault(p => p.Id == detail.ProductId);
+                        if (product != null)
+                            product.StockQuantity += detail.Quantity;
+
+                        if (!string.IsNullOrEmpty(order.DeliveryTimeSlot) && order.DeliveryDate.HasValue)
+                            await _deliverySlotService.ReleaseSlot(detail.ProductId, order.DeliveryDate.Value, order.DeliveryTimeSlot);
+                    }
+                }
+            }
+
+            if (expiredOrders.Any())
+                await _context.SaveChangesAsync();
+
+            return expiredOrders.Any();
         }
     }
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="light" lang="en">
+<html class="light" lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,6 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
     <!-- Material Symbols -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <!-- CKEditor 5 -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.0.0/classic/ckeditor.js"></script>
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script id="tailwind-config">
@@ -138,15 +140,15 @@
                 <span class="material-symbols-outlined">local_florist</span>
             </div>
             <div>
-                <h1 class="font-headline-sm text-headline-sm text-primary tracking-tight leading-tight">Admin Panel</h1>
-                <p class="font-label-sm text-label-sm text-on-surface-variant">Management Suite</p>
+                <h1 class="font-headline-sm text-headline-sm text-primary tracking-tight leading-tight">Admin</h1>
+                <p class="font-label-sm text-label-sm text-on-surface-variant">Quản trị</p>
             </div>
         </div>
 
         <div class="px-base mb-stack-md">
             <a asp-controller="Product" asp-action="Create" class="w-full flex items-center justify-center gap-2 bg-primary text-on-primary py-3 rounded-lg font-label-md text-label-md petal-shadow-1 hover:bg-primary/90 transition-colors no-underline">
                 <span class="material-symbols-outlined text-[20px]">add</span>
-                Add New Arrangement
+                Tạo nhanh
             </a>
         </div>
 
@@ -154,77 +156,80 @@
             @{
                 var controller = ViewContext.RouteData.Values["controller"]?.ToString();
             }
+
+            <p class="text-[10px] text-on-surface-variant uppercase tracking-[0.2em] font-medium px-4 pt-2 pb-1">Bảng điều khiển</p>
             <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md @(controller == "Home" ? "text-primary bg-secondary-container" : "text-on-surface-variant hover:text-primary hover:bg-primary-container/20") transition-all duration-200 no-underline"
                asp-controller="Home" asp-action="Index">
                 <span class="material-symbols-outlined @(controller == "Home" ? "text-primary" : "")">dashboard</span>
-                Dashboard
+                Bảng điều khiển
             </a>
+
+            <p class="text-[10px] text-on-surface-variant uppercase tracking-[0.2em] font-medium px-4 pt-4 pb-1">Danh mục sản phẩm</p>
             <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md @(controller == "Product" ? "text-primary bg-secondary-container" : "text-on-surface-variant hover:text-primary hover:bg-primary-container/20") transition-all duration-200 no-underline"
                asp-controller="Product" asp-action="Index">
                 <span class="material-symbols-outlined @(controller == "Product" ? "text-primary" : "")">local_florist</span>
-                Inventory
+                Sản phẩm
             </a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md @(controller == "Order" ? "text-primary bg-secondary-container" : "text-on-surface-variant hover:text-primary hover:bg-primary-container/20") transition-all duration-200 no-underline"
-               asp-controller="Order" asp-action="Index">
-                <span class="material-symbols-outlined @(controller == "Order" ? "" : "")" style="@(controller == "Order" ? "font-variation-settings: 'FILL' 1;" : "")">shopping_cart</span>
-                Orders
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md @(controller == "Customer" ? "text-primary bg-secondary-container" : "text-on-surface-variant hover:text-primary hover:bg-primary-container/20") transition-all duration-200 no-underline"
-               asp-controller="Customer" asp-action="Index">
-                <span class="material-symbols-outlined @(controller == "Customer" ? "text-primary" : "")">group</span>
-                Customers
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md text-on-surface-variant hover:text-primary hover:bg-primary-container/20 transition-all duration-200 no-underline"
-               href="#">
-                <span class="material-symbols-outlined">bar_chart</span>
-                Analytics
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md text-on-surface-variant hover:text-primary hover:bg-primary-container/20 transition-all duration-200 no-underline"
-               href="#">
-                <span class="material-symbols-outlined">campaign</span>
-                Marketing
-            </a>
-
-            <div class="pt-4 pb-2 px-4">
-                <p class="text-[10px] text-on-surface-variant uppercase tracking-[0.2em] font-medium">Management</p>
-            </div>
             <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md @(controller == "CategoryProduct" ? "text-primary bg-secondary-container" : "text-on-surface-variant hover:text-primary hover:bg-primary-container/20") transition-all duration-200 no-underline"
                asp-controller="CategoryProduct" asp-action="Index">
                 <span class="material-symbols-outlined @(controller == "CategoryProduct" ? "text-primary" : "")">category</span>
-                Product Categories
+                Danh mục sản phẩm
             </a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md @(controller == "Category" ? "text-primary bg-secondary-container" : "text-on-surface-variant hover:text-primary hover:bg-primary-container/20") transition-all duration-200 no-underline"
-               asp-controller="Category" asp-action="Index">
-                <span class="material-symbols-outlined @(controller == "Category" ? "text-primary" : "")">grid_view</span>
-                Blog Categories
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md @(controller == "Post" ? "text-primary bg-secondary-container" : "text-on-surface-variant hover:text-primary hover:bg-primary-container/20") transition-all duration-200 no-underline"
-               asp-controller="Post" asp-action="Index">
-                <span class="material-symbols-outlined @(controller == "Post" ? "text-primary" : "")">article</span>
-                Blog Posts
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md @(controller == "User" ? "text-primary bg-secondary-container" : "text-on-surface-variant hover:text-primary hover:bg-primary-container/20") transition-all duration-200 no-underline"
-               asp-controller="User" asp-action="Index">
-                <span class="material-symbols-outlined @(controller == "User" ? "text-primary" : "")">manage_accounts</span>
-                Admin Users
+
+            <p class="text-[10px] text-on-surface-variant uppercase tracking-[0.2em] font-medium px-4 pt-4 pb-1">Bán hàng</p>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md @(controller == "Order" ? "text-primary bg-secondary-container" : "text-on-surface-variant hover:text-primary hover:bg-primary-container/20") transition-all duration-200 no-underline"
+               asp-controller="Order" asp-action="Index">
+                <span class="material-symbols-outlined @(controller == "Order" ? "" : "")" style="@(controller == "Order" ? "font-variation-settings: 'FILL' 1;" : "")">shopping_cart</span>
+                Đơn hàng
             </a>
             <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md @(controller == "OrderDetail" ? "text-primary bg-secondary-container" : "text-on-surface-variant hover:text-primary hover:bg-primary-container/20") transition-all duration-200 no-underline"
                asp-controller="OrderDetail" asp-action="Index">
                 <span class="material-symbols-outlined @(controller == "OrderDetail" ? "text-primary" : "")">receipt_long</span>
-                Order Details
+                Chi tiết đơn hàng
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md @(controller == "Customer" ? "text-primary bg-secondary-container" : "text-on-surface-variant hover:text-primary hover:bg-primary-container/20") transition-all duration-200 no-underline"
+               asp-controller="Customer" asp-action="Index">
+                <span class="material-symbols-outlined @(controller == "Customer" ? "text-primary" : "")">group</span>
+                Khách hàng
+            </a>
+
+            <p class="text-[10px] text-on-surface-variant uppercase tracking-[0.2em] font-medium px-4 pt-4 pb-1">Nội dung</p>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md @(controller == "Post" ? "text-primary bg-secondary-container" : "text-on-surface-variant hover:text-primary hover:bg-primary-container/20") transition-all duration-200 no-underline"
+               asp-controller="Post" asp-action="Index">
+                <span class="material-symbols-outlined @(controller == "Post" ? "text-primary" : "")">article</span>
+                Bài viết
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md @(controller == "Category" ? "text-primary bg-secondary-container" : "text-on-surface-variant hover:text-primary hover:bg-primary-container/20") transition-all duration-200 no-underline"
+               asp-controller="Category" asp-action="Index">
+                <span class="material-symbols-outlined @(controller == "Category" ? "text-primary" : "")">grid_view</span>
+                Danh mục blog
+            </a>
+
+            <p class="text-[10px] text-on-surface-variant uppercase tracking-[0.2em] font-medium px-4 pt-4 pb-1">Tiếp thị</p>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md @(controller == "Advertisement" ? "text-primary bg-secondary-container" : "text-on-surface-variant hover:text-primary hover:bg-primary-container/20") transition-all duration-200 no-underline"
+               asp-controller="Advertisement" asp-action="Index">
+                <span class="material-symbols-outlined @(controller == "Advertisement" ? "text-primary" : "")">campaign</span>
+                Quảng cáo
+            </a>
+
+            <p class="text-[10px] text-on-surface-variant uppercase tracking-[0.2em] font-medium px-4 pt-4 pb-1">Hệ thống</p>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md @(controller == "User" ? "text-primary bg-secondary-container" : "text-on-surface-variant hover:text-primary hover:bg-primary-container/20") transition-all duration-200 no-underline"
+               asp-controller="User" asp-action="Index">
+                <span class="material-symbols-outlined @(controller == "User" ? "text-primary" : "")">manage_accounts</span>
+                Người dùng
             </a>
         </div>
 
         <div class="mt-auto px-base pt-stack-md border-t border-outline-variant/20 space-y-1">
             <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md text-on-surface-variant hover:text-primary hover:bg-primary-container/20 transition-all duration-200 no-underline" href="#">
                 <span class="material-symbols-outlined">help</span>
-                Help Center
+                Trợ giúp
             </a>
             @if (User.Identity.IsAuthenticated)
             {
                 <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md text-on-surface-variant hover:text-primary hover:bg-primary-container/20 transition-all duration-200 no-underline" asp-controller="Account" asp-action="Logout">
                     <span class="material-symbols-outlined">logout</span>
-                    Log Out
+                    Đăng xuất
                 </a>
             }
         </div>
@@ -240,7 +245,7 @@
             <div class="hidden md:flex flex-1 max-w-md mx-8">
                 <div class="relative w-full">
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
-                    <input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant/30 rounded-full focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary font-body-md text-body-md text-on-surface transition-colors placeholder:text-on-surface-variant/70" placeholder="Search orders..." type="text" />
+                    <input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant/30 rounded-full focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary font-body-md text-body-md text-on-surface transition-colors placeholder:text-on-surface-variant/70" placeholder="Tìm đơn hàng..." type="text" />
                 </div>
             </div>
 
@@ -285,11 +290,11 @@
 
         <!-- Footer -->
         <footer class="border-t border-outline-variant/20 flex flex-col md:flex-row justify-between items-center px-margin-desktop py-6 gap-4 bg-surface-container-lowest">
-            <p class="font-label-sm text-label-sm text-on-surface-variant">&copy; @DateTime.Now.Year AnhCMS. All rights reserved.</p>
+            <p class="font-label-sm text-label-sm text-on-surface-variant">&copy; @DateTime.Now.Year AnhCMS. Đã đăng ký bản quyền.</p>
             <div class="flex gap-6">
-                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors no-underline" href="#">Documentation</a>
-                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors no-underline" href="#">Support</a>
-                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors no-underline" href="#">Terms of Service</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors no-underline" href="#">Tài liệu</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors no-underline" href="#">Hỗ trợ</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors no-underline" href="#">Điều khoản dịch vụ</a>
             </div>
         </footer>
     </main>
@@ -300,22 +305,22 @@
             <div class="w-14 h-14 rounded-full bg-error-container flex items-center justify-center mx-auto mb-4">
                 <span class="material-symbols-outlined text-error text-3xl">timer_off</span>
             </div>
-            <h3 class="font-headline-sm text-headline-sm text-on-surface mb-2">Session Expiring</h3>
+            <h3 class="font-headline-sm text-headline-sm text-on-surface mb-2">Phiên sắp hết hạn</h3>
             <p class="font-body-md text-body-md text-on-surface-variant mb-1">
-                Your session will expire due to inactivity.
+                Phiên làm việc của bạn sắp hết hạn do không hoạt động.
             </p>
             <p class="font-body-md text-body-md text-on-surface-variant mb-6">
-                You will be logged out in <strong id="idle-countdown" class="text-error">60</strong> seconds.
+                Bạn sẽ bị đăng xuất sau <strong id="idle-countdown" class="text-error">60</strong> giây.
             </p>
             <div class="flex gap-3 justify-center">
                 <button id="idle-stay-btn"
                         class="px-6 py-2.5 bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:bg-primary/90 transition-colors border-0 cursor-pointer">
-                    Stay Logged In
+                    Giữ phiên đăng nhập
                 </button>
                 <a id="idle-logout-btn"
                    class="px-6 py-2.5 bg-transparent text-on-surface-variant rounded-lg font-label-md text-label-md border border-outline-variant hover:bg-surface-container-low transition-colors no-underline"
                    asp-controller="Account" asp-action="Logout">
-                    Log Out Now
+                    Đăng xuất ngay
                 </a>
             </div>
         </div>
@@ -383,6 +388,20 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('textarea[data-rich-editor]').forEach(function (el) {
+                var type = el.getAttribute('data-rich-editor');
+                var toolbar;
+                if (type === 'full') {
+                    toolbar = ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|', 'blockQuote', 'insertTable', '|', 'undo', 'redo', 'imageUpload'];
+                } else {
+                    toolbar = ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|', 'blockQuote', '|', 'undo', 'redo'];
+                }
+                ClassicEditor.create(el, { toolbar: toolbar }).catch(console.error);
+            });
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

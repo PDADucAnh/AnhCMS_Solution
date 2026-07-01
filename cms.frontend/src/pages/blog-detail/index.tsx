@@ -25,7 +25,7 @@ const BlogDetail: React.FC = () => {
             <div className="min-h-screen flex items-center justify-center">
                 <div className="animate-pulse flex flex-col items-center">
                     <div className="size-16 bg-surface-container rounded-full mb-md"></div>
-                    <p className="font-label-sm text-label-sm uppercase tracking-widest text-secondary">Retrieving Narrative...</p>
+                    <p className="font-label-sm text-label-sm uppercase tracking-widest text-secondary">Đang tải...</p>
                 </div>
             </div>
         );
@@ -34,8 +34,8 @@ const BlogDetail: React.FC = () => {
     if (!post) {
         return (
             <div className="text-center py-xl px-margin">
-                <h2 className="font-display-xl text-headline-lg uppercase tracking-tighter">Narrative Not Found</h2>
-                <Link to="/blog" className="text-primary font-label-sm uppercase tracking-widest mt-4 inline-block text-decoration-none btn-link-luxury">Back to Journal</Link>
+                <h2 className="font-display-xl text-headline-lg uppercase tracking-tighter">Không tìm thấy bài viết</h2>
+                <Link to="/blog" className="text-primary font-label-sm uppercase tracking-widest mt-4 inline-block text-decoration-none btn-link-luxury">Quay lại bài viết</Link>
             </div>
         );
     }
@@ -55,13 +55,13 @@ const BlogDetail: React.FC = () => {
                     <div className="relative z-20 max-w-4xl mx-auto text-center w-full">
                         <div className="mb-sm">
                             <span className="font-label-sm text-label-sm text-surface-container-highest uppercase border border-surface-container-highest px-xs py-[2px] rounded-DEFAULT">
-                                {post.categoryName || 'Style Guide'}
+                                {post.categoryName || 'Hướng dẫn phong cách'}
                             </span>
                         </div>
                         <h1 className="font-display-xl text-display-xl-mobile md:text-display-xl text-on-primary mb-md uppercase tracking-tighter drop-shadow-lg">{post.title}</h1>
                         {post.summary && <p className="font-body-lg text-body-lg text-white/80 max-w-2xl mx-auto">{post.summary}</p>}
                         <div className="mt-lg flex items-center justify-center gap-xs text-white/60 font-label-sm text-[10px] uppercase tracking-[0.2em] font-bold">
-                            <span>By Editorial Team</span>
+                            <span>Ban biên tập</span>
                             <span className="mx-2">/</span>
                             <span>{new Date(post.createdDate || Date.now()).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                         </div>
@@ -102,10 +102,10 @@ const BlogDetail: React.FC = () => {
                     <div className="max-w-[1440px] mx-auto">
                         <div className="flex flex-col md:flex-row justify-between items-end mb-xl gap-md">
                             <div>
-                                <h3 className="font-display-xl text-headline-lg text-primary mb-xs uppercase tracking-tighter">Shop The Editorial</h3>
-                                <p className="font-body-md text-body-md text-secondary italic serif">Curated pieces to recreate the layered aesthetic.</p>
+                                <h3 className="font-display-xl text-headline-lg text-primary mb-xs uppercase tracking-tighter">Mua sắm</h3>
+                                <p className="font-body-md text-body-md text-secondary italic serif">Sản phẩm phối hợp để tạo phong cách layer.</p>
                             </div>
-                            <Link className="font-label-sm text-label-sm text-primary uppercase tracking-widest text-decoration-none font-bold btn-link-luxury" to="/shop">View All</Link>
+                            <Link className="font-label-sm text-label-sm text-primary uppercase tracking-widest text-decoration-none font-bold btn-link-luxury" to="/shop">Xem tất cả</Link>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-gutter">
                             {products.map((p: any) => (
@@ -128,30 +128,30 @@ const BlogDetail: React.FC = () => {
 
                 <div className="max-w-[1440px] mx-auto px-margin py-[120px] grid grid-cols-1 md:grid-cols-12 gap-gutter">
                     <div className="md:col-span-5 lg:col-span-4 bg-surface p-xl border border-outline-variant flex flex-col justify-center">
-                        <h3 className="font-display-xl text-headline-sm text-primary mb-sm uppercase tracking-tighter">The Journal</h3>
-                        <p className="font-body-md text-body-md text-secondary mb-lg italic serif">Subscribe to receive editorial updates, early access to collections, and styling insights.</p>
+                        <h3 className="font-display-xl text-headline-sm text-primary mb-sm uppercase tracking-tighter">Bản tin</h3>
+                        <p className="font-body-md text-body-md text-secondary mb-lg italic serif">Đăng ký để nhận cập nhật bài viết, truy cập sớm bộ sưu tập và mẹo phối đồ.</p>
                         <form className="flex flex-col gap-md">
                             <div className="relative">
                                 <input className="block w-full px-0 py-sm text-body-md bg-transparent border-0 border-b border-outline appearance-none focus:outline-none focus:ring-0 focus:border-primary peer transition-colors" id="email" placeholder=" " type="email" />
-                                <label className="absolute font-label-sm text-label-sm text-secondary duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-primary peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 uppercase tracking-widest" htmlFor="email">Email Address</label>
+                                <label className="absolute font-label-sm text-label-sm text-secondary duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-primary peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 uppercase tracking-widest" htmlFor="email">Địa chỉ Email</label>
                             </div>
-                            <button className="w-full bg-primary text-on-primary font-label-sm text-label-sm uppercase py-sm border border-primary font-bold tracking-[0.2em] btn-luxury btn-primary-luxury" type="button">Subscribe</button>
+                            <button className="w-full bg-primary text-on-primary font-label-sm text-label-sm uppercase py-sm border border-primary font-bold tracking-[0.2em] btn-luxury btn-primary-luxury" type="button">Đăng ký</button>
                         </form>
                     </div>
 
                     <div className="md:col-span-7 lg:col-span-7 md:col-start-6 lg:col-start-6 mt-xl md:mt-0">
-                        <h3 className="font-headline-sm text-headline-sm text-primary mb-lg border-b border-outline-variant pb-sm uppercase tracking-widest">Discussion</h3>
+                        <h3 className="font-headline-sm text-headline-sm text-primary mb-lg border-b border-outline-variant pb-sm uppercase tracking-widest">Bình luận</h3>
                         <div className="space-y-lg mb-xl">
-                            <p className="text-secondary italic serif">The conversation has not yet begun. Share your perspective below.</p>
+                            <p className="text-secondary italic serif">Chưa có bình luận. Hãy chia sẻ ý kiến của bạn bên dưới.</p>
                         </div>
                         <div>
-                            <h4 className="font-body-md text-sm font-bold text-primary mb-sm uppercase tracking-widest">Leave a comment</h4>
+                            <h4 className="font-body-md text-sm font-bold text-primary mb-sm uppercase tracking-widest">Để lại bình luận</h4>
                             <form className="flex flex-col gap-md">
                                 <div className="relative">
                                     <textarea className="block w-full px-0 py-sm text-body-md bg-transparent border-0 border-b border-outline appearance-none focus:outline-none focus:ring-0 focus:border-primary peer transition-colors resize-none" id="comment" placeholder=" " rows={4}></textarea>
-                                    <label className="absolute font-label-sm text-label-sm text-secondary duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-primary peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 uppercase tracking-widest" htmlFor="comment">Your narrative</label>
+                                    <label className="absolute font-label-sm text-label-sm text-secondary duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-primary peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 uppercase tracking-widest" htmlFor="comment">Nội dung</label>
                                 </div>
-                                <button className="self-start bg-transparent text-primary font-label-sm text-label-sm uppercase py-sm px-lg border border-primary font-bold tracking-[0.2em] btn-luxury btn-outline-luxury" type="button">Post Comment</button>
+                                <button className="self-start bg-transparent text-primary font-label-sm text-label-sm uppercase py-sm px-lg border border-primary font-bold tracking-[0.2em] btn-luxury btn-outline-luxury" type="button">Gửi bình luận</button>
                             </form>
                         </div>
                     </div>

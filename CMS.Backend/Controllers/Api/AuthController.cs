@@ -29,6 +29,7 @@ namespace CMS.Backend.Controllers.Api
         {
             new Claim(ClaimTypes.Name, result.Username),
             new Claim(ClaimTypes.Role, result.Role),
+            new Claim("Id", result.Id.ToString()),
             new Claim("FullName", result.FullName ?? ""),
             new Claim("Email", result.Email ?? ""),
             new Claim("Phone", result.Phone ?? ""),
@@ -79,6 +80,7 @@ namespace CMS.Backend.Controllers.Api
                 {
                     token = tokenString,
                     expiresAt = expiration.ToString("o"),
+                    id = result.Id,
                     username = result.Username,
                     fullName = result.FullName,
                     email = result.Email,

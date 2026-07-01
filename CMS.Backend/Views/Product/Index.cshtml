@@ -1,19 +1,19 @@
 @model IEnumerable<ProductDTO>
 @{
-    ViewData["Title"] = "Inventory";
+    ViewData["Title"] = "Kho hàng";
     Layout = "_LayoutAdmin";
 }
 
 <div class="space-y-stack-lg">
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-            <h2 class="font-display-lg text-display-lg text-on-background mb-2">Inventory Overview</h2>
-            <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Manage your floral product catalog, stock levels, and pricing.</p>
+            <h2 class="font-display-lg text-display-lg text-on-background mb-2">Danh sách sản phẩm</h2>
+            <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Quản lý danh mục sản phẩm, số lượng tồn kho và giá cả.</p>
         </div>
         <div>
             <a asp-action="Create" class="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:bg-primary/90 transition-colors shadow-sm no-underline">
                 <span class="material-symbols-outlined text-[18px]">add</span>
-                Add New Product
+                Thêm sản phẩm
             </a>
         </div>
     </div>
@@ -36,17 +36,17 @@
                 </div>
                 <div class="p-4 flex flex-col flex-1 gap-3">
                     <div>
-                        <p class="font-label-sm text-label-sm text-on-surface-variant mb-1">@(product.CategoryProductName ?? "Uncategorized")</p>
+                        <p class="font-label-sm text-label-sm text-on-surface-variant mb-1">@(product.CategoryProductName ?? "Chưa phân loại")</p>
                         <h4 class="font-headline-sm text-headline-sm text-on-surface">@product.Name</h4>
                     </div>
                     <div class="flex justify-between items-center mt-auto">
                         <p class="font-headline-sm text-headline-sm text-primary font-bold">@product.Price.ToString("C2")</p>
-                        <span class="font-label-sm text-label-sm text-on-surface-variant">Stock: @product.StockQuantity</span>
+                        <span class="font-label-sm text-label-sm text-on-surface-variant">Tồn kho: @product.StockQuantity</span>
                     </div>
                     <div class="flex gap-2 pt-3 border-t border-outline-variant/10">
-                        <a asp-action="Details" asp-route-id="@product.Id" class="flex-1 text-center px-3 py-2 border border-outline-variant rounded-lg text-primary font-label-sm text-label-sm hover:bg-primary-container/10 transition-colors no-underline">View</a>
-                        <a asp-action="Edit" asp-route-id="@product.Id" class="flex-1 text-center px-3 py-2 border border-outline-variant rounded-lg text-primary font-label-sm text-label-sm hover:bg-primary-container/10 transition-colors no-underline">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@product.Id" class="flex-1 text-center px-3 py-2 border border-outline-variant rounded-lg text-error font-label-sm text-label-sm hover:bg-error-container/30 transition-colors no-underline" onclick="return confirm('Delete this product?')">Delete</a>
+                        <a asp-action="Details" asp-route-id="@product.Id" class="flex-1 text-center px-3 py-2 border border-outline-variant rounded-lg text-primary font-label-sm text-label-sm hover:bg-primary-container/10 transition-colors no-underline">Xem</a>
+                        <a asp-action="Edit" asp-route-id="@product.Id" class="flex-1 text-center px-3 py-2 border border-outline-variant rounded-lg text-primary font-label-sm text-label-sm hover:bg-primary-container/10 transition-colors no-underline">Sửa</a>
+                        <a asp-action="Delete" asp-route-id="@product.Id" class="flex-1 text-center px-3 py-2 border border-outline-variant rounded-lg text-error font-label-sm text-label-sm hover:bg-error-container/30 transition-colors no-underline" onclick="return confirm('Xóa sản phẩm này?')">Xóa</a>
                     </div>
                 </div>
             </div>

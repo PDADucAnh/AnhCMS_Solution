@@ -27,13 +27,13 @@ const RegisterPage: React.FC = () => {
                 password: data.password,
             });
             if (success) {
-                toast.success('Account created successfully. Please sign in.');
+                toast.success('Tạo tài khoản thành công. Vui lòng đăng nhập.');
                 navigate('/login');
             } else {
-                setError('Registration failed. Username may already be taken.');
+                setError('Đăng ký thất bại. Tên đăng nhập có thể đã tồn tại.');
             }
         } catch {
-            setError('An error occurred during registration.');
+            setError('Đã xảy ra lỗi trong quá trình đăng ký.');
         } finally {
             setLoading(false);
         }
@@ -60,7 +60,7 @@ const RegisterPage: React.FC = () => {
                     {/* Brand */}
                     <div className="text-center mb-8">
                         <h1 className="font-display-xl text-display-xl text-primary tracking-tight leading-none">PDA FLOWER</h1>
-                        <p className="font-body-md text-body-md text-on-surface-variant/70 mt-3">Create Your Account</p>
+                        <p className="font-body-md text-body-md text-on-surface-variant/70 mt-3">Tạo tài khoản</p>
                     </div>
 
                     {/* Register card */}
@@ -72,11 +72,11 @@ const RegisterPage: React.FC = () => {
                         <div className="space-y-2">
                             <label htmlFor="fullName" className="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-2">
                                 <span className="material-symbols-outlined text-[16px] text-outline">badge</span>
-                                Full Name
+                                Họ và tên
                             </label>
                             <input id="fullName" type="text" {...register('fullName')}
                                    className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3.5 font-body-md text-body-md text-on-surface placeholder:text-outline/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                                   placeholder="Your full name" required />
+                                    placeholder="Họ và tên của bạn" required />
                             {errors.fullName && (
                                 <p className="font-label-sm text-label-sm text-error mt-1">{errors.fullName.message}</p>
                             )}
@@ -86,11 +86,11 @@ const RegisterPage: React.FC = () => {
                         <div className="space-y-2">
                             <label htmlFor="email" className="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-2">
                                 <span className="material-symbols-outlined text-[16px] text-outline">email</span>
-                                Email Address
+                                Email
                             </label>
                             <input id="email" type="email" {...register('email')}
                                    className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3.5 font-body-md text-body-md text-on-surface placeholder:text-outline/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                                   placeholder="your@email.com" required autoComplete="email" />
+                                    placeholder="email@của bạn" required autoComplete="email" />
                             {errors.email && (
                                 <p className="font-label-sm text-label-sm text-error mt-1">{errors.email.message}</p>
                             )}
@@ -100,11 +100,11 @@ const RegisterPage: React.FC = () => {
                         <div className="space-y-2">
                             <label htmlFor="phone" className="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-2">
                                 <span className="material-symbols-outlined text-[16px] text-outline">phone</span>
-                                Phone Number
+                                Số điện thoại
                             </label>
                             <input id="phone" type="tel" {...register('phone')}
                                    className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3.5 font-body-md text-body-md text-on-surface placeholder:text-outline/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                                   placeholder="Phone number" required />
+                                    placeholder="Số điện thoại" required />
                             {errors.phone && (
                                 <p className="font-label-sm text-label-sm text-error mt-1">{errors.phone.message}</p>
                             )}
@@ -114,11 +114,11 @@ const RegisterPage: React.FC = () => {
                         <div className="space-y-2">
                             <label htmlFor="address" className="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-2">
                                 <span className="material-symbols-outlined text-[16px] text-outline">home</span>
-                                Shipping Address
+                                Địa chỉ giao hàng
                             </label>
                             <textarea id="address" {...register('address')}
                                       className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3.5 font-body-md text-body-md text-on-surface placeholder:text-outline/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 resize-none"
-                                      placeholder="Your shipping address" rows={2} required />
+                                      placeholder="Địa chỉ giao hàng" rows={2} required />
                             {errors.address && (
                                 <p className="font-label-sm text-label-sm text-error mt-1">{errors.address.message}</p>
                             )}
@@ -129,11 +129,11 @@ const RegisterPage: React.FC = () => {
                             <div className="space-y-2">
                                 <label htmlFor="password" className="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-2">
                                     <span className="material-symbols-outlined text-[16px] text-outline">lock</span>
-                                    Password
+                                    Mật khẩu
                                 </label>
                                 <input id="password" type="password" {...register('password')}
                                        className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3.5 font-body-md text-body-md text-on-surface placeholder:text-outline/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                                       placeholder="Min. 6 characters" required autoComplete="new-password" />
+                                        placeholder="Tối thiểu 6 ký tự" required autoComplete="new-password" />
                                 {errors.password && (
                                     <p className="font-label-sm text-label-sm text-error mt-1">{errors.password.message}</p>
                                 )}
@@ -141,11 +141,11 @@ const RegisterPage: React.FC = () => {
                             <div className="space-y-2">
                                 <label htmlFor="confirmPassword" className="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-2">
                                     <span className="material-symbols-outlined text-[16px] text-outline">check</span>
-                                    Confirm Password
+                                    Xác nhận mật khẩu
                                 </label>
                                 <input id="confirmPassword" type="password" {...register('confirmPassword')}
                                        className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3.5 font-body-md text-body-md text-on-surface placeholder:text-outline/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                                       placeholder="Re-enter password" required autoComplete="new-password" />
+                                        placeholder="Nhập lại mật khẩu" required autoComplete="new-password" />
                                 {errors.confirmPassword && (
                                     <p className="font-label-sm text-label-sm text-error mt-1">{errors.confirmPassword.message}</p>
                                 )}
@@ -164,15 +164,15 @@ const RegisterPage: React.FC = () => {
                         <button type="submit" disabled={loading}
                                 className="w-full bg-primary text-on-primary py-3.5 rounded-xl font-label-md text-label-md hover:bg-primary/90 active:scale-[0.98] transition-all duration-200 disabled:opacity-50 cursor-pointer border-0 flex items-center justify-center gap-2"
                                 style={{ boxShadow: '0 4px 24px rgba(171,44,93,0.06)' }}>
-                            <span>{loading ? 'Processing...' : 'Create Account'}</span>
+                            <span>{loading ? 'Đang xử lý...' : 'Đăng ký'}</span>
                             <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
                         </button>
 
                         {/* Login link */}
                         <div className="text-center pt-4 border-t border-outline-variant/20">
                             <p className="font-label-sm text-label-sm text-on-surface-variant">
-                                Already have an account?{' '}
-                                <Link to="/login" className="text-primary font-semibold hover:underline ml-1">Sign In</Link>
+                                Đã có tài khoản?{' '}
+                                <Link to="/login" className="text-primary font-semibold hover:underline ml-1">Đăng nhập</Link>
                             </p>
                         </div>
                     </form>
@@ -180,7 +180,7 @@ const RegisterPage: React.FC = () => {
                     {/* Footer */}
                     <div className="text-center mt-8">
                         <p className="font-label-sm text-label-sm text-on-surface-variant/40">
-                            &copy; {new Date().getFullYear()} PDA FLOWER. All rights reserved.
+                            &copy; {new Date().getFullYear()} PDA FLOWER. Đã đăng ký bản quyền.
                         </p>
                     </div>
 

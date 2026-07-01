@@ -10,6 +10,19 @@ namespace CMS.Data.Entities
         [Key]
         public int Id { get; set; }
 
+        [Required(ErrorMessage = "Tiêu đề không được để trống")]
+        [MaxLength(500)]
+        public string Title { get; set; }
+
+        [Required(ErrorMessage = "Nội dung không được để trống")]
+        public string Content { get; set; }
+
+        [MaxLength(500)]
+        public string? Summary { get; set; }
+
+        [MaxLength(300)]
+        public string? Slug { get; set; }
+
         [MaxLength(1000)]
         public string? ImageUrl { get; set; }
 
@@ -19,7 +32,5 @@ namespace CMS.Data.Entities
 
         [ForeignKey("CategoryId")]
         public virtual Category Category { get; set; }
-
-        public virtual ICollection<PostTranslation> Translations { get; set; } = new List<PostTranslation>();
     }
 }

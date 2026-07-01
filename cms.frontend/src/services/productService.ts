@@ -1,26 +1,11 @@
 import axiosClient from '../api/axiosClient';
 
-interface ProductQueryParams {
-  locale?: string;
-  currency?: string;
-}
-
-const buildProductUrl = (path: string, params?: ProductQueryParams): string => {
-  const searchParams = new URLSearchParams();
-  if (params?.locale) searchParams.set('locale', params.locale);
-  if (params?.currency) searchParams.set('currency', params.currency);
-  const qs = searchParams.toString();
-  return qs ? `${path}?${qs}` : path;
-};
-
 const productService = {
-    getProductsPaged: async (page: number, pageSize: number, params?: ProductQueryParams) => {
+    getProductsPaged: async (page: number, pageSize: number) => {
         try {
             const searchParams = new URLSearchParams();
             searchParams.set('page', page.toString());
             searchParams.set('pageSize', pageSize.toString());
-            if (params?.locale) searchParams.set('locale', params.locale);
-            if (params?.currency) searchParams.set('currency', params.currency);
             const response = await axiosClient.get(`/Products/paged?${searchParams.toString()}`);
             return response.data || response;
         } catch (error) {
@@ -29,9 +14,9 @@ const productService = {
         }
     },
 
-    getAllProducts: async (params?: ProductQueryParams) => {
+    getAllProducts: async () => {
         try {
-            const response = await axiosClient.get(buildProductUrl('/Products', params));
+            const response = await axiosClient.get('/Products');
             return response.data || response;
         } catch (error) {
             console.error('API getAllProducts error:', error);
@@ -39,9 +24,9 @@ const productService = {
         }
     },
 
-    getProductById: async (id: string | number, params?: ProductQueryParams) => {
+    getProductById: async (id: string | number) => {
         try {
-            const response = await axiosClient.get(buildProductUrl(`/Products/${id}`, params));
+            const response = await axiosClient.get(`/Products/${id}`);
             return response.data || response;
         } catch (error) {
             console.error(`API getProductById error for ID ${id}:`, error);
@@ -49,9 +34,9 @@ const productService = {
         }
     },
 
-    getProductsByCategory: async (categoryProductId: number | null, params?: ProductQueryParams) => {
+    getProductsByCategory: async (categoryProductId: number | null) => {
         try {
-            const response = await axiosClient.get(buildProductUrl(`/Products/categoryproduct/${categoryProductId}`, params));
+            const response = await axiosClient.get(`/Products/categoryproduct/${categoryProductId}`);
             return response.data || response;
         } catch (error) {
             console.error(`API getProductsByCategory error for ID ${categoryProductId}:`, error);

@@ -15,6 +15,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             try {
                 const payload = JSON.parse(atob(token.split('.')[1]));
                 setUser({
+                    id: payload.Id ? Number(payload.Id) : undefined,
                     username: payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || payload.unique_name,
                     fullName: payload.FullName || '',
                     email: payload.Email || '',
@@ -34,6 +35,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (response.token) {
             tokenService.setToken(response.token);
             setUser({
+                id: response.id,
                 username: response.username,
                 fullName: response.fullName,
                 email: response.email,

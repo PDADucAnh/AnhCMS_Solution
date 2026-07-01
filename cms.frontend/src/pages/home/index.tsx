@@ -28,7 +28,7 @@ function Home() {
                 {/* Trending Products Grid */}
                 <ProductGrid categoryId={selectedCategoryId} />
 
-                {/* Fashion Trends Section */}
+                {/* Blog Section */}
                 <LatestBlog />
             </main>
 

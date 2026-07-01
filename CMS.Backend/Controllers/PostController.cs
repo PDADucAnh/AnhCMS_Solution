@@ -136,24 +136,16 @@ namespace CMS.Backend.Controllers
             ViewBag.CategoryList = new SelectList(categories, "Id", "Name");
 
             var post = await _context.Posts
-                .Include(p => p.Translations)
                 .FirstOrDefaultAsync(p => p.Id == id);
             if (post == null) return NotFound();
-
-            var transEn = post.Translations.FirstOrDefault(t => t.Locale == "en");
-            var transVi = post.Translations.FirstOrDefault(t => t.Locale == "vi");
 
             var model = new UpdatePostDTO
             {
                 Id = post.Id,
-                TitleEn = transEn?.Title ?? "",
-                TitleVi = transVi?.Title ?? "",
-                ContentEn = transEn?.Content ?? "",
-                ContentVi = transVi?.Content ?? "",
-                SummaryEn = transEn?.Summary,
-                SummaryVi = transVi?.Summary,
-                SlugEn = transEn?.Slug,
-                SlugVi = transVi?.Slug,
+                Title = post.Title,
+                Content = post.Content,
+                Summary = post.Summary,
+                Slug = post.Slug,
                 ImageUrl = post.ImageUrl,
                 CategoryId = post.CategoryId
             };
