@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CMS.Data;
 using CMS.Data.Entities;
@@ -20,15 +19,6 @@ namespace CMS.Backend.Services
             _context = context;
         }
 
-        private static string GenerateSlug(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name)) return string.Empty;
-            var slug = name.ToLowerInvariant();
-            slug = Regex.Replace(slug, @"[^a-z0-9\s-]", string.Empty);
-            slug = Regex.Replace(slug, @"\s+", "-");
-            slug = Regex.Replace(slug, @"-+", "-");
-            return slug.Trim('-');
-        }
 
         private IQueryable<Product> BuildQuery()
         {
@@ -83,7 +73,11 @@ namespace CMS.Backend.Services
         {
             if (string.IsNullOrEmpty(dto.Slug))
             {
-                dto.Slug = GenerateSlug(dto.Name);
+                dto.Slug = CMS.Backend.Utils.SlugHelper.GenerateSlug(dto.Name);
+            }
+            if (string.IsNullOrEmpty(dto.Sku))
+            {
+                dto.Sku = CMS.Backend.Utils.SlugHelper.GenerateSku(dto.Name);
             }
 
             var product = dto.ToEntity();

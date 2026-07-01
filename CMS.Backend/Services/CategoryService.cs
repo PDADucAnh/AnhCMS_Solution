@@ -53,6 +53,10 @@ namespace CMS.Backend.Services
 
         public async Task<CategoryDTO> Create(CreateCategoryDTO dto)
         {
+            if (string.IsNullOrEmpty(dto.Slug))
+            {
+                dto.Slug = CMS.Backend.Utils.SlugHelper.GenerateSlug(dto.Name);
+            }
             var category = dto.ToEntity();
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();

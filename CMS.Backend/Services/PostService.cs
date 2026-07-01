@@ -69,6 +69,10 @@ namespace CMS.Backend.Services
 
         public async Task<PostDTO> Create(CreatePostDTO dto)
         {
+            if (string.IsNullOrEmpty(dto.Slug))
+            {
+                dto.Slug = CMS.Backend.Utils.SlugHelper.GenerateSlug(dto.Title);
+            }
             var post = dto.ToEntity();
             post.CreatedDate = DateTime.Now;
             _context.Posts.Add(post);
