@@ -132,5 +132,30 @@ namespace CMS.Backend.Controllers.Api
 
             return Ok(new { message });
         }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+        {
+            var clientUrl = Request.Headers["Origin"].ToString();
+            if (string.IsNullOrEmpty(clientUrl))
+            {
+                clientUrl = "http://localhost:5173"; // Fallback development port
+            }
+
+            var (success, message) = await _authService.ForgotPassword(request.Email, clientUrl);
+            return Ok(new { message });
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        {
+            var (success, message) = await _authService.ResetPassword(request.Token, request.NewPassword);
+            if (!success)
+            {
+                return BadRequest(new { message });
+            }
+
+            return Ok(new { message });
+        }
     }
 }
