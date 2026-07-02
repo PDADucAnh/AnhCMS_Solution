@@ -408,8 +408,8 @@ namespace CMS.Backend.Services
             sb.AppendLine($"<p><strong>Phương thức thanh toán:</strong> {methodStr}</p>");
             sb.AppendLine("</div>");
             sb.AppendLine("<div class='footer'>");
-            sb.AppendLine("<p>AnhCMS Boutique — Trân trọng cảm ơn quý khách!</p>");
-            sb.AppendLine("<p>Mọi thắc mắc xin vui lòng liên hệ: support@anhcms.com</p>");
+            sb.AppendLine("<p>FlowerShop — Trân trọng cảm ơn quý khách!</p>");
+            sb.AppendLine("<p>Mọi thắc mắc xin vui lòng liên hệ: pdahoctap@gmail.com</p>");
             sb.AppendLine("</div></div></body></html>");
             return sb.ToString();
         }
@@ -449,6 +449,56 @@ namespace CMS.Backend.Services
                 }
             }
             return result;
+        }
+
+        public async Task SendResetPasswordEmailAsync(string email, string name, string resetLink)
+        {
+            try
+            {
+                var sb = new StringBuilder();
+                sb.AppendLine("<!DOCTYPE html><html><head><meta charset='utf-8'><style>");
+                sb.AppendLine("body { font-family: 'Georgia', serif; background: #f5f2ed; color: #1a1a1a; padding: 40px 20px; }");
+                sb.AppendLine(".container { max-width: 500px; margin: 0 auto; background: #fff; border: 1px solid #d4cfc7; }");
+                sb.AppendLine(".header { background: #ab2c5d; color: #fff; padding: 30px; text-align: center; }");
+                sb.AppendLine(".header h1 { margin: 0; font-size: 20px; letter-spacing: 2px; text-transform: uppercase; }");
+                sb.AppendLine(".content { padding: 30px; text-align: center; font-size: 15px; line-height: 1.6; }");
+                sb.AppendLine(".btn { display: inline-block; background: #ab2c5d; color: #fff; padding: 12px 24px; text-decoration: none; font-weight: bold; margin: 20px 0; letter-spacing: 1px; }");
+                sb.AppendLine(".footer { padding: 20px; background: #f5f2ed; text-align: center; font-size: 11px; color: #666; }");
+                sb.AppendLine("</style></head><body>");
+                sb.AppendLine("<div class='container'>");
+                sb.AppendLine("<div class='header'><h1>AnhCMS Boutique</h1></div>");
+                sb.AppendLine("<div class='content'>");
+                sb.AppendLine($"<p>Xin chào <strong>{WebUtility.HtmlEncode(name)}</strong>,</p>");
+                sb.AppendLine("<p>Bạn đã yêu cầu đặt lại mật khẩu cho tài khoản của mình tại AnhCMS Boutique. Vui lòng bấm vào nút bên dưới để tiến hành thiết lập mật khẩu mới (liên kết có giá trị trong vòng 15 phút):</p>");
+                sb.AppendLine($"<a class='btn' href='{resetLink}'>ĐẶT LẠI MẬT KHẨU</a>");
+                sb.AppendLine("<p style='color: #888; font-size: 12px;'>Nếu bạn không yêu cầu hành động này, vui lòng bỏ qua email.</p>");
+                sb.AppendLine("</div>");
+                sb.AppendLine("<div class='footer'><p>© 2026 AnhCMS Boutique. All rights reserved.</p></div>");
+                sb.AppendLine("</div></body></html>");
+
+                var body = sb.ToString();
+                var senderEmail = !string.IsNullOrEmpty(_settings.SenderEmail) && _settings.SenderEmail != "test@gmail.com"
+                    ? _settings.SenderEmail
+                    : _settings.Username;
+
+                using var message = new MailMessage
+                {
+                    From = new MailAddress(senderEmail, _settings.SenderName),
+                    Subject = "Đặt lại mật khẩu của bạn - AnhCMS Boutique",
+                    Body = body,
+                    IsBodyHtml = true
+                };
+                message.To.Add(new MailAddress(email, name));
+
+                using var client = CreateSmtpClient();
+                await client.SendMailAsync(message);
+                _logger.LogInformation("Password reset email sent to {Email}", email);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send password reset email to {Email}", email);
+                throw;
+            }
         }
     }
 }
