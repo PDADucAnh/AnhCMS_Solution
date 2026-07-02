@@ -24,6 +24,14 @@ const BlogDetail: React.FC = () => {
         return txt.value;
     };
 
+    const stripHtml = (html: string): string => {
+        if (!html) return '';
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        const text = tempDiv.textContent || tempDiv.innerText || '';
+        return text.trim();
+    };
+
     const getProcessedContent = (content: string) => {
         if (!content) return '';
         const decoded = decodeHtmlEntities(content);
@@ -75,7 +83,7 @@ const BlogDetail: React.FC = () => {
                             </span>
                         </div>
                         <h1 className="font-display-xl text-display-xl-mobile md:text-display-xl text-on-primary mb-md uppercase tracking-tighter drop-shadow-lg">{post.title}</h1>
-                        {post.summary && <p className="font-body-lg text-body-lg text-white/80 max-w-2xl mx-auto">{post.summary}</p>}
+                        {post.summary && <p className="font-body-lg text-body-lg text-white/80 max-w-2xl mx-auto">{stripHtml(post.summary)}</p>}
                         <div className="mt-lg flex items-center justify-center gap-xs text-white/60 font-label-sm text-[10px] uppercase tracking-[0.2em] font-bold">
                             <span>Ban biên tập</span>
                             <span className="mx-2">/</span>
