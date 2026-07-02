@@ -4,7 +4,7 @@ import { usePost } from '../../hooks/usePosts';
 import { useProducts } from '../../hooks/useProducts';
 import { useCart } from '../../context/CartContext';
 import DOMPurify from 'dompurify';
-import { getImageUrl } from '../../utils/apiUtils';
+import { getImageUrl, API_BASE_URL } from '../../utils/apiUtils';
 import { formatCurrency } from '../../utils/currency';
 import type { Product } from '../../types/product';
 
@@ -17,6 +17,22 @@ const BlogDetail: React.FC = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [id]);
+
+    const decodeHtmlEntities = (str: string): string => {
+        const txt = document.createElement('textarea');
+        txt.innerHTML = str;
+        return txt.value;
+    };
+
+    const getProcessedContent = (content: string) => {
+        if (!content) return '';
+        const decoded = decodeHtmlEntities(content);
+        const withAbsoluteUrls = decoded.replace(
+            /src=["']\/uploads\/(.*?)["']/g,
+            `src="${API_BASE_URL}/uploads/$1"`
+        );
+        return DOMPurify.sanitize(withAbsoluteUrls);
+    };
 
     const products = allProducts.slice(0, 4);
 
@@ -86,7 +102,7 @@ const BlogDetail: React.FC = () => {
                         <div className="prose prose-lg max-w-none">
                             <div
                                 className="blog-detail-content font-body-lg text-body-lg text-on-surface-variant mb-lg leading-relaxed first-letter:text-5xl first-letter:font-display-xl first-letter:float-left first-letter:mr-3 first-letter:text-primary"
-                                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
+                                dangerouslySetInnerHTML={{ __html: getProcessedContent(post.content) }}
                             ></div>
                         </div>
 
