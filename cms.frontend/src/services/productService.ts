@@ -52,6 +52,16 @@ const productService = {
             console.error(`API getProductsByCategory error for ID ${categoryProductId}:`, error);
             throw error;
         }
+    },
+
+    searchProducts: async (query: string) => {
+        try {
+            const response = await axiosClient.get(`/Products/search?query=${encodeURIComponent(query)}`);
+            return response.data || response;
+        } catch (error) {
+            console.error('API searchProducts error:', error);
+            throw error;
+        }
     }
 };
 

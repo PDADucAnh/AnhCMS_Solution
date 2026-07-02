@@ -54,3 +54,11 @@ export const useBestSellingProducts = (limit: number) => {
     data: query.data?.slice(0, limit) ?? [],
   };
 };
+
+export const useSearchProducts = (query: string) => {
+  return useQuery<any[]>({
+    queryKey: ['products', 'search', query],
+    queryFn: () => productService.searchProducts(query),
+    enabled: !!query,
+  });
+};
