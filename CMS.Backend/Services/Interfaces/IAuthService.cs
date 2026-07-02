@@ -12,5 +12,7 @@ namespace CMS.Backend.Services.Interfaces
         Task<int?> ValidateRefreshTokenAsync(string rawToken);
         Task RevokeUserTokensAsync(int userId);
         Task RevokeTokenAsync(string rawToken);
+        Task<(bool Success, string Message)> ForgotPassword(string email, string clientUrl);
+        Task<(bool Success, string Message)> ResetPassword(string token, string newPassword);
     }
 }

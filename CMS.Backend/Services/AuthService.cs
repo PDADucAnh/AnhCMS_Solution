@@ -4,6 +4,7 @@ using CMS.Backend.Models.DTOs;
 using CMS.Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Security.Cryptography;
 
 namespace CMS.Backend.Services
@@ -13,10 +14,12 @@ namespace CMS.Backend.Services
         private readonly IApplicationDbContext _context;
         private readonly PasswordHasher<User> _userPasswordHasher;
         private readonly PasswordHasher<Customer> _customerPasswordHasher;
+        private readonly IEmailService _emailService;
 
-        public AuthService(IApplicationDbContext context)
+        public AuthService(IApplicationDbContext context, IEmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
             _userPasswordHasher = new PasswordHasher<User>();
             _customerPasswordHasher = new PasswordHasher<Customer>();
         }
@@ -208,6 +211,51 @@ namespace CMS.Backend.Services
             }
 
             return null;
+        }
+
+        public async Task<(bool Success, string Message)> ForgotPassword(string email, string clientUrl)
+        {
+            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Email == email);
+            if (customer == null)
+            {
+                // Anti email enumeration fallback response
+                return (true, "Nếu email tồn tại trên hệ thống, một liên kết đặt lại mật khẩu đã được gửi đi. Vui lòng kiểm tra hộp thư.");
+            }
+
+            var token = Guid.NewGuid().ToString("N");
+            customer.ResetToken = token;
+            customer.ResetTokenExpiry = DateTime.Now.AddMinutes(15);
+
+            _context.Customers.Update(customer);
+            await _context.SaveChangesAsync();
+
+            var resetLink = $"{clientUrl.TrimEnd('/')}/reset-password?token={token}";
+            await _emailService.SendResetPasswordEmailAsync(customer.Email, customer.FullName, resetLink);
+
+            return (true, "Yêu cầu đặt lại mật khẩu đã được gửi đi thành công.");
+        }
+
+        public async Task<(bool Success, string Message)> ResetPassword(string token, string newPassword)
+        {
+            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.ResetToken == token);
+            if (customer == null)
+            {
+                return (false, "Mã xác thực đặt lại mật khẩu không hợp lệ.");
+            }
+
+            if (!customer.ResetTokenExpiry.HasValue || customer.ResetTokenExpiry.Value < DateTime.Now)
+            {
+                return (false, "Liên kết đặt lại mật khẩu đã hết hạn. Vui lòng yêu cầu lại.");
+            }
+
+            customer.PasswordHash = _customerPasswordHasher.HashPassword(customer, newPassword);
+            customer.ResetToken = null;
+            customer.ResetTokenExpiry = null;
+
+            _context.Customers.Update(customer);
+            await _context.SaveChangesAsync();
+
+            return (true, "Đổi mật khẩu thành công!");
         }
     }
 }

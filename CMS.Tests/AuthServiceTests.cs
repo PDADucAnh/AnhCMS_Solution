@@ -1,16 +1,20 @@
 using System;
 using System.Threading.Tasks;
 using CMS.Backend.Services;
+using CMS.Backend.Services.Interfaces;
 using CMS.Data;
 using CMS.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using Xunit;
 
 namespace CMS.Tests
 {
     public class AuthServiceTests
     {
+        private readonly Mock<IEmailService> _emailServiceMock = new();
+
         private ApplicationDbContext CreateInMemoryDbContext()
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -25,7 +29,7 @@ namespace CMS.Tests
         {
             // Arrange
             using var context = CreateInMemoryDbContext();
-            var authService = new AuthService(context);
+            var authService = new AuthService(context, _emailServiceMock.Object);
 
             // Act
             var result = await authService.Register("Password123!", "Test User", "test@example.com", "0123456789", "123 Street");
@@ -46,7 +50,7 @@ namespace CMS.Tests
         {
             // Arrange
             using var context = CreateInMemoryDbContext();
-            var authService = new AuthService(context);
+            var authService = new AuthService(context, _emailServiceMock.Object);
             
             // Seed existing customer
             await authService.Register("Password123!", "Test User", "test@example.com", null, null);
@@ -64,7 +68,7 @@ namespace CMS.Tests
         {
             // Arrange
             using var context = CreateInMemoryDbContext();
-            var authService = new AuthService(context);
+            var authService = new AuthService(context, _emailServiceMock.Object);
             await authService.Register("Password123!", "Login User", "login@example.com", null, null);
 
             // Act
@@ -84,7 +88,7 @@ namespace CMS.Tests
         {
             // Arrange
             using var context = CreateInMemoryDbContext();
-            var authService = new AuthService(context);
+            var authService = new AuthService(context, _emailServiceMock.Object);
             await authService.Register("Password123!", "Login User", "login@example.com", null, null);
 
             // Act
@@ -99,7 +103,7 @@ namespace CMS.Tests
         {
             // Arrange
             using var context = CreateInMemoryDbContext();
-            var authService = new AuthService(context);
+            var authService = new AuthService(context, _emailServiceMock.Object);
 
             // Act
             var result = await authService.Login("nonexistent@example.com", "Password123!");
@@ -113,7 +117,7 @@ namespace CMS.Tests
         {
             // Arrange
             using var context = CreateInMemoryDbContext();
-            var authService = new AuthService(context);
+            var authService = new AuthService(context, _emailServiceMock.Object);
 
             // Seed an admin User directly in the database
             var admin = new User
@@ -135,6 +139,127 @@ namespace CMS.Tests
             Assert.Equal("Admin User", result.FullName);
             Assert.Equal("Admin", result.Role);
             Assert.Equal("User", result.AuthType);
+        }
+
+        [Fact]
+        public async Task ForgotPassword_NonExistentEmail_ShouldSucceedWithFallbackMessage()
+        {
+            // Arrange
+            using var context = CreateInMemoryDbContext();
+            var authService = new AuthService(context, _emailServiceMock.Object);
+
+            // Act
+            var result = await authService.ForgotPassword("nonexistent@example.com", "http://client.com");
+
+            // Assert
+            Assert.True(result.Success);
+            Assert.Contains("Nếu email tồn tại trên hệ thống", result.Message);
+            _emailServiceMock.Verify(e => e.SendResetPasswordEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task ForgotPassword_ExistingEmail_ShouldUpdateCustomerAndSendEmail()
+        {
+            // Arrange
+            using var context = CreateInMemoryDbContext();
+            var authService = new AuthService(context, _emailServiceMock.Object);
+            await authService.Register("Password123!", "Test User", "test@example.com", null, null);
+
+            // Act
+            var result = await authService.ForgotPassword("test@example.com", "http://client.com");
+
+            // Assert
+            Assert.True(result.Success);
+            Assert.Equal("Yêu cầu đặt lại mật khẩu đã được gửi đi thành công.", result.Message);
+
+            var customer = await context.Customers.FirstOrDefaultAsync(c => c.Email == "test@example.com");
+            Assert.NotNull(customer);
+            Assert.NotNull(customer.ResetToken);
+            Assert.NotNull(customer.ResetTokenExpiry);
+            Assert.True(customer.ResetTokenExpiry > DateTime.Now);
+
+            _emailServiceMock.Verify(e => e.SendResetPasswordEmailAsync(
+                "test@example.com",
+                "Test User",
+                It.Is<string>(url => url.Contains(customer.ResetToken) && url.StartsWith("http://client.com/reset-password?token="))),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task ResetPassword_InvalidToken_ShouldFail()
+        {
+            // Arrange
+            using var context = CreateInMemoryDbContext();
+            var authService = new AuthService(context, _emailServiceMock.Object);
+
+            // Act
+            var result = await authService.ResetPassword("invalid-token", "NewPassword123!");
+
+            // Assert
+            Assert.False(result.Success);
+            Assert.Equal("Mã xác thực đặt lại mật khẩu không hợp lệ.", result.Message);
+        }
+
+        [Fact]
+        public async Task ResetPassword_ExpiredToken_ShouldFail()
+        {
+            // Arrange
+            using var context = CreateInMemoryDbContext();
+            var authService = new AuthService(context, _emailServiceMock.Object);
+            
+            var customer = new Customer
+            {
+                FullName = "Expired User",
+                Email = "expired@example.com",
+                PasswordHash = "old-hash",
+                ResetToken = "expired-token",
+                ResetTokenExpiry = DateTime.Now.AddMinutes(-5) // Expired 5 minutes ago
+            };
+            context.Customers.Add(customer);
+            await context.SaveChangesAsync();
+
+            // Act
+            var result = await authService.ResetPassword("expired-token", "NewPassword123!");
+
+            // Assert
+            Assert.False(result.Success);
+            Assert.Equal("Liên kết đặt lại mật khẩu đã hết hạn. Vui lòng yêu cầu lại.", result.Message);
+        }
+
+        [Fact]
+        public async Task ResetPassword_ValidToken_ShouldSucceedAndHashNewPassword()
+        {
+            // Arrange
+            using var context = CreateInMemoryDbContext();
+            var authService = new AuthService(context, _emailServiceMock.Object);
+            
+            var customer = new Customer
+            {
+                FullName = "Valid User",
+                Email = "valid@example.com",
+                PasswordHash = "old-hash",
+                ResetToken = "valid-token",
+                ResetTokenExpiry = DateTime.Now.AddMinutes(5)
+            };
+            context.Customers.Add(customer);
+            await context.SaveChangesAsync();
+
+            // Act
+            var result = await authService.ResetPassword("valid-token", "NewPassword123!");
+
+            // Assert
+            Assert.True(result.Success);
+            Assert.Equal("Đổi mật khẩu thành công!", result.Message);
+
+            var updatedCustomer = await context.Customers.FirstOrDefaultAsync(c => c.Email == "valid@example.com");
+            Assert.NotNull(updatedCustomer);
+            Assert.Null(updatedCustomer.ResetToken);
+            Assert.Null(updatedCustomer.ResetTokenExpiry);
+            Assert.NotEqual("old-hash", updatedCustomer.PasswordHash);
+            
+            // Verify we can log in with new password
+            var loginResult = await authService.Login("valid@example.com", "NewPassword123!");
+            Assert.NotNull(loginResult);
         }
     }
 }
