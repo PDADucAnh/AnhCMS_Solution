@@ -32,6 +32,8 @@ const Contact = lazy(() => import('./pages/contact/index'));
 const OrderConfirmation = lazy(() => import('./pages/order-confirmation/index'));
 const OrderDetail = lazy(() => import('./pages/auth/OrderDetail'));
 const MomoMock = lazy(() => import('./pages/checkout/MomoMock'));
+const Search = lazy(() => import('./pages/search/index'));
+
 
 const PageLoader: React.FC = () => (
   <div className="flex justify-center items-center min-h-screen bg-surface">
@@ -106,6 +108,8 @@ const App: React.FC = () => {
                     <Route path="/my-orders" element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
                     <Route path="/my-orders/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
                     <Route path="/wishlist" element={<Wishlist />} />
+                    <Route path="/search" element={<Search />} />
+
                     <Route path="/about" element={<About />} />
                     <Route path="/contact" element={<Contact />} />
                     <Route path="*" element={<NotFound />} />
