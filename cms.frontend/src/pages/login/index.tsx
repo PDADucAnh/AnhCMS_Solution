@@ -73,10 +73,15 @@ const LoginPage: React.FC = () => {
 
                         {/* Password */}
                         <div className="space-y-2">
-                            <label htmlFor="password" className="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-2">
-                                <span className="material-symbols-outlined text-[16px] text-outline">lock</span>
-                                Mật khẩu
-                            </label>
+                            <div className="flex justify-between items-center">
+                                <label htmlFor="password" className="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-2">
+                                    <span className="material-symbols-outlined text-[16px] text-outline">lock</span>
+                                    Mật khẩu
+                                </label>
+                                <Link to="/forgot-password" className="font-label-sm text-label-sm text-primary hover:underline">
+                                    Quên mật khẩu?
+                                </Link>
+                            </div>
                             <input id="password" type="password" {...register('password')}
                                    className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3.5 font-body-md text-body-md text-on-surface placeholder:text-outline/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
                                     placeholder="Nhập mật khẩu" required autoComplete="current-password" />

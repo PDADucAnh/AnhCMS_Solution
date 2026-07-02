@@ -22,6 +22,8 @@ const Cart = lazy(() => import('./pages/cart/index'));
 const Checkout = lazy(() => import('./pages/checkout/index'));
 const Login = lazy(() => import('./pages/login/index'));
 const Register = lazy(() => import('./pages/register/index'));
+const ForgotPassword = lazy(() => import('./pages/forgot-password/index'));
+const ResetPassword = lazy(() => import('./pages/reset-password/index'));
 const Profile = lazy(() => import('./pages/auth/Profile'));
 const MyOrders = lazy(() => import('./pages/auth/MyOrders'));
 const Wishlist = lazy(() => import('./pages/wishlist/index'));
@@ -96,6 +98,8 @@ const App: React.FC = () => {
                     <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
                     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                     <Route path="/order-confirmation" element={<OrderConfirmation />} />
                     <Route path="/momo-mock" element={<ProtectedRoute><MomoMock /></ProtectedRoute>} />
