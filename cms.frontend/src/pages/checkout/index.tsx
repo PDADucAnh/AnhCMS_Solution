@@ -174,295 +174,379 @@ const CheckoutPage: React.FC = () => {
 
   if (cartItems.length === 0) {
     return (
-      <div className="text-center py-xl px-margin">
-        <div className="size-20 bg-surface-container flex items-center justify-center text-outline mb-4 mx-auto">
+      <div className="text-center py-20 px-margin-mobile md:px-margin-desktop min-h-screen pt-40 bg-background text-on-background">
+        <div className="size-20 bg-surface-container flex items-center justify-center text-outline mb-4 mx-auto rounded-full">
           <span className="material-symbols-outlined text-4xl">shopping_bag</span>
         </div>
-        <div className="space-y-md">
-          <h2 className="font-display-xl text-display-xl-mobile md:text-headline-lg uppercase tracking-tighter">Giỏ hàng trống</h2>
-          <p className="text-secondary max-w-md mx-auto">Bạn cần có sản phẩm trong giỏ để thanh toán.</p>
+        <div className="space-y-md mb-6">
+          <h2 className="font-display-lg text-display-lg text-on-background">Giỏ hàng trống</h2>
+          <p className="text-on-surface-variant max-w-md mx-auto font-body-md">Bạn cần có sản phẩm trong giỏ để thanh toán.</p>
         </div>
-        <Link to="/shop" className="bg-primary text-on-primary px-xl py-4 font-label-sm text-label-sm uppercase tracking-[0.3em] font-bold text-decoration-none inline-block mt-4 btn-luxury btn-primary-luxury">
+        <Link to="/shop" className="bg-primary text-on-primary px-6 py-4 rounded-lg font-label-md text-label-md inline-block no-underline hover:opacity-90 transition-opacity">
           Quay lại cửa hàng
         </Link>
       </div>
     );
   }
 
-  const premiumInputClass = "w-full border border-[#FCE4EC] bg-[#FCE4EC] rounded-lg px-4 py-3 text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all font-body-md text-body-md placeholder-secondary-fixed-dim/60";
-
   return (
-    <div className="bg-background text-on-background font-body-md antialiased pt-20">
-      <main className="max-w-[1440px] mx-auto px-margin py-xl">
-        <header className="mb-xl text-center space-y-md">
-          <h3 className="text-label-sm uppercase tracking-[0.3em] text-secondary">Thanh toán</h3>
-          <h2 className="font-display-xl text-display-xl uppercase tracking-tighter">Hoàn tất đơn hàng</h2>
-          <div className="w-12 h-0.5 bg-primary mx-auto"></div>
-        </header>
+    <div className="bg-background text-on-background font-body-lg min-h-screen flex flex-col antialiased pt-20">
+      <main className="flex-grow pt-stack-lg pb-stack-lg px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full">
+        {/* Header */}
+        <div className="mb-stack-lg text-center md:text-left border-b border-outline-variant pb-stack-md flex justify-between items-end">
+          <div>
+            <Link className="font-headline-md text-headline-md text-primary mb-2 inline-block no-underline" to="/">
+              FlowerShop
+            </Link>
+            <h1 className="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mt-4">
+              Thanh toán
+            </h1>
+            <p className="font-body-md text-body-md text-on-surface-variant mt-2">Hoàn tất đơn hàng</p>
+          </div>
+          <Link
+            className="hidden md:flex items-center text-primary font-label-md text-label-md hover:opacity-80 transition-opacity no-underline"
+            to="/cart"
+          >
+            <span className="material-symbols-outlined mr-1" style={{ fontVariationSettings: "'FILL' 0" }}>
+              arrow_back
+            </span>
+            Trở lại giỏ hàng
+          </Link>
+        </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col lg:flex-row gap-xl">
-          <div className="flex-1 space-y-lg">
-            {/* PHẦN 1: NGƯỜI MUA */}
-            <div className="bg-surface-container-lowest border border-outline-variant p-xl space-y-xl">
-              <h5 className="font-display-xl text-headline-sm uppercase tracking-widest border-b border-outline-variant pb-md text-on-surface">1. Thông tin người mua</h5>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
-                <div className="space-y-sm">
-                  <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Họ và tên người mua</label>
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col lg:flex-row gap-gutter">
+          {/* Form Sections (Left) */}
+          <div className="w-full lg:w-2/3 space-y-stack-md">
+            {/* Section 1: Thông tin người mua */}
+            <section className="bg-surface-container-lowest rounded-xl p-6 md:p-8 shadow-[0_4px_20px_rgba(255,177,197,0.02)] border border-outline-variant/30 relative overflow-hidden group">
+              <div className="absolute top-0 left-0 w-1 h-full bg-primary/20 group-hover:bg-primary transition-colors duration-300"></div>
+              <h2 className="font-headline-sm text-headline-sm text-on-surface mb-6 flex items-center">
+                <span className="material-symbols-outlined mr-2 text-primary">person</span>
+                Thông tin người mua
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="col-span-1 md:col-span-2">
+                  <label className="block font-label-md text-label-md text-on-surface-variant mb-2" htmlFor="buyer-name">
+                    Họ và tên người mua
+                  </label>
                   <input
                     type="text"
+                    id="buyer-name"
                     {...register('fullname')}
-                    className={premiumInputClass}
-                    placeholder="Họ tên người mua"
+                    className="w-full bg-[#FCE4EC] border-outline-variant rounded-lg px-4 py-3 text-on-surface focus:outline-none form-input-pink transition-all font-body-md text-body-md placeholder-secondary-fixed-dim"
+                    placeholder="Nhập họ và tên"
                   />
-                  {errors.fullname && <p className="text-error text-[10px] mt-1">{errors.fullname.message}</p>}
+                  {errors.fullname && <p className="text-error text-xs mt-1">{errors.fullname.message}</p>}
                 </div>
-                <div className="space-y-sm">
-                  <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Số điện thoại người mua</label>
+                <div>
+                  <label className="block font-label-md text-label-md text-on-surface-variant mb-2" htmlFor="buyer-phone">
+                    Số điện thoại người mua
+                  </label>
                   <input
-                    type="text"
+                    type="tel"
+                    id="buyer-phone"
                     {...phoneRegister}
                     onBlur={async (e) => {
                       phoneRegister.onBlur(e);
                       await handlePhoneBlur(e.target.value);
                     }}
-                    className={premiumInputClass}
-                    placeholder="Số điện thoại"
+                    className="w-full bg-[#FCE4EC] border-outline-variant rounded-lg px-4 py-3 text-on-surface focus:outline-none form-input-pink transition-all font-body-md text-body-md placeholder-secondary-fixed-dim"
+                    placeholder="Nhập số điện thoại"
                   />
-                  {errors.phone && <p className="text-error text-[10px] mt-1">{errors.phone.message}</p>}
-                  {checkingBlacklist && <p className="text-secondary text-[9px] uppercase tracking-widest mt-1">Đang kiểm tra lịch sử đơn hàng...</p>}
+                  {errors.phone && <p className="text-error text-xs mt-1">{errors.phone.message}</p>}
+                  {checkingBlacklist && <p className="text-secondary text-[10px] uppercase tracking-widest mt-1">Đang kiểm tra lịch sử đơn hàng...</p>}
                   {isBlacklisted && (
-                    <p className="text-error text-[10px] font-bold uppercase tracking-wider mt-1">
+                    <p className="text-error text-xs font-bold uppercase tracking-wider mt-1">
                       Số điện thoại này có lịch sử bùng hàng. Bạn bắt buộc phải thanh toán Online.
                     </p>
                   )}
                 </div>
+                <div>
+                  <label className="block font-label-md text-label-md text-on-surface-variant mb-2" htmlFor="buyer-email">
+                    Email người mua
+                  </label>
+                  <input
+                    type="email"
+                    id="buyer-email"
+                    {...register('email')}
+                    className="w-full bg-[#FCE4EC] border-outline-variant rounded-lg px-4 py-3 text-on-surface focus:outline-none form-input-pink transition-all font-body-md text-body-md placeholder-secondary-fixed-dim"
+                    placeholder="Nhập email"
+                  />
+                  {errors.email && <p className="text-error text-xs mt-1">{errors.email.message}</p>}
+                </div>
               </div>
+            </section>
 
-              <div className="space-y-sm">
-                <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Email người mua</label>
-                <input
-                  type="email"
-                  {...register('email')}
-                  className={premiumInputClass}
-                  placeholder="Địa chỉ Email"
-                />
-                {errors.email && <p className="text-error text-[10px] mt-1">{errors.email.message}</p>}
-              </div>
-            </div>
-
-            {/* PHẦN 2: NGƯỜI NHẬN */}
-            <div className="bg-surface-container-lowest border border-outline-variant p-xl space-y-xl">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-outline-variant pb-md">
-                <h5 className="font-display-xl text-headline-sm uppercase tracking-widest text-on-surface">2. Thông tin người nhận</h5>
-                <label className="flex items-center gap-2 cursor-pointer select-none">
+            {/* Section 2: Thông tin người nhận */}
+            <section className="bg-surface-container-lowest rounded-xl p-6 md:p-8 shadow-[0_4px_20px_rgba(255,177,197,0.02)] border border-outline-variant/30 relative overflow-hidden group">
+              <div className="absolute top-0 left-0 w-1 h-full bg-primary/20 group-hover:bg-primary transition-colors duration-300"></div>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="font-headline-sm text-headline-sm text-on-surface flex items-center">
+                  <span className="material-symbols-outlined mr-2 text-primary">local_florist</span>
+                  Thông tin người nhận
+                </h2>
+                <label className="flex items-center space-x-2 cursor-pointer group/check">
                   <input
                     type="checkbox"
                     checked={recipientIsBuyer}
                     onChange={(e) => setRecipientIsBuyer(e.target.checked)}
-                    className="rounded text-primary focus:ring-primary size-4 border-outline-variant bg-transparent"
+                    className="form-checkbox text-primary rounded border-outline-variant focus:ring-primary focus:ring-offset-0 transition-colors"
                   />
-                  <span className="text-[12px] uppercase tracking-widest text-secondary font-bold">Người nhận là người mua</span>
+                  <span className="font-label-sm text-label-sm text-on-surface-variant group-hover/check:text-primary transition-colors">
+                    Người nhận là người mua
+                  </span>
                 </label>
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
-                <div className="space-y-sm">
-                  <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Họ và tên người nhận</label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block font-label-md text-label-md text-on-surface-variant mb-2" htmlFor="receiver-name">
+                    Họ và tên người nhận
+                  </label>
                   <input
                     type="text"
+                    id="receiver-name"
                     readOnly={recipientIsBuyer}
                     {...register('recipientName')}
-                    className={`${premiumInputClass} ${recipientIsBuyer ? 'opacity-60 cursor-not-allowed bg-opacity-70' : ''}`}
-                    placeholder="Tên người nhận hoa"
+                    className={`w-full bg-[#FCE4EC] border-outline-variant rounded-lg px-4 py-3 text-on-surface focus:outline-none form-input-pink transition-all font-body-md text-body-md placeholder-secondary-fixed-dim ${recipientIsBuyer ? 'opacity-60 cursor-not-allowed' : ''}`}
+                    placeholder="Nhập họ và tên người nhận"
                   />
-                  {errors.recipientName && <p className="text-error text-[10px] mt-1">{errors.recipientName.message}</p>}
+                  {errors.recipientName && <p className="text-error text-xs mt-1">{errors.recipientName.message}</p>}
                 </div>
-                <div className="space-y-sm">
-                  <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Số điện thoại người nhận</label>
+                <div>
+                  <label className="block font-label-md text-label-md text-on-surface-variant mb-2" htmlFor="receiver-phone">
+                    Số điện thoại người nhận
+                  </label>
                   <input
-                    type="text"
+                    type="tel"
+                    id="receiver-phone"
                     readOnly={recipientIsBuyer}
                     {...register('recipientPhone')}
-                    className={`${premiumInputClass} ${recipientIsBuyer ? 'opacity-60 cursor-not-allowed bg-opacity-70' : ''}`}
-                    placeholder="SĐT người nhận hoa"
+                    className={`w-full bg-[#FCE4EC] border-outline-variant rounded-lg px-4 py-3 text-on-surface focus:outline-none form-input-pink transition-all font-body-md text-body-md placeholder-secondary-fixed-dim ${recipientIsBuyer ? 'opacity-60 cursor-not-allowed' : ''}`}
+                    placeholder="Nhập số điện thoại người nhận"
                   />
-                  {errors.recipientPhone && <p className="text-error text-[10px] mt-1">{errors.recipientPhone.message}</p>}
+                  {errors.recipientPhone && <p className="text-error text-xs mt-1">{errors.recipientPhone.message}</p>}
+                </div>
+                <div className="col-span-1 md:col-span-2">
+                  <label className="block font-label-md text-label-md text-on-surface-variant mb-2 flex items-center" htmlFor="card-message">
+                    Lời chúc trên thiệp
+                    <span className="material-symbols-outlined ml-1 text-[16px] text-outline" title="Tặng kèm thiệp thiết kế riêng">
+                      info
+                    </span>
+                  </label>
+                  <textarea
+                    id="card-message"
+                    {...register('greetingCard')}
+                    className="w-full bg-[#FCE4EC] border-outline-variant rounded-lg px-4 py-3 text-on-surface focus:outline-none form-input-pink transition-all font-body-md text-body-md placeholder-secondary-fixed-dim resize-none"
+                    placeholder="Nhập lời chúc muốn gửi gắm..."
+                    rows={3}
+                  ></textarea>
+                  {errors.greetingCard && <p className="text-error text-xs mt-1">{errors.greetingCard.message}</p>}
                 </div>
               </div>
+            </section>
 
-              <div className="space-y-sm">
-                <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Lời chúc trên thiệp</label>
-                <textarea
-                  {...register('greetingCard')}
-                  className={premiumInputClass}
-                  rows={3}
-                  placeholder="Lời chúc đính kèm thiệp hoa..."
-                ></textarea>
-                {errors.greetingCard && <p className="text-error text-[10px] mt-1">{errors.greetingCard.message}</p>}
-              </div>
-            </div>
-
-            {/* PHẦN 3: GIAO HÀNG */}
-            <div className="bg-surface-container-lowest border border-outline-variant p-xl space-y-xl">
-              <h5 className="font-display-xl text-headline-sm uppercase tracking-widest border-b border-outline-variant pb-md text-on-surface">3. Thời gian & Địa điểm nhận hàng</h5>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
-                <div className="space-y-sm">
-                  <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Quận/Huyện giao hàng (Gated)</label>
-                  <input
-                    type="text"
-                    value={deliveryDistrict}
-                    disabled
-                    className={`${premiumInputClass} opacity-60 cursor-not-allowed`}
-                  />
+            {/* Section 3: Thời gian & Địa điểm */}
+            <section className="bg-surface-container-lowest rounded-xl p-6 md:p-8 shadow-[0_4px_20px_rgba(255,177,197,0.02)] border border-outline-variant/30 relative overflow-hidden group">
+              <div className="absolute top-0 left-0 w-1 h-full bg-primary/20 group-hover:bg-primary transition-colors duration-300"></div>
+              <h2 className="font-headline-sm text-headline-sm text-on-surface mb-6 flex items-center">
+                <span className="material-symbols-outlined mr-2 text-primary">location_on</span>
+                Thời gian &amp; Địa điểm nhận hàng
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="col-span-1 md:col-span-2">
+                  <label className="block font-label-md text-label-md text-on-surface-variant mb-2" htmlFor="district">
+                    Quận/Huyện giao hàng (Gated)
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      id="district"
+                      value={deliveryDistrict}
+                      disabled
+                      className="w-full bg-[#FCE4EC]/50 border border-outline-variant rounded-lg px-4 py-3 text-on-surface/60 font-body-md text-body-md cursor-not-allowed focus:outline-none"
+                    />
+                  </div>
                 </div>
-                <div className="space-y-sm">
-                  <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Địa chỉ chi tiết</label>
+                <div className="col-span-1 md:col-span-2">
+                  <label className="block font-label-md text-label-md text-on-surface-variant mb-2" htmlFor="address">
+                    Địa chỉ chi tiết
+                  </label>
                   <input
                     type="text"
+                    id="address"
                     {...register('deliveryAddress')}
-                    className={premiumInputClass}
-                    placeholder="Số nhà, tên đường, phường..."
+                    className="w-full bg-[#FCE4EC] border-outline-variant rounded-lg px-4 py-3 text-on-surface focus:outline-none form-input-pink transition-all font-body-md text-body-md placeholder-secondary-fixed-dim"
+                    placeholder="Số nhà, tên đường, phường/xã..."
                   />
-                  {errors.deliveryAddress && <p className="text-error text-[10px] mt-1">{errors.deliveryAddress.message}</p>}
+                  {errors.deliveryAddress && <p className="text-error text-xs mt-1">{errors.deliveryAddress.message}</p>}
+                </div>
+                <div>
+                  <label className="block font-label-md text-label-md text-on-surface-variant mb-2" htmlFor="delivery-date">
+                    Ngày nhận hoa
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="date"
+                      id="delivery-date"
+                      {...register('deliveryDate')}
+                      min={getVietnamTodayString()}
+                      className="w-full bg-[#FCE4EC] border-outline-variant rounded-lg px-4 py-3 text-on-surface focus:outline-none form-input-pink transition-all font-body-md text-body-md"
+                    />
+                  </div>
+                  {errors.deliveryDate && <p className="text-error text-xs mt-1">{errors.deliveryDate.message}</p>}
+                </div>
+                <div>
+                  <label className="block font-label-md text-label-md text-on-surface-variant mb-2" htmlFor="delivery-time">
+                    Khung giờ giao hoa
+                  </label>
+                  <div className="relative">
+                    <select
+                      id="delivery-time"
+                      {...register('deliveryTimeSlot')}
+                      className="w-full bg-[#FCE4EC] border-outline-variant rounded-lg px-4 py-3 text-on-surface focus:outline-none form-input-pink transition-all font-body-md text-body-md appearance-none cursor-pointer"
+                    >
+                      <option disabled value="">Chọn khung giờ</option>
+                      {getFilteredSlots().map(slot => (
+                        <option key={slot.value} value={slot.value}>{slot.label}</option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-on-surface-variant">
+                      <span className="material-symbols-outlined">expand_more</span>
+                    </div>
+                  </div>
+                  {errors.deliveryTimeSlot && <p className="text-error text-xs mt-1">{errors.deliveryTimeSlot.message}</p>}
+                </div>
+                <div className="col-span-1 md:col-span-2">
+                  <label className="block font-label-md text-label-md text-on-surface-variant mb-2" htmlFor="extra-notes">
+                    Ghi chú thêm
+                  </label>
+                  <textarea
+                    id="extra-notes"
+                    {...register('notes')}
+                    className="w-full bg-[#FCE4EC] border-outline-variant rounded-lg px-4 py-3 text-on-surface focus:outline-none form-input-pink transition-all font-body-md text-body-md placeholder-secondary-fixed-dim resize-none"
+                    placeholder="Lưu ý về giao hàng, bảo vệ, gọi điện trước..."
+                    rows={2}
+                  ></textarea>
                 </div>
               </div>
+            </section>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
-                <div className="space-y-sm">
-                  <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Ngày nhận hoa</label>
-                  <input
-                    type="date"
-                    {...register('deliveryDate')}
-                    min={getVietnamTodayString()}
-                    className={premiumInputClass}
-                  />
-                  {errors.deliveryDate && <p className="text-error text-[10px] mt-1">{errors.deliveryDate.message}</p>}
-                </div>
-                <div className="space-y-sm">
-                  <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Khung giờ giao hoa</label>
-                  <select
-                    {...register('deliveryTimeSlot')}
-                    className={premiumInputClass}
-                  >
-                    <option value="">-- CHỌN KHUNG GIỜ --</option>
-                    {getFilteredSlots().map(slot => (
-                      <option key={slot.value} value={slot.value}>{slot.label}</option>
-                    ))}
-                  </select>
-                  {errors.deliveryTimeSlot && <p className="text-error text-[10px] mt-1">{errors.deliveryTimeSlot.message}</p>}
-                </div>
-              </div>
-
-              <div className="space-y-sm">
-                <label className="text-[10px] uppercase tracking-widest text-secondary font-bold">Ghi chú thêm</label>
-                <textarea
-                  {...register('notes')}
-                  className={premiumInputClass}
-                  rows={3}
-                  placeholder="Yêu cầu riêng về đơn hàng..."
-                ></textarea>
-              </div>
-            </div>
-
-            {/* PHƯƠNG THỨC THANH TOÁN */}
-            <div className="bg-surface-container-lowest border border-outline-variant p-xl space-y-lg">
-              <h5 className="font-display-xl text-headline-sm uppercase tracking-widest border-b border-outline-variant pb-md text-on-surface">4. Phương thức thanh toán</h5>
-              
-              <div className="space-y-md">
-                {/* COD option */}
-                <label className={`flex items-start gap-md p-md border rounded-lg transition-all ${watchPaymentMethod === 'COD' ? 'border-primary bg-[#FCE4EC]/20' : 'border-outline-variant hover:border-primary/50'} cursor-pointer ${isBlacklisted ? 'opacity-50 cursor-not-allowed' : ''}`}>
-                  <div className="flex items-center h-6">
+            {/* Section 4: Phương thức thanh toán */}
+            <section className="bg-surface-container-lowest rounded-xl p-6 md:p-8 shadow-[0_4px_20px_rgba(255,177,197,0.02)] border border-outline-variant/30 relative overflow-hidden group">
+              <div className="absolute top-0 left-0 w-1 h-full bg-primary/20 group-hover:bg-primary transition-colors duration-300"></div>
+              <h2 className="font-headline-sm text-headline-sm text-on-surface mb-6 flex items-center">
+                <span className="material-symbols-outlined mr-2 text-primary">payments</span>
+                Phương thức thanh toán
+              </h2>
+              <div className="space-y-4">
+                {/* Option 1: COD */}
+                <label className={`flex items-start p-4 border rounded-lg cursor-pointer transition-colors group/radio ${watchPaymentMethod === 'COD' ? 'border-primary bg-surface-container-low' : 'border-outline-variant hover:bg-surface-container-low'} ${isBlacklisted ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                  <div className="flex items-center h-6 mr-4">
                     <input
                       type="radio"
                       value="COD"
                       disabled={isBlacklisted}
                       {...register('paymentMethod')}
-                      className="size-4 text-primary focus:ring-primary border-primary bg-transparent"
+                      className="w-5 h-5 text-primary form-radio-pink bg-[#FCE4EC] border-outline-variant focus:ring-primary focus:ring-offset-0 transition-all cursor-pointer"
                     />
                   </div>
-                  <div className="space-y-1">
-                    <span className="text-label-sm uppercase tracking-widest font-bold block text-on-surface">Thanh toán khi nhận hàng (COD)</span>
-                    <span className="text-[10px] text-secondary uppercase tracking-widest block">Thanh toán bằng tiền mặt khi nhận được hoa.</span>
+                  <div className="flex-grow">
+                    <div className="flex items-center justify-between">
+                      <span className="font-label-md text-label-md text-on-surface group-hover/radio:text-primary transition-colors">
+                        Thanh toán khi nhận hàng (COD)
+                      </span>
+                      <span className="material-symbols-outlined text-outline">local_shipping</span>
+                    </div>
+                    <p className="font-body-md text-sm text-on-surface-variant mt-1">Thanh toán bằng tiền mặt khi nhận được hoa</p>
                   </div>
                 </label>
-
-                {/* Online Payment option */}
-                <label className={`flex items-start gap-md p-md border rounded-lg transition-all ${watchPaymentMethod === 'OnlinePayment' ? 'border-primary bg-[#FCE4EC]/20' : 'border-outline-variant hover:border-primary/50'} cursor-pointer`}>
-                  <div className="flex items-center h-6">
+                {/* Option 2: MoMo */}
+                <label className={`flex items-start p-4 border rounded-lg cursor-pointer transition-colors group/radio ${watchPaymentMethod === 'OnlinePayment' ? 'border-primary bg-surface-container-low' : 'border-outline-variant hover:bg-surface-container-low'}`}>
+                  <div className="flex items-center h-6 mr-4">
                     <input
                       type="radio"
                       value="OnlinePayment"
                       {...register('paymentMethod')}
-                      className="size-4 text-primary focus:ring-primary border-primary bg-transparent"
+                      className="w-5 h-5 text-primary form-radio-pink bg-[#FCE4EC] border-outline-variant focus:ring-primary focus:ring-offset-0 transition-all cursor-pointer"
                     />
                   </div>
-                  <div className="space-y-1">
-                    <span className="text-label-sm uppercase tracking-widest font-bold block text-on-surface">Chuyển khoản trực tuyến / MoMo</span>
-                    <span className="text-[10px] text-secondary uppercase tracking-widest block">Thanh toán an toàn qua cổng MoMo (giả lập).</span>
+                  <div className="flex-grow">
+                    <div className="flex items-center justify-between">
+                      <span className="font-label-md text-label-md text-on-surface group-hover/radio:text-primary transition-colors">
+                        Chuyển khoản trực tuyến / MoMo
+                      </span>
+                      <span className="material-symbols-outlined text-outline">account_balance_wallet</span>
+                    </div>
+                    <p className="font-body-md text-sm text-on-surface-variant mt-1">Thanh toán an toàn qua cổng MoMo (giả lập)</p>
                   </div>
                 </label>
               </div>
-            </div>
+            </section>
           </div>
 
-          <aside className="w-full lg:w-96 flex-shrink-0">
-            <div className="bg-surface-container-low border border-outline-variant p-lg space-y-xl sticky top-32 rounded-lg">
-              <h5 className="text-headline-sm uppercase tracking-widest border-b border-outline-variant pb-md text-on-surface">Chi tiết đơn hàng</h5>
-
-              <div className="space-y-md border-b border-outline-variant pb-md max-h-80 overflow-y-auto no-scrollbar">
+          {/* Sidebar (Right) - Order Summary */}
+          <div className="w-full lg:w-1/3 mt-8 lg:mt-0">
+            <div className="bg-surface-container-lowest rounded-xl p-6 shadow-[0_4px_20px_rgba(255,177,197,0.05)] border border-outline-variant/30 sticky top-8">
+              <h2 className="font-headline-sm text-headline-sm text-on-surface mb-6 border-b border-[#FCE4EC] pb-4">
+                Chi tiết đơn hàng
+              </h2>
+              {/* Product Item List */}
+              <div className="space-y-6 max-h-96 overflow-y-auto no-scrollbar">
                 {cartItems.map(item => (
-                  <div className="flex items-center gap-md" key={item.id}>
-                    <div className="relative w-20 aspect-[20/24] overflow-hidden rounded-lg bg-surface-container-low flex-shrink-0 border border-outline-variant/30">
+                  <div className="flex items-start pb-6 border-b border-[#FCE4EC]" key={item.id}>
+                    <div className="w-20 h-24 bg-surface-container-low rounded-lg overflow-hidden flex-shrink-0 mr-4 petal-shadow">
                       <img
+                        className="w-full h-full object-cover"
                         src={item.imageUrl || '/placeholder-product.jpg'}
                         alt={item.name}
-                        className="w-full h-full object-cover"
                       />
                     </div>
-                    <div className="flex-1 space-y-1">
-                      <span className="text-label-sm uppercase tracking-widest font-bold block text-on-surface line-clamp-1">{item.name}</span>
-                      <span className="text-[10px] text-secondary uppercase tracking-widest block">SL: {item.quantity}</span>
-                      <span className="font-bold text-xs text-secondary-fixed block">{formatCurrency(item.discountPrice || item.price)}</span>
+                    <div className="flex-grow">
+                      <h3 className="font-label-md text-label-md text-on-surface mb-1">{item.name}</h3>
+                      <p className="font-label-sm text-label-sm text-on-surface-variant mb-2">SL: {item.quantity}</p>
+                      <p className="font-headline-sm text-lg text-primary">
+                        {formatCurrency((item.discountPrice || item.price) * item.quantity)}
+                      </p>
                     </div>
-                    <span className="font-bold text-sm text-on-surface self-center">{formatCurrency((item.discountPrice || item.price) * item.quantity)}</span>
                   </div>
                 ))}
               </div>
-
-              <div className="space-y-md">
-                <div className="flex justify-between items-center text-label-sm uppercase tracking-widest">
-                  <span className="text-secondary">Tạm tính</span>
-                  <span className="font-bold text-on-surface">{formatCurrency(cartTotal)}</span>
+              {/* Subtotals */}
+              <div className="space-y-3 font-body-md text-body-md text-on-surface-variant mb-6 pb-6 border-b border-[#FCE4EC] mt-6">
+                <div className="flex justify-between">
+                  <span>Tạm tính</span>
+                  <span>{formatCurrency(cartTotal)}</span>
                 </div>
-                <div className="flex justify-between items-center text-label-sm uppercase tracking-widest">
-                  <span className="text-secondary">Phí vận chuyển</span>
-                  <span className="text-primary font-bold uppercase tracking-widest text-[10px]">Miễn phí</span>
+                <div className="flex justify-between">
+                  <span>Phí vận chuyển</span>
+                  <span className="text-primary font-medium">Miễn phí</span>
                 </div>
               </div>
-
-              <div className="border-t border-outline-variant pt-lg flex justify-between items-center">
-                <span className="text-label-sm uppercase tracking-[0.2em] font-bold text-on-surface">Tổng cộng</span>
-                <span className="serif text-2xl font-bold text-on-surface">
+              {/* Total */}
+              <div className="flex justify-between items-end mb-8">
+                <span className="font-label-md text-label-md text-on-surface">Tổng cộng</span>
+                <span className="font-headline-md text-headline-sm text-primary">
                   {formatCurrency(cartTotal)}
                 </span>
               </div>
-
+              {/* Checkout Button */}
               <button
                 type="submit"
                 disabled={createOrder.isPending || cartItems.length === 0}
-                className="w-full bg-primary text-on-primary py-5 text-label-sm uppercase tracking-[0.3em] font-bold border border-primary outline-none disabled:opacity-50 disabled:cursor-not-allowed btn-luxury btn-primary-luxury rounded-lg hover:bg-primary-hover transition-colors"
+                className="w-full bg-primary hover:bg-on-primary-fixed-variant text-on-primary font-label-md text-label-md py-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 mb-4 flex items-center justify-center border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {createOrder.isPending ? 'Đang xử lý...' : 'Đặt hàng'}
+                <span className="material-symbols-outlined ml-2" style={{ fontVariationSettings: "'FILL' 1" }}>
+                  arrow_forward
+                </span>
               </button>
-
-              <div className="bg-white border border-outline-variant p-md flex items-start gap-md rounded-lg" style={{ backgroundColor: 'var(--md-sys-color-surface-container-lowest, #fff)' }}>
-                <span className="material-symbols-outlined text-secondary">lock</span>
-                <p className="text-[10px] text-secondary uppercase tracking-widest leading-relaxed">Mã hóa đầu cuối an toàn. Thông tin của bạn được bảo vệ.</p>
+              {/* Security Note */}
+              <div className="flex items-center justify-center text-on-surface-variant font-label-sm text-label-sm">
+                <span className="material-symbols-outlined mr-2 text-[16px]">lock</span>
+                Mã hóa đầu cuối an toàn. Thông tin của bạn được bảo vệ.
               </div>
             </div>
-          </aside>
+          </div>
         </form>
       </main>
     </div>
