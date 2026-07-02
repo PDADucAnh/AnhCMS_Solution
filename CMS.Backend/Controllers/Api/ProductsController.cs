@@ -34,6 +34,14 @@ namespace CMS.Backend.Controllers.Api
         }
 
         [AllowAnonymous]
+        [HttpGet("search")]
+        public async Task<IActionResult> Search([FromQuery] string query)
+        {
+            var results = await _productService.Search(query);
+            return Ok(results);
+        }
+
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
