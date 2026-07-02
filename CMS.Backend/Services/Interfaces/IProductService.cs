@@ -7,7 +7,7 @@ namespace CMS.Backend.Services.Interfaces
     public interface IProductService
     {
         Task<IEnumerable<ProductDTO>> GetAll();
-        Task<PagedResult<ProductDTO>> GetPaged(int page, int pageSize);
+        Task<PagedResult<ProductDTO>> GetPaged(int page, int pageSize, decimal? minPrice = null, decimal? maxPrice = null, int? categoryProductId = null);
         Task<IEnumerable<ProductDTO>> GetByCategoryProduct(int categoryProductId);
         Task<ProductDTO?> GetDetail(int id);
         Task<ProductDTO> Create(CreateProductDTO dto);

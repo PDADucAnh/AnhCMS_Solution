@@ -34,10 +34,26 @@ namespace CMS.Backend.Services
             return products.Select(p => p.ToDTO());
         }
 
-        public async Task<PagedResult<ProductDTO>> GetPaged(int page, int pageSize)
+        public async Task<PagedResult<ProductDTO>> GetPaged(int page, int pageSize, decimal? minPrice = null, decimal? maxPrice = null, int? categoryProductId = null)
         {
-            var query = BuildQuery()
-                .OrderByDescending(p => p.Id);
+            var query = BuildQuery();
+
+            if (categoryProductId.HasValue)
+            {
+                query = query.Where(p => p.CategoryProductId == categoryProductId.Value);
+            }
+
+            if (minPrice.HasValue)
+            {
+                query = query.Where(p => p.Price >= minPrice.Value);
+            }
+
+            if (maxPrice.HasValue)
+            {
+                query = query.Where(p => p.Price <= maxPrice.Value);
+            }
+
+            query = query.OrderByDescending(p => p.Id);
 
             var totalCount = await query.CountAsync();
             var items = await query
