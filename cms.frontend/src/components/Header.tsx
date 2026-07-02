@@ -90,14 +90,14 @@ const Header: React.FC = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && searchQuery.trim()) {
-                  navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
+                  navigate(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
                 }
               }}
             />
             <button
               onClick={() => {
                 if (searchQuery.trim()) {
-                  navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
+                  navigate(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
                 }
               }}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-primary/40 hover:text-primary transition-colors flex items-center justify-center border-0 bg-transparent cursor-pointer"
