@@ -1,7 +1,32 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const Footer: React.FC = () => {
+  const location = useLocation();
+
+  if (location.pathname === '/order-confirmation') {
+    return (
+      <footer className="w-full mt-stack-lg border-t border-outline-variant bg-surface-container-low">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-gutter max-w-container-max mx-auto px-margin-desktop py-stack-lg">
+          <div className="flex flex-col gap-4">
+            <span className="font-display-lg text-display-lg-mobile text-primary">PDA FLOWER</span>
+            <span className="font-body-md text-body-md text-secondary">© 2026 PDA FLOWER. All rights reserved.</span>
+          </div>
+          <div className="flex flex-col gap-2">
+            <Link className="font-body-md text-body-md text-on-surface-variant hover:text-primary underline underline-offset-4 opacity-90 hover:opacity-100 transition-opacity no-underline" to="/shop">Delivery Policy</Link>
+            <Link className="font-body-md text-body-md text-on-surface-variant hover:text-primary underline underline-offset-4 opacity-90 hover:opacity-100 transition-opacity no-underline" to="/shop">Return Policy</Link>
+          </div>
+          <div className="flex flex-col gap-2">
+            <Link className="font-body-md text-body-md text-on-surface-variant hover:text-primary underline underline-offset-4 opacity-90 hover:opacity-100 transition-opacity no-underline" to="/shop">Privacy Policy</Link>
+          </div>
+          <div className="flex flex-col gap-2">
+            <span className="font-body-md text-body-md text-on-surface-variant">Tay Ninh, Vietnam</span>
+            <Link className="font-body-md text-body-md text-on-surface-variant hover:text-primary underline underline-offset-4 opacity-90 hover:opacity-100 transition-opacity no-underline" to="/contact">Contact Us</Link>
+          </div>
+        </div>
+      </footer>
+    );
+  }
   return (
     <footer className="bg-surface-container-lowest border-t border-outline-variant mt-auto w-full">
       <div className="max-w-container-max mx-auto px-margin-desktop py-stack-lg">

@@ -15,6 +15,20 @@ const Header: React.FC = () => {
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
 
+  if (location.pathname === '/order-confirmation') {
+    return (
+      <header className="w-full bg-surface py-base px-margin-desktop flex justify-between items-center shadow-sm max-w-container-max mx-auto pt-20 md:pt-4">
+        <Link className="font-display-lg text-display-lg text-primary tracking-tight md:text-display-lg text-display-lg-mobile no-underline" to="/">
+          FlowerShop
+        </Link>
+        <div className="flex items-center gap-2 text-on-surface-variant">
+          <span className="material-symbols-outlined">person</span>
+          <span className="font-label-md text-label-md">{user?.fullName || user?.username || 'Khách hàng'}</span>
+        </div>
+      </header>
+    );
+  }
+
   const isActive = (path: string) => {
     if (path === '/') return location.pathname === '/';
     return location.pathname.startsWith(path);
