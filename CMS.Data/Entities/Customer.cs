@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -36,5 +36,10 @@ namespace CMS.Data.Entities
         public bool IsBlacklisted { get; set; }
 
         public int FraudScore { get; set; }
+
+        [MaxLength(100)]
+        public string? ResetToken { get; set; }
+
+        public DateTime? ResetTokenExpiry { get; set; }
     }
 }
