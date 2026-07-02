@@ -9,10 +9,16 @@ export const useProducts = () => {
   });
 };
 
-export const useProductsPaged = (page: number, pageSize: number) => {
+export const useProductsPaged = (
+  page: number, 
+  pageSize: number, 
+  minPrice?: number | null, 
+  maxPrice?: number | null, 
+  categoryProductId?: number | null
+) => {
   return useQuery<PagedResult<any>>({
-    queryKey: ['products', 'paged', page, pageSize],
-    queryFn: () => productService.getProductsPaged(page, pageSize),
+    queryKey: ['products', 'paged', page, pageSize, minPrice, maxPrice, categoryProductId],
+    queryFn: () => productService.getProductsPaged(page, pageSize, minPrice, maxPrice, categoryProductId),
     placeholderData: (prev) => prev,
   });
 };
