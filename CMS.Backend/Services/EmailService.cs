@@ -87,6 +87,11 @@ namespace CMS.Backend.Services
             var dateStr = order.DeliveryDate?.ToString("dd/MM/yyyy") ?? "N/A";
             var deliveryTime = $"{timeSlot} ngày {dateStr}";
 
+            var orderPlacedTime = order.OrderDate.ToString("dd/MM/yyyy HH:mm");
+            var orderConfirmedTime = order.VerifiedAt.HasValue 
+                ? order.VerifiedAt.Value.ToString("dd/MM/yyyy HH:mm") 
+                : (order.PaymentPaidAt.HasValue ? order.PaymentPaidAt.Value.ToString("dd/MM/yyyy HH:mm") : DateTime.Now.ToString("dd/MM/yyyy HH:mm"));
+
             var buyer = WebUtility.HtmlEncode(parsedNotes.Buyer);
             var recipient = WebUtility.HtmlEncode(parsedNotes.Recipient);
             var greeting = WebUtility.HtmlEncode(parsedNotes.Greeting);
@@ -132,6 +137,8 @@ namespace CMS.Backend.Services
             sb.AppendLine("<table class='info-grid'>");
             sb.AppendLine($"<tr><td class='info-label'>Địa chỉ:</td><td class='info-value'>{encodedAddress}</td></tr>");
             sb.AppendLine($"<tr><td class='info-label'>Thời gian giao:</td><td class='info-value'>{encodedTime}</td></tr>");
+            sb.AppendLine($"<tr><td class='info-label'>Thời gian đặt hàng:</td><td class='info-value'>{orderPlacedTime}</td></tr>");
+            sb.AppendLine($"<tr><td class='info-label'>Thời gian xác nhận:</td><td class='info-value'>{orderConfirmedTime}</td></tr>");
             sb.AppendLine("</table>");
 
             sb.AppendLine("<div class='section-title'>Lời chúc thiệp</div>");
@@ -238,6 +245,11 @@ namespace CMS.Backend.Services
             var dateStr = order.DeliveryDate?.ToString("dd/MM/yyyy") ?? "N/A";
             var deliveryTime = $"{timeSlot} ngày {dateStr}";
 
+            var orderPlacedTime = order.OrderDate.ToString("dd/MM/yyyy HH:mm");
+            var orderConfirmedTime = order.VerifiedAt.HasValue 
+                ? order.VerifiedAt.Value.ToString("dd/MM/yyyy HH:mm") 
+                : (order.PaymentPaidAt.HasValue ? order.PaymentPaidAt.Value.ToString("dd/MM/yyyy HH:mm") : DateTime.Now.ToString("dd/MM/yyyy HH:mm"));
+
             var buyer = WebUtility.HtmlEncode(parsedNotes.Buyer);
             var recipient = WebUtility.HtmlEncode(parsedNotes.Recipient);
             var greeting = WebUtility.HtmlEncode(parsedNotes.Greeting);
@@ -285,6 +297,8 @@ namespace CMS.Backend.Services
             sb.AppendLine("<table class='info-grid'>");
             sb.AppendLine($"<tr><td class='info-label'>Địa chỉ:</td><td class='info-value'>{encodedAddress}</td></tr>");
             sb.AppendLine($"<tr><td class='info-label'>Thời gian giao:</td><td class='info-value'>{encodedTime}</td></tr>");
+            sb.AppendLine($"<tr><td class='info-label'>Thời gian đặt hàng:</td><td class='info-value'>{orderPlacedTime}</td></tr>");
+            sb.AppendLine($"<tr><td class='info-label'>Thời gian xác nhận:</td><td class='info-value'>{orderConfirmedTime}</td></tr>");
             sb.AppendLine("</table>");
 
             sb.AppendLine("<div class='section-title'>Lời chúc thiệp</div>");
