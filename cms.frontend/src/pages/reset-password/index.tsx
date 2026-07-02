@@ -21,6 +21,10 @@ export default function ResetPassword() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!token) {
+            setError('Không tìm thấy token đặt lại mật khẩu hợp lệ.');
+            return;
+        }
         if (password !== confirmPassword) {
             setError('Mật khẩu nhập lại không trùng khớp.');
             return;

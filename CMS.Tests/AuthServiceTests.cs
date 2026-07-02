@@ -1,4 +1,5 @@
 using System;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using CMS.Backend.Services;
 using CMS.Backend.Services.Interfaces;
@@ -165,6 +166,12 @@ namespace CMS.Tests
             var authService = new AuthService(context, _emailServiceMock.Object);
             await authService.Register("Password123!", "Test User", "test@example.com", null, null);
 
+            var emailSentTcs = new TaskCompletionSource<string>();
+            _emailServiceMock
+                .Setup(e => e.SendResetPasswordEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Callback<string, string, string>((email, name, link) => emailSentTcs.TrySetResult(link))
+                .Returns(Task.CompletedTask);
+
             // Act
             var result = await authService.ForgotPassword("test@example.com", "http://client.com");
 
@@ -172,17 +179,31 @@ namespace CMS.Tests
             Assert.True(result.Success);
             Assert.Equal("Yêu cầu đặt lại mật khẩu đã được gửi đi thành công.", result.Message);
 
+            // Wait for fire-and-forget task to execute
+            var completedTask = await Task.WhenAny(emailSentTcs.Task, Task.Delay(2000));
+            Assert.Same(emailSentTcs.Task, completedTask);
+
+            var resetLink = await emailSentTcs.Task;
+
             var customer = await context.Customers.FirstOrDefaultAsync(c => c.Email == "test@example.com");
             Assert.NotNull(customer);
             Assert.NotNull(customer.ResetToken);
             Assert.NotNull(customer.ResetTokenExpiry);
-            Assert.True(customer.ResetTokenExpiry > DateTime.Now);
+            Assert.True(customer.ResetTokenExpiry > DateTime.UtcNow);
 
-            _emailServiceMock.Verify(e => e.SendResetPasswordEmailAsync(
-                "test@example.com",
-                "Test User",
-                It.Is<string>(url => url.Contains(customer.ResetToken) && url.StartsWith("http://client.com/reset-password?token="))),
-                Times.Once);
+            // Verify resetLink format and that it contains a valid rawToken
+            Assert.StartsWith("http://client.com/reset-password?token=", resetLink);
+            var tokenIndex = resetLink.IndexOf("token=");
+            Assert.True(tokenIndex >= 0);
+            var rawToken = resetLink.Substring(tokenIndex + 6);
+            Assert.False(string.IsNullOrEmpty(rawToken));
+
+            // Verify that the hashed token in database matches the hashed rawToken
+            Assert.Equal(HashToken(rawToken), customer.ResetToken);
+
+            // Verify using ResetPassword that the raw token works
+            var resetResult = await authService.ResetPassword(rawToken, "NewPassword123!");
+            Assert.True(resetResult.Success);
         }
 
         [Fact]
@@ -212,8 +233,8 @@ namespace CMS.Tests
                 FullName = "Expired User",
                 Email = "expired@example.com",
                 PasswordHash = "old-hash",
-                ResetToken = "expired-token",
-                ResetTokenExpiry = DateTime.Now.AddMinutes(-5) // Expired 5 minutes ago
+                ResetToken = HashToken("expired-token"),
+                ResetTokenExpiry = DateTime.UtcNow.AddMinutes(-5) // Expired 5 minutes ago
             };
             context.Customers.Add(customer);
             await context.SaveChangesAsync();
@@ -238,8 +259,8 @@ namespace CMS.Tests
                 FullName = "Valid User",
                 Email = "valid@example.com",
                 PasswordHash = "old-hash",
-                ResetToken = "valid-token",
-                ResetTokenExpiry = DateTime.Now.AddMinutes(5)
+                ResetToken = HashToken("valid-token"),
+                ResetTokenExpiry = DateTime.UtcNow.AddMinutes(5)
             };
             context.Customers.Add(customer);
             await context.SaveChangesAsync();
@@ -260,6 +281,13 @@ namespace CMS.Tests
             // Verify we can log in with new password
             var loginResult = await authService.Login("valid@example.com", "NewPassword123!");
             Assert.NotNull(loginResult);
+        }
+
+        private static string HashToken(string token)
+        {
+            var bytes = System.Text.Encoding.UTF8.GetBytes(token);
+            var hash = SHA256.HashData(bytes);
+            return Convert.ToBase64String(hash);
         }
     }
 }

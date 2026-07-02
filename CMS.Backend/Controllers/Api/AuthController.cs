@@ -136,11 +136,7 @@ namespace CMS.Backend.Controllers.Api
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
         {
-            var clientUrl = Request.Headers["Origin"].ToString();
-            if (string.IsNullOrEmpty(clientUrl))
-            {
-                clientUrl = "http://localhost:5173"; // Fallback development port
-            }
+            var clientUrl = _configuration["ClientUrl"] ?? "http://localhost:3000";
 
             var (success, message) = await _authService.ForgotPassword(request.Email, clientUrl);
             return Ok(new { message });

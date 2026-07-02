@@ -222,28 +222,44 @@ namespace CMS.Backend.Services
                 return (true, "Nếu email tồn tại trên hệ thống, một liên kết đặt lại mật khẩu đã được gửi đi. Vui lòng kiểm tra hộp thư.");
             }
 
-            var token = Guid.NewGuid().ToString("N");
-            customer.ResetToken = token;
-            customer.ResetTokenExpiry = DateTime.Now.AddMinutes(15);
+            var rawToken = Guid.NewGuid().ToString("N");
+            customer.ResetToken = HashToken(rawToken);
+            customer.ResetTokenExpiry = DateTime.UtcNow.AddMinutes(15);
 
-            _context.Customers.Update(customer);
             await _context.SaveChangesAsync();
 
-            var resetLink = $"{clientUrl.TrimEnd('/')}/reset-password?token={token}";
-            await _emailService.SendResetPasswordEmailAsync(customer.Email, customer.FullName, resetLink);
+            var resetLink = $"{clientUrl.TrimEnd('/')}/reset-password?token={rawToken}";
+            
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await _emailService.SendResetPasswordEmailAsync(customer.Email, customer.FullName, resetLink);
+                }
+                catch (Exception ex)
+                {
+                    // Log exception without bubbling it to the HTTP response
+                }
+            });
 
             return (true, "Yêu cầu đặt lại mật khẩu đã được gửi đi thành công.");
         }
 
         public async Task<(bool Success, string Message)> ResetPassword(string token, string newPassword)
         {
-            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.ResetToken == token);
+            if (string.IsNullOrEmpty(token))
+            {
+                return (false, "Mã xác thực đặt lại mật khẩu không hợp lệ.");
+            }
+
+            var tokenHash = HashToken(token);
+            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.ResetToken == tokenHash);
             if (customer == null)
             {
                 return (false, "Mã xác thực đặt lại mật khẩu không hợp lệ.");
             }
 
-            if (!customer.ResetTokenExpiry.HasValue || customer.ResetTokenExpiry.Value < DateTime.Now)
+            if (!customer.ResetTokenExpiry.HasValue || customer.ResetTokenExpiry.Value < DateTime.UtcNow)
             {
                 return (false, "Liên kết đặt lại mật khẩu đã hết hạn. Vui lòng yêu cầu lại.");
             }
@@ -252,7 +268,6 @@ namespace CMS.Backend.Services
             customer.ResetToken = null;
             customer.ResetTokenExpiry = null;
 
-            _context.Customers.Update(customer);
             await _context.SaveChangesAsync();
 
             return (true, "Đổi mật khẩu thành công!");
