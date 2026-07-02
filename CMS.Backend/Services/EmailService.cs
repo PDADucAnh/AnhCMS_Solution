@@ -50,9 +50,12 @@ namespace CMS.Backend.Services
             try
             {
                 var body = BuildOrderConfirmationBody(order, customerName);
+                var senderEmail = !string.IsNullOrEmpty(_settings.SenderEmail) && _settings.SenderEmail != "test@gmail.com"
+                    ? _settings.SenderEmail
+                    : _settings.Username;
                 using var message = new MailMessage
                 {
-                    From = new MailAddress(_settings.SenderEmail, _settings.SenderName),
+                    From = new MailAddress(senderEmail, _settings.SenderName),
                     Subject = $"Xác nhận đơn hàng #{order.Id} - AnhCMS Boutique",
                     Body = body,
                     IsBodyHtml = true
@@ -169,9 +172,12 @@ namespace CMS.Backend.Services
             {
                 var statusText = $"Đơn hàng #{order.Id} đã được xác nhận và thợ cắm hoa đang tiến hành thiết kế hoa. Cảm ơn bạn!";
                 var body = BuildOrderEmailBody(order, customerName, "Đơn hàng đã xác nhận", statusText);
+                var senderEmail = !string.IsNullOrEmpty(_settings.SenderEmail) && _settings.SenderEmail != "test@gmail.com"
+                    ? _settings.SenderEmail
+                    : _settings.Username;
                 using var message = new MailMessage
                 {
-                    From = new MailAddress(_settings.SenderEmail, _settings.SenderName),
+                    From = new MailAddress(senderEmail, _settings.SenderName),
                     Subject = $"Đơn hàng #{order.Id} đã được xác nhận - AnhCMS Boutique",
                     Body = body,
                     IsBodyHtml = true
@@ -195,9 +201,12 @@ namespace CMS.Backend.Services
             {
                 var statusText = $"Đơn hàng #{order.Id} của bạn đã được giao thành công. AnhCMS Boutique xin trân trọng cảm ơn quý khách!";
                 var body = BuildOrderEmailBody(order, customerName, "Giao hàng thành công", statusText);
+                var senderEmail = !string.IsNullOrEmpty(_settings.SenderEmail) && _settings.SenderEmail != "test@gmail.com"
+                    ? _settings.SenderEmail
+                    : _settings.Username;
                 using var message = new MailMessage
                 {
-                    From = new MailAddress(_settings.SenderEmail, _settings.SenderName),
+                    From = new MailAddress(senderEmail, _settings.SenderName),
                     Subject = $"Giao hàng thành công #{order.Id} - AnhCMS Boutique",
                     Body = body,
                     IsBodyHtml = true
