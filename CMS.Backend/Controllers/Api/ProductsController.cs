@@ -22,9 +22,14 @@ namespace CMS.Backend.Controllers.Api
 
         [AllowAnonymous]
         [HttpGet("paged")]
-        public async Task<IActionResult> GetPaged([FromQuery] int page = 1, [FromQuery] int pageSize = 8)
+        public async Task<IActionResult> GetPaged(
+            [FromQuery] int page = 1, 
+            [FromQuery] int pageSize = 8,
+            [FromQuery] decimal? minPrice = null,
+            [FromQuery] decimal? maxPrice = null,
+            [FromQuery] int? categoryProductId = null)
         {
-            var result = await _productService.GetPaged(page, pageSize);
+            var result = await _productService.GetPaged(page, pageSize, minPrice, maxPrice, categoryProductId);
             return Ok(result);
         }
 
