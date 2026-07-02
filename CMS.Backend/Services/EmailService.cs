@@ -88,9 +88,33 @@ namespace CMS.Backend.Services
             var deliveryTime = $"{timeSlot} ngày {dateStr}";
 
             var orderPlacedTime = order.OrderDate.ToString("dd/MM/yyyy HH:mm");
-            var orderConfirmedTime = order.VerifiedAt.HasValue 
-                ? order.VerifiedAt.Value.ToString("dd/MM/yyyy HH:mm") 
-                : (order.PaymentPaidAt.HasValue ? order.PaymentPaidAt.Value.ToString("dd/MM/yyyy HH:mm") : DateTime.Now.ToString("dd/MM/yyyy HH:mm"));
+
+            // Confirmation time
+            var orderConfirmedTime = "Chờ xác nhận";
+            if (order.Status == OrderStatus.Confirmed || order.Status == OrderStatus.Preparing || order.Status == OrderStatus.Shipping || order.Status == OrderStatus.Completed || order.VerifiedAt.HasValue || order.PaymentPaidAt.HasValue)
+            {
+                var dt = order.VerifiedAt ?? order.PaymentPaidAt ?? order.OrderDate.AddMinutes(5);
+                orderConfirmedTime = dt.ToString("dd/MM/yyyy HH:mm");
+            }
+
+            // Shipping time
+            var orderShippingTime = "Chờ giao hàng";
+            if (order.Status == OrderStatus.Shipping)
+            {
+                orderShippingTime = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+            }
+            else if (order.Status == OrderStatus.Completed)
+            {
+                var confirmTime = order.VerifiedAt ?? order.PaymentPaidAt ?? order.OrderDate.AddMinutes(5);
+                orderShippingTime = confirmTime.AddHours(2).ToString("dd/MM/yyyy HH:mm");
+            }
+
+            // Completed time
+            var orderCompletedTime = "Chờ hoàn thành";
+            if (order.Status == OrderStatus.Completed)
+            {
+                orderCompletedTime = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+            }
 
             var buyer = WebUtility.HtmlEncode(parsedNotes.Buyer);
             var recipient = WebUtility.HtmlEncode(parsedNotes.Recipient);
@@ -139,6 +163,8 @@ namespace CMS.Backend.Services
             sb.AppendLine($"<tr><td class='info-label'>Thời gian giao:</td><td class='info-value'>{encodedTime}</td></tr>");
             sb.AppendLine($"<tr><td class='info-label'>Thời gian đặt hàng:</td><td class='info-value'>{orderPlacedTime}</td></tr>");
             sb.AppendLine($"<tr><td class='info-label'>Thời gian xác nhận:</td><td class='info-value'>{orderConfirmedTime}</td></tr>");
+            sb.AppendLine($"<tr><td class='info-label'>Thời gian đang giao:</td><td class='info-value'>{orderShippingTime}</td></tr>");
+            sb.AppendLine($"<tr><td class='info-label'>Thời gian đã giao:</td><td class='info-value'>{orderCompletedTime}</td></tr>");
             sb.AppendLine("</table>");
 
             sb.AppendLine("<div class='section-title'>Lời chúc thiệp</div>");
@@ -202,6 +228,35 @@ namespace CMS.Backend.Services
             }
         }
 
+        public async Task SendOrderShippingEmailAsync(Order order, string customerEmail, string customerName)
+        {
+            try
+            {
+                var statusText = $"Đơn hàng #{order.Id} của bạn đang được vận chuyển và sẽ sớm giao tới tay bạn. AnhCMS Boutique trân trọng cảm ơn!";
+                var body = BuildOrderEmailBody(order, customerName, "Đơn hàng đang được giao", statusText);
+                var senderEmail = !string.IsNullOrEmpty(_settings.SenderEmail) && _settings.SenderEmail != "test@gmail.com"
+                    ? _settings.SenderEmail
+                    : _settings.Username;
+                using var message = new MailMessage
+                {
+                    From = new MailAddress(senderEmail, _settings.SenderName),
+                    Subject = $"Đơn hàng #{order.Id} đang được giao - AnhCMS Boutique",
+                    Body = body,
+                    IsBodyHtml = true
+                };
+                message.To.Add(new MailAddress(customerEmail, customerName));
+
+                using var client = CreateSmtpClient();
+
+                await client.SendMailAsync(message);
+                _logger.LogInformation("Order shipping email sent for order {OrderId} to {Email}", order.Id, customerEmail);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to send order shipping email for order {OrderId}", order.Id);
+            }
+        }
+
         public async Task SendOrderCompletedEmailAsync(Order order, string customerEmail, string customerName)
         {
             try
@@ -246,9 +301,33 @@ namespace CMS.Backend.Services
             var deliveryTime = $"{timeSlot} ngày {dateStr}";
 
             var orderPlacedTime = order.OrderDate.ToString("dd/MM/yyyy HH:mm");
-            var orderConfirmedTime = order.VerifiedAt.HasValue 
-                ? order.VerifiedAt.Value.ToString("dd/MM/yyyy HH:mm") 
-                : (order.PaymentPaidAt.HasValue ? order.PaymentPaidAt.Value.ToString("dd/MM/yyyy HH:mm") : DateTime.Now.ToString("dd/MM/yyyy HH:mm"));
+
+            // Confirmation time
+            var orderConfirmedTime = "Chờ xác nhận";
+            if (order.Status == OrderStatus.Confirmed || order.Status == OrderStatus.Preparing || order.Status == OrderStatus.Shipping || order.Status == OrderStatus.Completed || order.VerifiedAt.HasValue || order.PaymentPaidAt.HasValue)
+            {
+                var dt = order.VerifiedAt ?? order.PaymentPaidAt ?? order.OrderDate.AddMinutes(5);
+                orderConfirmedTime = dt.ToString("dd/MM/yyyy HH:mm");
+            }
+
+            // Shipping time
+            var orderShippingTime = "Chờ giao hàng";
+            if (order.Status == OrderStatus.Shipping)
+            {
+                orderShippingTime = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+            }
+            else if (order.Status == OrderStatus.Completed)
+            {
+                var confirmTime = order.VerifiedAt ?? order.PaymentPaidAt ?? order.OrderDate.AddMinutes(5);
+                orderShippingTime = confirmTime.AddHours(2).ToString("dd/MM/yyyy HH:mm");
+            }
+
+            // Completed time
+            var orderCompletedTime = "Chờ hoàn thành";
+            if (order.Status == OrderStatus.Completed)
+            {
+                orderCompletedTime = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+            }
 
             var buyer = WebUtility.HtmlEncode(parsedNotes.Buyer);
             var recipient = WebUtility.HtmlEncode(parsedNotes.Recipient);
@@ -299,6 +378,8 @@ namespace CMS.Backend.Services
             sb.AppendLine($"<tr><td class='info-label'>Thời gian giao:</td><td class='info-value'>{encodedTime}</td></tr>");
             sb.AppendLine($"<tr><td class='info-label'>Thời gian đặt hàng:</td><td class='info-value'>{orderPlacedTime}</td></tr>");
             sb.AppendLine($"<tr><td class='info-label'>Thời gian xác nhận:</td><td class='info-value'>{orderConfirmedTime}</td></tr>");
+            sb.AppendLine($"<tr><td class='info-label'>Thời gian đang giao:</td><td class='info-value'>{orderShippingTime}</td></tr>");
+            sb.AppendLine($"<tr><td class='info-label'>Thời gian đã giao:</td><td class='info-value'>{orderCompletedTime}</td></tr>");
             sb.AppendLine("</table>");
 
             sb.AppendLine("<div class='section-title'>Lời chúc thiệp</div>");

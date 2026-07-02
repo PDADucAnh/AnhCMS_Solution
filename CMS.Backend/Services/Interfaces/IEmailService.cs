@@ -7,6 +7,7 @@ namespace CMS.Backend.Services.Interfaces
     {
         Task SendOrderConfirmationAsync(Order order, string customerEmail, string customerName);
         Task SendOrderConfirmedEmailAsync(Order order, string customerEmail, string customerName);
+        Task SendOrderShippingEmailAsync(Order order, string customerEmail, string customerName);
         Task SendOrderCompletedEmailAsync(Order order, string customerEmail, string customerName);
     }
 }

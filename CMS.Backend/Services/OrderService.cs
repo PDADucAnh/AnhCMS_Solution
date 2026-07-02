@@ -327,8 +327,9 @@ namespace CMS.Backend.Services
 
                 var statusChangedToConfirmed = oldStatus != OrderStatus.Confirmed && order.Status == OrderStatus.Confirmed;
                 var statusChangedToCompleted = oldStatus != OrderStatus.Completed && order.Status == OrderStatus.Completed;
+                var statusChangedToShipping = oldStatus != OrderStatus.Shipping && order.Status == OrderStatus.Shipping;
 
-                if (statusChangedToConfirmed || statusChangedToCompleted)
+                if (statusChangedToConfirmed || statusChangedToCompleted || statusChangedToShipping)
                 {
                     await _context.Entry(order).Reference(o => o.Customer).LoadAsync();
                     await _context.Entry(order).Collection(o => o.OrderDetails).LoadAsync();
@@ -345,6 +346,10 @@ namespace CMS.Backend.Services
                         if (statusChangedToConfirmed)
                         {
                             await _emailService.SendOrderConfirmedEmailAsync(order, order.Customer.Email, order.Customer.FullName);
+                        }
+                        else if (statusChangedToShipping)
+                        {
+                            await _emailService.SendOrderShippingEmailAsync(order, order.Customer.Email, order.Customer.FullName);
                         }
                         else if (statusChangedToCompleted)
                         {
