@@ -319,12 +319,24 @@ namespace CMS.Backend.Models.DTOs
             };
         }
 
+        private static string StripHtml(string input)
+        {
+            if (string.IsNullOrEmpty(input)) return "";
+            var clean = System.Text.RegularExpressions.Regex.Replace(input, "<.*?>", string.Empty);
+            clean = clean.Replace("&nbsp;", " ")
+                         .Replace("&amp;", "&")
+                         .Replace("&lt;", "<")
+                         .Replace("&gt;", ">");
+            return clean.Trim();
+        }
+
         private static string? TruncateSummary(string? summary, string? content)
         {
             const int maxLength = 500;
             var text = !string.IsNullOrWhiteSpace(summary)
                 ? summary
-                : (content?.Length > 100 ? content.Substring(0, 100) : content);
+                : StripHtml(content ?? "");
+                
             return text?.Length > maxLength ? text.Substring(0, maxLength) : text;
         }
 
