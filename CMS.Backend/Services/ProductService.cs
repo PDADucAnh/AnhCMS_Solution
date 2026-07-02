@@ -147,5 +147,22 @@ namespace CMS.Backend.Services
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<IEnumerable<ProductDTO>> Search(string query)
+        {
+            if (string.IsNullOrEmpty(query))
+            {
+                return new List<ProductDTO>();
+            }
+
+            var cleanQuery = query.Trim().ToLower();
+            var products = await BuildQuery()
+                .Where(p => p.Name.ToLower().Contains(cleanQuery) || 
+                           (p.Sku != null && p.Sku.ToLower().Contains(cleanQuery)))
+                .OrderByDescending(p => p.Id)
+                .ToListAsync();
+
+            return products.Select(p => p.ToDTO());
+        }
     }
 }

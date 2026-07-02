@@ -13,5 +13,6 @@ namespace CMS.Backend.Services.Interfaces
         Task<ProductDTO> Create(CreateProductDTO dto);
         Task<bool> Update(int id, UpdateProductDTO dto);
         Task<bool> Delete(int id);
+        Task<IEnumerable<ProductDTO>> Search(string query);
     }
 }
