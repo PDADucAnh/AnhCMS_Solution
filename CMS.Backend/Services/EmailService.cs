@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
@@ -71,6 +72,26 @@ namespace CMS.Backend.Services
 
         private static string BuildOrderConfirmationBody(Order order, string customerName)
         {
+            var parsedNotes = ParseNotes(order.Notes);
+
+            var addressParts = new List<string>();
+            if (!string.IsNullOrWhiteSpace(order.DeliveryAddress)) addressParts.Add(order.DeliveryAddress.Trim());
+            if (!string.IsNullOrWhiteSpace(order.DeliveryDistrict)) addressParts.Add(order.DeliveryDistrict.Trim());
+            addressParts.Add("TP. Hồ Chí Minh");
+            var fullAddress = string.Join(", ", addressParts);
+
+            var timeSlot = !string.IsNullOrWhiteSpace(order.DeliveryTimeSlot) ? order.DeliveryTimeSlot.Trim() : "N/A";
+            var dateStr = order.DeliveryDate?.ToString("dd/MM/yyyy") ?? "N/A";
+            var deliveryTime = $"{timeSlot} ngày {dateStr}";
+
+            var buyer = WebUtility.HtmlEncode(parsedNotes.Buyer);
+            var recipient = WebUtility.HtmlEncode(parsedNotes.Recipient);
+            var greeting = WebUtility.HtmlEncode(parsedNotes.Greeting);
+            var extraNotes = WebUtility.HtmlEncode(parsedNotes.ExtraNotes);
+            var encodedAddress = WebUtility.HtmlEncode(fullAddress);
+            var encodedTime = WebUtility.HtmlEncode(deliveryTime);
+            var encodedCustomerName = WebUtility.HtmlEncode(customerName);
+
             var sb = new StringBuilder();
             sb.AppendLine("<!DOCTYPE html><html><head><meta charset='utf-8'><style>");
             sb.AppendLine("body { font-family: 'Georgia', serif; background: #f5f2ed; color: #1a1a1a; padding: 40px 20px; }");
@@ -84,13 +105,39 @@ namespace CMS.Backend.Services
             sb.AppendLine("td { padding: 10px; border-bottom: 1px solid #e8e4dd; font-size: 14px; }");
             sb.AppendLine(".total { font-size: 18px; font-weight: bold; color: #ab2c5d; text-align: right; padding-top: 15px; }");
             sb.AppendLine(".footer { padding: 20px 30px; background: #f5f2ed; font-size: 12px; color: #666; text-align: center; }");
+            sb.AppendLine(".section-title { font-size: 16px; font-weight: bold; color: #ab2c5d; border-bottom: 1px solid #ab2c5d; padding-bottom: 5px; margin-top: 25px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }");
+            sb.AppendLine(".info-grid { width: 100%; margin-bottom: 20px; }");
+            sb.AppendLine(".info-grid td { padding: 6px 0; border: none; font-size: 14px; }");
+            sb.AppendLine(".info-label { font-weight: bold; color: #555; width: 35%; }");
+            sb.AppendLine(".info-value { color: #1a1a1a; }");
             sb.AppendLine("</style></head><body>");
             sb.AppendLine("<div class='container'>");
             sb.AppendLine("<div class='header'><h1>Xác nhận đơn hàng</h1></div>");
             sb.AppendLine("<div class='content'>");
-            sb.AppendLine($"<p>Kính gửi {customerName},</p>");
+            sb.AppendLine($"<p>Kính gửi {encodedCustomerName},</p>");
             sb.AppendLine("<p>Cảm ơn bạn đã đặt hàng tại AnhCMS Boutique. Đơn hàng của bạn đã được ghi nhận và đang được xử lý.</p>");
             sb.AppendLine($"<div class='order-id'>Mã đơn hàng: #{order.Id}</div>");
+
+            // Sections
+            sb.AppendLine("<div class='section-title'>Thông tin khách hàng & Người nhận</div>");
+            sb.AppendLine("<table class='info-grid'>");
+            sb.AppendLine($"<tr><td class='info-label'>Người mua:</td><td class='info-value'>{buyer}</td></tr>");
+            sb.AppendLine($"<tr><td class='info-label'>Người nhận:</td><td class='info-value'>{recipient}</td></tr>");
+            sb.AppendLine("</table>");
+
+            sb.AppendLine("<div class='section-title'>Thông tin giao hàng</div>");
+            sb.AppendLine("<table class='info-grid'>");
+            sb.AppendLine($"<tr><td class='info-label'>Địa chỉ:</td><td class='info-value'>{encodedAddress}</td></tr>");
+            sb.AppendLine($"<tr><td class='info-label'>Thời gian giao:</td><td class='info-value'>{encodedTime}</td></tr>");
+            sb.AppendLine("</table>");
+
+            sb.AppendLine("<div class='section-title'>Lời chúc thiệp</div>");
+            sb.AppendLine($"<p style='margin: 10px 0; font-size: 14px;'>{greeting}</p>");
+
+            sb.AppendLine("<div class='section-title'>Ghi chú</div>");
+            sb.AppendLine($"<p style='margin: 10px 0; font-size: 14px;'>{extraNotes}</p>");
+
+            sb.AppendLine("<div class='section-title'>Chi tiết đơn hàng</div>");
             sb.AppendLine("<table><thead><tr><th>Sản phẩm</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th></tr></thead><tbody>");
 
             if (order.OrderDetails != null)
@@ -99,14 +146,15 @@ namespace CMS.Backend.Services
                 {
                     var productName = detail.Product?.Name ?? $"Sản phẩm #{detail.ProductId}";
                     var lineTotal = detail.Quantity * detail.UnitPrice;
-                    sb.AppendLine($"<tr><td>{productName}</td><td>{detail.Quantity}</td><td>{detail.UnitPrice:N0}₫</td><td>{lineTotal:N0}₫</td></tr>");
+                    sb.AppendLine($"<tr><td>{WebUtility.HtmlEncode(productName)}</td><td>{detail.Quantity}</td><td>{detail.UnitPrice:N0}₫</td><td>{lineTotal:N0}₫</td></tr>");
                 }
             }
 
             sb.AppendLine("</tbody></table>");
             var total = order.OrderDetails?.Sum(d => d.Quantity * d.UnitPrice) ?? 0;
             sb.AppendLine($"<div class='total'>Tổng cộng: {total:N0}₫</div>");
-            sb.AppendLine("<p><strong>Phương thức thanh toán:</strong> Thanh toán khi nhận hàng (COD)</p>");
+            var methodStr = order.PaymentMethod == PaymentMethod.COD ? "Thanh toán khi nhận hàng (COD)" : "Thanh toán trực tuyến (MoMo)";
+            sb.AppendLine($"<p><strong>Phương thức thanh toán:</strong> {methodStr}</p>");
             sb.AppendLine("</div>");
             sb.AppendLine("<div class='footer'>");
             sb.AppendLine("<p>AnhCMS Boutique — Trân trọng cảm ơn quý khách!</p>");
@@ -169,6 +217,28 @@ namespace CMS.Backend.Services
 
         private static string BuildOrderEmailBody(Order order, string customerName, string title, string statusText)
         {
+            var parsedNotes = ParseNotes(order.Notes);
+
+            var addressParts = new List<string>();
+            if (!string.IsNullOrWhiteSpace(order.DeliveryAddress)) addressParts.Add(order.DeliveryAddress.Trim());
+            if (!string.IsNullOrWhiteSpace(order.DeliveryDistrict)) addressParts.Add(order.DeliveryDistrict.Trim());
+            addressParts.Add("TP. Hồ Chí Minh");
+            var fullAddress = string.Join(", ", addressParts);
+
+            var timeSlot = !string.IsNullOrWhiteSpace(order.DeliveryTimeSlot) ? order.DeliveryTimeSlot.Trim() : "N/A";
+            var dateStr = order.DeliveryDate?.ToString("dd/MM/yyyy") ?? "N/A";
+            var deliveryTime = $"{timeSlot} ngày {dateStr}";
+
+            var buyer = WebUtility.HtmlEncode(parsedNotes.Buyer);
+            var recipient = WebUtility.HtmlEncode(parsedNotes.Recipient);
+            var greeting = WebUtility.HtmlEncode(parsedNotes.Greeting);
+            var extraNotes = WebUtility.HtmlEncode(parsedNotes.ExtraNotes);
+            var encodedAddress = WebUtility.HtmlEncode(fullAddress);
+            var encodedTime = WebUtility.HtmlEncode(deliveryTime);
+            var encodedCustomerName = WebUtility.HtmlEncode(customerName);
+            var encodedStatusText = WebUtility.HtmlEncode(statusText);
+            var encodedTitle = WebUtility.HtmlEncode(title);
+
             var sb = new StringBuilder();
             sb.AppendLine("<!DOCTYPE html><html><head><meta charset='utf-8'><style>");
             sb.AppendLine("body { font-family: 'Georgia', serif; background: #f5f2ed; color: #1a1a1a; padding: 40px 20px; }");
@@ -182,13 +252,39 @@ namespace CMS.Backend.Services
             sb.AppendLine("td { padding: 10px; border-bottom: 1px solid #e8e4dd; font-size: 14px; }");
             sb.AppendLine(".total { font-size: 18px; font-weight: bold; color: #ab2c5d; text-align: right; padding-top: 15px; }");
             sb.AppendLine(".footer { padding: 20px 30px; background: #f5f2ed; font-size: 12px; color: #666; text-align: center; }");
+            sb.AppendLine(".section-title { font-size: 16px; font-weight: bold; color: #ab2c5d; border-bottom: 1px solid #ab2c5d; padding-bottom: 5px; margin-top: 25px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }");
+            sb.AppendLine(".info-grid { width: 100%; margin-bottom: 20px; }");
+            sb.AppendLine(".info-grid td { padding: 6px 0; border: none; font-size: 14px; }");
+            sb.AppendLine(".info-label { font-weight: bold; color: #555; width: 35%; }");
+            sb.AppendLine(".info-value { color: #1a1a1a; }");
             sb.AppendLine("</style></head><body>");
             sb.AppendLine("<div class='container'>");
-            sb.AppendLine($"<div class='header'><h1>{title}</h1></div>");
+            sb.AppendLine($"<div class='header'><h1>{encodedTitle}</h1></div>");
             sb.AppendLine("<div class='content'>");
-            sb.AppendLine($"<p>Kính gửi {customerName},</p>");
-            sb.AppendLine($"<p>{statusText}</p>");
+            sb.AppendLine($"<p>Kính gửi {encodedCustomerName},</p>");
+            sb.AppendLine($"<p>{encodedStatusText}</p>");
             sb.AppendLine($"<div class='order-id'>Mã đơn hàng: #{order.Id}</div>");
+
+            // Sections
+            sb.AppendLine("<div class='section-title'>Thông tin khách hàng & Người nhận</div>");
+            sb.AppendLine("<table class='info-grid'>");
+            sb.AppendLine($"<tr><td class='info-label'>Người mua:</td><td class='info-value'>{buyer}</td></tr>");
+            sb.AppendLine($"<tr><td class='info-label'>Người nhận:</td><td class='info-value'>{recipient}</td></tr>");
+            sb.AppendLine("</table>");
+
+            sb.AppendLine("<div class='section-title'>Thông tin giao hàng</div>");
+            sb.AppendLine("<table class='info-grid'>");
+            sb.AppendLine($"<tr><td class='info-label'>Địa chỉ:</td><td class='info-value'>{encodedAddress}</td></tr>");
+            sb.AppendLine($"<tr><td class='info-label'>Thời gian giao:</td><td class='info-value'>{encodedTime}</td></tr>");
+            sb.AppendLine("</table>");
+
+            sb.AppendLine("<div class='section-title'>Lời chúc thiệp</div>");
+            sb.AppendLine($"<p style='margin: 10px 0; font-size: 14px;'>{greeting}</p>");
+
+            sb.AppendLine("<div class='section-title'>Ghi chú</div>");
+            sb.AppendLine($"<p style='margin: 10px 0; font-size: 14px;'>{extraNotes}</p>");
+
+            sb.AppendLine("<div class='section-title'>Chi tiết đơn hàng</div>");
             sb.AppendLine("<table><thead><tr><th>Sản phẩm</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th></tr></thead><tbody>");
 
             if (order.OrderDetails != null)
@@ -197,7 +293,7 @@ namespace CMS.Backend.Services
                 {
                     var productName = detail.Product?.Name ?? $"Sản phẩm #{detail.ProductId}";
                     var lineTotal = detail.Quantity * detail.UnitPrice;
-                    sb.AppendLine($"<tr><td>{productName}</td><td>{detail.Quantity}</td><td>{detail.UnitPrice:N0}₫</td><td>{lineTotal:N0}₫</td></tr>");
+                    sb.AppendLine($"<tr><td>{WebUtility.HtmlEncode(productName)}</td><td>{detail.Quantity}</td><td>{detail.UnitPrice:N0}₫</td><td>{lineTotal:N0}₫</td></tr>");
                 }
             }
 
@@ -212,6 +308,43 @@ namespace CMS.Backend.Services
             sb.AppendLine("<p>Mọi thắc mắc xin vui lòng liên hệ: support@anhcms.com</p>");
             sb.AppendLine("</div></div></body></html>");
             return sb.ToString();
+        }
+
+        private class ParsedNotes
+        {
+            public string Buyer { get; set; } = "N/A";
+            public string Recipient { get; set; } = "N/A";
+            public string Greeting { get; set; } = "Không có";
+            public string ExtraNotes { get; set; } = "Không có";
+        }
+
+        private static ParsedNotes ParseNotes(string? notes)
+        {
+            var result = new ParsedNotes();
+            if (string.IsNullOrEmpty(notes)) return result;
+
+            var parts = notes.Split('|');
+            foreach (var part in parts)
+            {
+                var trimmed = part.Trim();
+                if (trimmed.StartsWith("Người mua:", StringComparison.OrdinalIgnoreCase))
+                {
+                    result.Buyer = trimmed.Replace("Người mua:", "", StringComparison.OrdinalIgnoreCase).Trim();
+                }
+                else if (trimmed.StartsWith("Người nhận:", StringComparison.OrdinalIgnoreCase))
+                {
+                    result.Recipient = trimmed.Replace("Người nhận:", "", StringComparison.OrdinalIgnoreCase).Trim();
+                }
+                else if (trimmed.StartsWith("Lời chúc:", StringComparison.OrdinalIgnoreCase))
+                {
+                    result.Greeting = trimmed.Replace("Lời chúc:", "", StringComparison.OrdinalIgnoreCase).Trim();
+                }
+                else if (trimmed.StartsWith("Ghi chú thêm:", StringComparison.OrdinalIgnoreCase))
+                {
+                    result.ExtraNotes = trimmed.Replace("Ghi chú thêm:", "", StringComparison.OrdinalIgnoreCase).Trim();
+                }
+            }
+            return result;
         }
     }
 }
