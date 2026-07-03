@@ -8,6 +8,9 @@ import { getImageUrl } from '../../utils/apiUtils';
 
 const statusStyles: Record<string, string> = {
   Pending: 'bg-tertiary-fixed/40 text-tertiary',
+  PendingVerification: 'bg-warning/10 text-warning',
+  Confirmed: 'bg-info/10 text-info',
+  Preparing: 'bg-secondary/10 text-secondary',
   Shipping: 'bg-blue-100 text-blue-700',
   Completed: 'bg-green-100 text-green-700',
   Cancelled: 'bg-red-100 text-red-600',
@@ -137,7 +140,7 @@ const MyOrders: React.FC = () => {
                           <td className="py-stack-md px-base font-semibold text-primary">{formatCurrency(total)}</td>
                           <td className="py-stack-md px-base">
                             <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${statusClass}`}>
-                              {order.status === 'Completed' ? 'Hoàn thành' : order.status === 'Shipping' ? 'Đang giao' : order.status === 'Pending' ? 'Chờ xử lý' : order.status === 'Cancelled' ? 'Đã hủy' : order.status}
+                              {order.status === 'Completed' ? 'Hoàn thành' : order.status === 'Shipping' ? 'Đang giao' : order.status === 'Pending' ? 'Chờ xử lý' : order.status === 'PendingVerification' ? 'Chờ xác minh' : order.status === 'Confirmed' ? 'Đã xác nhận' : order.status === 'Preparing' ? 'Đang cắm hoa' : order.status === 'Cancelled' ? 'Đã hủy' : order.status}
                             </span>
                           </td>
                           <td className="py-stack-md px-base text-right whitespace-nowrap">
@@ -147,7 +150,7 @@ const MyOrders: React.FC = () => {
                             >
                               Chi tiết
                             </Link>
-                            {order.status === 'Pending' && (
+                            {(order.status === 'Pending' || order.status === 'PendingVerification' || order.status === 'Confirmed') && (
                               <>
                                 <span className="text-outline mx-2">|</span>
                                 <button

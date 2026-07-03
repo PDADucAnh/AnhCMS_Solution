@@ -483,7 +483,7 @@ namespace CMS.Backend.Services
                 ? (order.DeliveryDate.Value - DateTime.Now).TotalHours
                 : 999;
 
-            if (delta <= 4)
+            if (order.Status != OrderStatus.Pending && order.Status != OrderStatus.PendingVerification && delta <= 4)
                 return (false, "Đơn hàng cách thời gian giao dưới 4 giờ, không thể hủy. Vui lòng liên hệ hotline để được hỗ trợ.");
 
             decimal refundPercent;

@@ -38,8 +38,9 @@ export const useCancelOrder = () => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });
       toast.success('Hủy đơn thành công.');
     },
-    onError: () => {
-      toast.error('Không thể hủy đơn. Chỉ có thể hủy đơn ở trạng thái chờ xử lý.');
+    onError: (error: any) => {
+      const msg = error?.response?.data?.message || 'Không thể hủy đơn. Vui lòng thử lại.';
+      toast.error(msg);
     },
   });
 };
