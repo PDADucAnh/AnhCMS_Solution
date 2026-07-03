@@ -166,10 +166,13 @@ builder.Services.AddAuthorization(options =>
 
 var app = builder.Build();
 
-// Seed admin account
+// Auto-apply pending migrations (creates DB if not exists, applies all migrations)
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await context.Database.MigrateAsync();
+
+    // Seed admin account
     if (!context.Users.Any(u => u.Username == "admin"))
     {
         var hasher = new Microsoft.AspNetCore.Identity.PasswordHasher<CMS.Data.Entities.User>();
