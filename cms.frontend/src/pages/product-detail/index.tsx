@@ -21,6 +21,11 @@ const ProductDetailPage = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState<'Classic' | 'Deluxe' | 'Grand'>('Classic');
   const [activeImage, setActiveImage] = useState<string>('');
+  const [showVideoModal, setShowVideoModal] = useState(false);
+  const [showLightbox, setShowLightbox] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+
+  const videoUrl = "https://www.youtube.com/embed/g20T21s0uVw"; // Aesthetic Flower Care Tutorial
 
   useEffect(() => {
     setQuantity(1);
@@ -157,7 +162,14 @@ const ProductDetailPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-margin-desktop lg:gap-gutter items-start">
           {/* Left Column: Image Gallery */}
           <div className="lg:col-span-7 flex flex-col gap-stack-sm">
-            <div className="w-full aspect-[4/5] rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(171,44,93,0.02)] bg-surface-container-low group cursor-zoom-in relative">
+            <div 
+              onClick={() => {
+                const currentIdx = galleryImages.indexOf(activeImage);
+                setLightboxIndex(currentIdx !== -1 ? currentIdx : 0);
+                setShowLightbox(true);
+              }}
+              className="w-full aspect-[4/5] rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(171,44,93,0.02)] bg-surface-container-low group cursor-zoom-in relative"
+            >
               <img
                 alt={product.name}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
@@ -171,10 +183,13 @@ const ProductDetailPage = () => {
             </div>
             
             <div className="grid grid-cols-4 gap-stack-sm">
-              {galleryImages.map((imgUrl, idx) => (
+              {galleryImages.slice(0, 3).map((imgUrl, idx) => (
                 <div
                   key={idx}
-                  onClick={() => setActiveImage(imgUrl)}
+                  onClick={() => {
+                    setActiveImage(imgUrl);
+                    setLightboxIndex(idx);
+                  }}
                   className={`aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-colors ${
                     activeImage === imgUrl ? 'border-primary' : 'border-transparent hover:border-outline-variant'
                   }`}
@@ -186,6 +201,21 @@ const ProductDetailPage = () => {
                   />
                 </div>
               ))}
+              
+              {/* Video Thumbnail (4th Slot) */}
+              <div
+                onClick={() => setShowVideoModal(true)}
+                className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-outline-variant transition-colors bg-surface-container flex items-center justify-center relative group"
+              >
+                {galleryImages[3] && (
+                  <img
+                    alt="Video thumbnail"
+                    className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-300"
+                    src={formatImageUrl(galleryImages[3])}
+                  />
+                )}
+                <span className="material-symbols-outlined text-primary text-3xl z-10 transition-transform group-hover:scale-110">play_circle</span>
+              </div>
             </div>
           </div>
 
@@ -404,6 +434,79 @@ const ProductDetailPage = () => {
           </section>
         )}
       </main>
+
+      {/* Video Care Modal */}
+      {showVideoModal && (
+        <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="relative w-full max-w-4xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl">
+            <button
+              onClick={() => setShowVideoModal(false)}
+              className="absolute top-4 right-4 text-white hover:text-primary z-10 p-2 bg-black/40 rounded-full hover:bg-black/60 transition-colors"
+            >
+              <span className="material-symbols-outlined">close</span>
+            </button>
+            <iframe
+              className="w-full h-full"
+              src={`${videoUrl}?autoplay=1`}
+              title="Flower Care Tutorial"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Lightbox Modal */}
+      {showLightbox && (
+        <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex flex-col justify-between py-6">
+          <div className="flex justify-between items-center px-6">
+            <span className="text-white font-label-md">
+              {lightboxIndex + 1} / {galleryImages.length}
+            </span>
+            <button
+              onClick={() => setShowLightbox(false)}
+              className="text-white hover:text-primary p-2 bg-white/10 rounded-full transition-colors"
+            >
+              <span className="material-symbols-outlined">close</span>
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between px-4 max-h-[80vh]">
+            <button
+              onClick={() => setLightboxIndex((prev) => (prev === 0 ? galleryImages.length - 1 : prev - 1))}
+              className="text-white hover:text-primary p-3 bg-white/5 rounded-full transition-colors"
+            >
+              <span className="material-symbols-outlined">chevron_left</span>
+            </button>
+            <img
+              src={formatImageUrl(galleryImages[lightboxIndex])}
+              alt="Zoomed view"
+              className="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl"
+            />
+            <button
+              onClick={() => setLightboxIndex((prev) => (prev === galleryImages.length - 1 ? 0 : prev + 1))}
+              className="text-white hover:text-primary p-3 bg-white/5 rounded-full transition-colors"
+            >
+              <span className="material-symbols-outlined">chevron_right</span>
+            </button>
+          </div>
+
+          <div className="flex justify-center gap-2 overflow-x-auto px-6">
+            {galleryImages.map((img, idx) => (
+              <button
+                key={idx}
+                onClick={() => setLightboxIndex(idx)}
+                className={`w-16 h-16 rounded-md overflow-hidden border-2 transition-all ${
+                  lightboxIndex === idx ? 'border-primary scale-105' : 'border-transparent opacity-60'
+                }`}
+              >
+                <img src={formatImageUrl(img)} className="w-full h-full object-cover" alt="" />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
