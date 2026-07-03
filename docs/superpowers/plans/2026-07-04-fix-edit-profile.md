@@ -9,7 +9,7 @@ Enable the "Chỉnh sửa" (Edit) button on the client Profile page. Allow users
 
 ### Task 1: Backend API Implementation
 
-- [ ] **Step 1: Add UpdateProfileRequest DTO**
+- [x] **Step 1: Add UpdateProfileRequest DTO**
   Add `UpdateProfileRequest` class inside [AuthDTOs.cs](file:///D:/TrenLop/ASP.NET/AnhCMS_Solution/CMS.Backend/Models/DTOs/AuthDTOs.cs):
   ```csharp
   public class UpdateProfileRequest
@@ -23,13 +23,13 @@ Enable the "Chỉnh sửa" (Edit) button on the client Profile page. Allow users
   }
   ```
 
-- [ ] **Step 2: Update IAuthService Interface**
+- [x] **Step 2: Update IAuthService Interface**
   Add `UpdateProfile` method to [IAuthService.cs](file:///D:/TrenLop/ASP.NET/AnhCMS_Solution/CMS.Backend/Services/Interfaces/IAuthService.cs):
   ```csharp
   Task<(bool Success, string Message, LoginResult? Result)> UpdateProfile(string identifier, string authType, string fullName, string? phone, string? address);
   ```
 
-- [ ] **Step 3: Implement UpdateProfile in AuthService**
+- [x] **Step 3: Implement UpdateProfile in AuthService**
   Implement the method in [AuthService.cs](file:///D:/TrenLop/ASP.NET/AnhCMS_Solution/CMS.Backend/Services/AuthService.cs):
   ```csharp
   public async Task<(bool Success, string Message, LoginResult? Result)> UpdateProfile(string identifier, string authType, string fullName, string? phone, string? address)
@@ -67,7 +67,7 @@ Enable the "Chỉnh sửa" (Edit) button on the client Profile page. Allow users
   }
   ```
 
-- [ ] **Step 4: Create PUT endpoint in AuthController**
+- [x] **Step 4: Create PUT endpoint in AuthController**
   Add `UpdateProfile` action to [AuthController.cs](file:///D:/TrenLop/ASP.NET/AnhCMS_Solution/CMS.Backend/Controllers/Api/AuthController.cs):
   ```csharp
   [Authorize]
@@ -128,14 +128,14 @@ Enable the "Chỉnh sửa" (Edit) button on the client Profile page. Allow users
   }
   ```
 
-- [ ] **Step 5: Verify Backend Build**
+- [x] **Step 5: Verify Backend Build**
   Run `dotnet build` inside the root or `CMS.Backend/` directory.
 
 ---
 
 ### Task 2: Frontend Client Implementation
 
-- [ ] **Step 6: Update authService.ts API Call**
+- [x] **Step 6: Update authService.ts API Call**
   Add `updateProfile` method to [authService.ts](file:///D:/TrenLop/ASP.NET/AnhCMS_Solution/cms.frontend/src/services/authService.ts):
   ```typescript
   updateProfile: async (profileData: { fullName: string; phone: string; address: string }) => {
@@ -149,7 +149,7 @@ Enable the "Chỉnh sửa" (Edit) button on the client Profile page. Allow users
   }
   ```
 
-- [ ] **Step 7: Expose updateProfile in AuthContext**
+- [x] **Step 7: Expose updateProfile in AuthContext**
   Modify [AuthContext.tsx](file:///D:/TrenLop/ASP.NET/AnhCMS_Solution/cms.frontend/src/context/AuthContext.tsx) to support updating profile state:
   ```typescript
   // 1. In types definition (or local interfaces), verify updateProfile is declared
@@ -170,13 +170,13 @@ Enable the "Chỉnh sửa" (Edit) button on the client Profile page. Allow users
   ```
   *Note: Need to check [context.d.ts](file:///D:/TrenLop/ASP.NET/AnhCMS_Solution/cms.frontend/src/types/context.ts) or equivalent to ensure the type matches.*
 
-- [ ] **Step 8: Update Profile Page UI and Logic**
+- [x] **Step 8: Update Profile Page UI and Logic**
   Modify [Profile.tsx](file:///D:/TrenLop/ASP.NET/AnhCMS_Solution/cms.frontend/src/pages/auth/Profile.tsx):
   - Add state `isEditing`, `fullName`, `phone`, `address`.
   - Sync state fields on `user` change.
   - Switch display fields to editable inputs when `isEditing === true`.
   - Handle form submission with loading state, toaster messages, and validation.
 
-- [ ] **Step 9: Compile and Verify**
+- [x] **Step 9: Compile and Verify**
   Run `npx tsc --noEmit` under `cms.frontend/` and make sure it builds cleanly.
   Run `npm run build` as confirmation.
