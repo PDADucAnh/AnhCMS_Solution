@@ -1,14 +1,16 @@
-<!DOCTYPE html><html class="light" lang="en"><head>
-<meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Pink Rose Harmony - FlowerShop</title>
 <!-- Google Fonts -->
-<link href="https://fonts.googleapis.com" rel="preconnect">
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
 <!-- Material Symbols -->
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <!-- Theme Configuration -->
@@ -172,23 +174,23 @@
 <!-- Left Column: Image Gallery -->
 <div class="lg:col-span-7 flex flex-col gap-stack-sm">
 <div class="w-full aspect-[4/5] rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(171,44,93,0.02)] bg-surface-container-low group cursor-zoom-in relative">
-<img alt="Pink Rose Harmony Bouquet Main Image" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A high-resolution, beautifully styled studio photograph of a large 'Pink Rose Harmony' floral bouquet. The arrangement features lush, vibrant rose pink garden roses, soft pale pink peonies, and delicate white ranunculus, loosely gathered to appear organic and romantic. The bouquet sits in a clear glass vase against a pristine white background. High-key, soft, diffused lighting highlights the velvety texture of the petals and creates a bright, modern, and elegant aesthetic typical of a luxury floral boutique. Minimal shadows are cast, emphasizing the airy feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD52BBC0c8IZwP_2ql5qca2NRFr8KIh_ZPDklXid4Ulnsj8i__S2IwpqVDtkfQLurrX4x82NjBCdroceMv_QKXey6yd3D6eACuFWZ5X8VQ9i6fEff9zym3kX83XcLERdUjlEQYCKbKky8Vpzqd9VI5BMm8cd7KGY9E_a-ABfXfgQKyqGG3uyO6A4tWxV0E3Wdh7dwkX7XkwYeriUKUTs1IstqxdZtpNqYSX5iN29jdzxufa18BTQUKAWWb65H1cHPU5AV32NtAOR7k">
+<img alt="Pink Rose Harmony Bouquet Main Image" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A high-resolution, beautifully styled studio photograph of a large 'Pink Rose Harmony' floral bouquet. The arrangement features lush, vibrant rose pink garden roses, soft pale pink peonies, and delicate white ranunculus, loosely gathered to appear organic and romantic. The bouquet sits in a clear glass vase against a pristine white background. High-key, soft, diffused lighting highlights the velvety texture of the petals and creates a bright, modern, and elegant aesthetic typical of a luxury floral boutique. Minimal shadows are cast, emphasizing the airy feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD52BBC0c8IZwP_2ql5qca2NRFr8KIh_ZPDklXid4Ulnsj8i__S2IwpqVDtkfQLurrX4x82NjBCdroceMv_QKXey6yd3D6eACuFWZ5X8VQ9i6fEff9zym3kX83XcLERdUjlEQYCKbKky8Vpzqd9VI5BMm8cd7KGY9E_a-ABfXfgQKyqGG3uyO6A4tWxV0E3Wdh7dwkX7XkwYeriUKUTs1IstqxdZtpNqYSX5iN29jdzxufa18BTQUKAWWb65H1cHPU5AV32NtAOR7k"/>
 </div>
 <div class="grid grid-cols-4 gap-stack-sm">
 <div class="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-primary">
-<img alt="Bouquet detail view 1" class="w-full h-full object-cover" data-alt="A close-up macro photograph focusing on the intricate details of a single vibrant rose pink garden rose within the 'Pink Rose Harmony' bouquet. Soft, natural lighting catches the dewdrops on the velvety petals. Pure white background, contemporary romance aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9CddqN2JsuVI2rYrLjfhM9YJEFtmNp6f_UaBbD8XuKJ2qE5FLElGt1sSIizcpFIBWITclUw4cq9Zhpzs1vGtTEpSTzy6UOcn8Uf3146Ih0LPSnin2xvbSLqAc08l1_MwIKWQmPF5wXwQrMQBKupE_0bN9EZ4UW86h9zRflczjzRqvbIbsUFzIELmDwiL61nlxefYQguY7IW2PnRp72LshlZWLRnxebPiOJ0fpdgIhYGXjGLuVtDt4aPlSGy5hNcdAWNjn4O8NxTs">
+<img alt="Bouquet detail view 1" class="w-full h-full object-cover" data-alt="A close-up macro photograph focusing on the intricate details of a single vibrant rose pink garden rose within the 'Pink Rose Harmony' bouquet. Soft, natural lighting catches the dewdrops on the velvety petals. Pure white background, contemporary romance aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9CddqN2JsuVI2rYrLjfhM9YJEFtmNp6f_UaBbD8XuKJ2qE5FLElGt1sSIizcpFIBWITclUw4cq9Zhpzs1vGtTEpSTzy6UOcn8Uf3146Ih0LPSnin2xvbSLqAc08l1_MwIKWQmPF5wXwQrMQBKupE_0bN9EZ4UW86h9zRflczjzRqvbIbsUFzIELmDwiL61nlxefYQguY7IW2PnRp72LshlZWLRnxebPiOJ0fpdgIhYGXjGLuVtDt4aPlSGy5hNcdAWNjn4O8NxTs"/>
 </div>
 <div class="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-outline-variant transition-colors">
-<img alt="Bouquet top view" class="w-full h-full object-cover" data-alt="An overhead flat-lay photograph of the 'Pink Rose Harmony' bouquet resting on a clean, light marble surface. Soft pink ribbons are casually draped next to the stems. The lighting is bright and even, showcasing the volume and varied textures of the peonies and roses. Modern minimalist style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuARzZ2qpRYpsU19whOUnfBzCxrqw3zwzDMv9zTU5J2TAmeacj0BaWjrlo-IrlQjJBljoQbGoSoIzF21u9dh3bo3b2jHjQy2W8jd31qKC3K7kd0UPuDp3iUuEIUkfpGc1e_GJKTgrk9ZcdqGWOgIDg80Ulq6XjEjJwfpZxB9zidUfXHEwrxinQBnbjR5Cly7HOst4MdMJ_fdSnZ4arKWILEdaahJabulvl9C0Ro1R3yq3W49q7veNH8L0L6P1YrTeExOXmoSnGQXuus">
+<img alt="Bouquet top view" class="w-full h-full object-cover" data-alt="An overhead flat-lay photograph of the 'Pink Rose Harmony' bouquet resting on a clean, light marble surface. Soft pink ribbons are casually draped next to the stems. The lighting is bright and even, showcasing the volume and varied textures of the peonies and roses. Modern minimalist style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuARzZ2qpRYpsU19whOUnfBzCxrqw3zwzDMv9zTU5J2TAmeacj0BaWjrlo-IrlQjJBljoQbGoSoIzF21u9dh3bo3b2jHjQy2W8jd31qKC3K7kd0UPuDp3iUuEIUkfpGc1e_GJKTgrk9ZcdqGWOgIDg80Ulq6XjEjJwfpZxB9zidUfXHEwrxinQBnbjR5Cly7HOst4MdMJ_fdSnZ4arKWILEdaahJabulvl9C0Ro1R3yq3W49q7veNH8L0L6P1YrTeExOXmoSnGQXuus"/>
 </div>
 <div class="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-outline-variant transition-colors">
-<img alt="Bouquet lifestyle setting" class="w-full h-full object-cover" data-alt="A lifestyle photograph showing the 'Pink Rose Harmony' bouquet placed on a modern, light wood dining table in a sunlit, airy room with soft white curtains in the background. The scene evokes a feeling of sophisticated, everyday romance and premium home decor." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8_xORpxwk86bL3I4VJlBsIa21JwThIYnfT_IvKL09XAhTuhrJHtHVTYz3lv02Uj2dU8HpKpZNGGsh4ULoq3Sf9ZZoFSqsoCcjVd8PdjIl8hPNpARjUw9RlqbsPb4b-tUKUfv8kb8ZMBB-QxF2PzIgAvpINuwnbQKOTvnXgZioxC-lZ1b13_z8DIbBBKuD7TGNLS6RPFGP5zE5X9SyhVB7zS_3FSH5utYQwqGx-gBglQ-m9DBJBpbcNJ_mvsxXQFVdTzgZjW--ZVk">
+<img alt="Bouquet lifestyle setting" class="w-full h-full object-cover" data-alt="A lifestyle photograph showing the 'Pink Rose Harmony' bouquet placed on a modern, light wood dining table in a sunlit, airy room with soft white curtains in the background. The scene evokes a feeling of sophisticated, everyday romance and premium home decor." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8_xORpxwk86bL3I4VJlBsIa21JwThIYnfT_IvKL09XAhTuhrJHtHVTYz3lv02Uj2dU8HpKpZNGGsh4ULoq3Sf9ZZoFSqsoCcjVd8PdjIl8hPNpARjUw9RlqbsPb4b-tUKUfv8kb8ZMBB-QxF2PzIgAvpINuwnbQKOTvnXgZioxC-lZ1b13_z8DIbBBKuD7TGNLS6RPFGP5zE5X9SyhVB7zS_3FSH5utYQwqGx-gBglQ-m9DBJBpbcNJ_mvsxXQFVdTzgZjW--ZVk"/>
 </div>
 <div class="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-outline-variant transition-colors bg-surface-container flex items-center justify-center">
 <span class="material-symbols-outlined text-outline">play_circle</span>
 </div>
 </div>
-</div>
+<div class="mt-stack-md"><p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">A symphony of soft textures and vibrant hues. The Pink Rose Harmony bouquet blends premium garden roses, lush peonies, and delicate accents to create an arrangement that speaks of contemporary romance. Perfect for anniversaries, celebrations, or simply elevating a modern space.</p></div></div>
 <!-- Right Column: Product Details -->
 <div class="lg:col-span-5 flex flex-col pt-2 md:pt-0 sticky top-stack-lg">
 <div class="flex items-center gap-2 mb-2">
@@ -200,9 +202,6 @@
 <p class="font-headline-md text-headline-md text-primary">$125.00</p>
 <p class="font-body-md text-body-md text-on-surface-variant line-through">$145.00</p>
 </div>
-<p class="font-body-md text-body-md text-on-surface-variant mb-stack-lg leading-relaxed">
-                    A symphony of soft textures and vibrant hues. The Pink Rose Harmony bouquet blends premium garden roses, lush peonies, and delicate accents to create an arrangement that speaks of contemporary romance. Perfect for anniversaries, celebrations, or simply elevating a modern space.
-                </p>
 <!-- Configuration Options -->
 <div class="space-y-stack-md mb-stack-lg">
 <div>
@@ -220,7 +219,7 @@
 <button aria-label="Decrease quantity" class="px-4 py-2 text-on-surface-variant hover:text-primary transition-colors">
 <span class="material-symbols-outlined">remove</span>
 </button>
-<input aria-label="Quantity" class="w-12 text-center border-none focus:ring-0 font-body-md text-body-md bg-transparent text-on-surface" min="1" type="number" value="1">
+<input aria-label="Quantity" class="w-12 text-center border-none focus:ring-0 font-body-md text-body-md bg-transparent text-on-surface" min="1" type="number" value="1"/>
 <button aria-label="Increase quantity" class="px-4 py-2 text-on-surface-variant hover:text-primary transition-colors">
 <span class="material-symbols-outlined">add</span>
 </button>
@@ -279,7 +278,7 @@
 <!-- Product Card 1 -->
 <div class="group cursor-pointer">
 <div class="w-full aspect-[4/5] rounded-xl overflow-hidden bg-surface-container-low mb-4 shadow-[0_4px_20px_rgba(171,44,93,0.02)] transition-shadow group-hover:shadow-[0_8px_30px_rgba(171,44,93,0.08)]">
-<img alt="White Ranunculus Cloud" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A pristine white ranunculus bouquet in a minimalist cylindrical vase. Set against a soft pale grey background with bright, diffused lighting. The aesthetic is clean, modern, and highly sophisticated, highlighting the delicate layers of the white petals. Typical of luxury editorial floral photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7P_TRPbJ54vxXR3tZOHCMJdhasTDVHHFI0BYmNYjJfmF0RrY5wXQZkG1j3M2qB_CS8WmOrHt8G9LoUg-TzRYLqBswRHuHXkCFq9RzXsxnitihoj8l9pIWgx_9fzXn7SHVqR7MoalXB5-BGH12Mxn5RQmfFoZg3SUKADoszTb3r3mtru4dk3q0wTzeugv2rijxhkkqh8_CRGGgyP8Nx2gj7K7-enR_RhVpTYPUoiM_vtI2IERtC_Ci9S6ja9DS7icK60dpjNvn7Jk">
+<img alt="White Ranunculus Cloud" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A pristine white ranunculus bouquet in a minimalist cylindrical vase. Set against a soft pale grey background with bright, diffused lighting. The aesthetic is clean, modern, and highly sophisticated, highlighting the delicate layers of the white petals. Typical of luxury editorial floral photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7P_TRPbJ54vxXR3tZOHCMJdhasTDVHHFI0BYmNYjJfmF0RrY5wXQZkG1j3M2qB_CS8WmOrHt8G9LoUg-TzRYLqBswRHuHXkCFq9RzXsxnitihoj8l9pIWgx_9fzXn7SHVqR7MoalXB5-BGH12Mxn5RQmfFoZg3SUKADoszTb3r3mtru4dk3q0wTzeugv2rijxhkkqh8_CRGGgyP8Nx2gj7K7-enR_RhVpTYPUoiM_vtI2IERtC_Ci9S6ja9DS7icK60dpjNvn7Jk"/>
 </div>
 <div class="text-center">
 <h3 class="font-label-md text-label-md text-on-surface mb-1">Pure Elegance</h3>
@@ -289,7 +288,7 @@
 <!-- Product Card 2 -->
 <div class="group cursor-pointer">
 <div class="w-full aspect-[4/5] rounded-xl overflow-hidden bg-surface-container-low mb-4 shadow-[0_4px_20px_rgba(171,44,93,0.02)] transition-shadow group-hover:shadow-[0_8px_30px_rgba(171,44,93,0.08)]">
-<img alt="Burgundy Dahlia Mix" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A lush bouquet of deep burgundy and soft blush dahlias mixed with dark green eucalyptus foliage. The arrangement is dramatic yet romantic, photographed in a well-lit studio setting with a clean, airy background to contrast the deep reds. Minimalist modern styling." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtfYqf9v5UvuGNk-VLBUVfGeq8FESvcpq4UePWQpPfvqO2X2pJ4S7qWkSqbq7A6rATKIsgBeypPdXCj4VBF7kaeUQTRRJQMuRmH3FhAr5U9ASBLP6nQumwKUUX3RQX2k6Ez3xFgQRTUR2JY3gf4rzpmIu7MFgagvDuiRZzC_7H_IrJLFjDQMC0LpX71y7uXYTwy1VEmrMmX2hU5zbQDFBk_DDzJjrdQOv58ykaRFyR6aGQ2RusSCvXrjJCNe5coPW5gJ1oDo_sOn4">
+<img alt="Burgundy Dahlia Mix" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A lush bouquet of deep burgundy and soft blush dahlias mixed with dark green eucalyptus foliage. The arrangement is dramatic yet romantic, photographed in a well-lit studio setting with a clean, airy background to contrast the deep reds. Minimalist modern styling." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtfYqf9v5UvuGNk-VLBUVfGeq8FESvcpq4UePWQpPfvqO2X2pJ4S7qWkSqbq7A6rATKIsgBeypPdXCj4VBF7kaeUQTRRJQMuRmH3FhAr5U9ASBLP6nQumwKUUX3RQX2k6Ez3xFgQRTUR2JY3gf4rzpmIu7MFgagvDuiRZzC_7H_IrJLFjDQMC0LpX71y7uXYTwy1VEmrMmX2hU5zbQDFBk_DDzJjrdQOv58ykaRFyR6aGQ2RusSCvXrjJCNe5coPW5gJ1oDo_sOn4"/>
 </div>
 <div class="text-center">
 <h3 class="font-label-md text-label-md text-on-surface mb-1">Twilight Romance</h3>
@@ -300,7 +299,7 @@
 <div class="group cursor-pointer hidden sm:block">
 <div class="w-full aspect-[4/5] rounded-xl overflow-hidden bg-surface-container-low mb-4 shadow-[0_4px_20px_rgba(171,44,93,0.02)] transition-shadow group-hover:shadow-[0_8px_30px_rgba(171,44,93,0.08)] relative">
 <span class="absolute top-3 left-3 bg-surface-container-lowest text-on-surface px-2 py-1 rounded font-label-sm text-label-sm shadow-sm z-10">New</span>
-<img alt="Coral Peony Arrangement" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A vibrant, asymmetrical floral arrangement featuring bright coral charm peonies and delicate yellow sweet peas. The style is organic and contemporary. Photographed against a bright, airy white backdrop with soft lighting to emphasize the warm, cheerful color palette. High-end modern floral design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPXF5NWfHsofIzZCBpQ4DjXUi5kIbA1RAMffPLL_dRGZlFwMrYjcjVCY82QYAPZVm4hhz65cZjh1lQDoekdBsiSOU3TJajnw1g1PkqSIlR2gg_E95HAoDwZgKwdRPq3gVs8FARkWTebS58wM2uoesIrGnqHMdRACWGylHzHbHN8IqoiX4ImxPIVhAxwiSJLsjsH_DInanvLbtuWVyeWijHEmFHzLpK6DU7nE80E5m7YgV9B9SQMRDUK_vh2YGR_OVg5oJRcaIwc3w">
+<img alt="Coral Peony Arrangement" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A vibrant, asymmetrical floral arrangement featuring bright coral charm peonies and delicate yellow sweet peas. The style is organic and contemporary. Photographed against a bright, airy white backdrop with soft lighting to emphasize the warm, cheerful color palette. High-end modern floral design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPXF5NWfHsofIzZCBpQ4DjXUi5kIbA1RAMffPLL_dRGZlFwMrYjcjVCY82QYAPZVm4hhz65cZjh1lQDoekdBsiSOU3TJajnw1g1PkqSIlR2gg_E95HAoDwZgKwdRPq3gVs8FARkWTebS58wM2uoesIrGnqHMdRACWGylHzHbHN8IqoiX4ImxPIVhAxwiSJLsjsH_DInanvLbtuWVyeWijHEmFHzLpK6DU7nE80E5m7YgV9B9SQMRDUK_vh2YGR_OVg5oJRcaIwc3w"/>
 </div>
 <div class="text-center">
 <h3 class="font-label-md text-label-md text-on-surface mb-1">Sunrise Charm</h3>
@@ -310,7 +309,7 @@
 <!-- Product Card 4 -->
 <div class="group cursor-pointer hidden lg:block">
 <div class="w-full aspect-[4/5] rounded-xl overflow-hidden bg-surface-container-low mb-4 shadow-[0_4px_20px_rgba(171,44,93,0.02)] transition-shadow group-hover:shadow-[0_8px_30px_rgba(171,44,93,0.08)]">
-<img alt="Single Orchid Stem" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A minimalist presentation of a single premium stem of a Phalaenopsis orchid in a sleek glass bud vase. The setting is hyper-clean and modern, with ample negative space around the flower. The lighting is crisp and cool, accentuating the elegant structure of the bloom." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2D4I810ayAvcSa39CMCu-aTEP9ywYiMeDPVKhSPGyBrUVjiRGyK02N50NegSD_Jj5a_anFPenhwYPtr7MDTXaGjG0tinrR5CDwuCSXRoyNyv0RcnfbHZyKw8Nio808_bqjxhtJCh653h7MJ1MuYCjL9_eTPdISYJ62-KEnrq4WTeXt8AzOekndSYXweme_YUiSl_jztpSxB-HUoj47l-2fw0J8tjcduB6B7W2LGjTRLI6AbgzPRpO_OOnMxhBlJqZHvm_ElN3S4Q">
+<img alt="Single Orchid Stem" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A minimalist presentation of a single premium stem of a Phalaenopsis orchid in a sleek glass bud vase. The setting is hyper-clean and modern, with ample negative space around the flower. The lighting is crisp and cool, accentuating the elegant structure of the bloom." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2D4I810ayAvcSa39CMCu-aTEP9ywYiMeDPVKhSPGyBrUVjiRGyK02N50NegSD_Jj5a_anFPenhwYPtr7MDTXaGjG0tinrR5CDwuCSXRoyNyv0RcnfbHZyKw8Nio808_bqjxhtJCh653h7MJ1MuYCjL9_eTPdISYJ62-KEnrq4WTeXt8AzOekndSYXweme_YUiSl_jztpSxB-HUoj47l-2fw0J8tjcduB6B7W2LGjTRLI6AbgzPRpO_OOnMxhBlJqZHvm_ElN3S4Q"/>
 </div>
 <div class="text-center">
 <h3 class="font-label-md text-label-md text-on-surface mb-1">Minimalist Orchid</h3>
