@@ -18,7 +18,7 @@
 **Interfaces:**
 - Produces: A premium 12-column grid details page with breadcrumbs, badges, sticky column info, care accordions, and interactive main image switching.
 
-- [ ] **Step 1: Update ProductDetailPage component UI**
+- [x] **Step 1: Update ProductDetailPage component UI**
 
 Modify [index.tsx](file:///D:/TrenLop/ASP.NET/AnhCMS_Solution/cms.frontend/src/pages/product-detail/index.tsx) to integrate the visual elements from [productdetails.md](file:///D:/TrenLop/ASP.NET/AnhCMS_Solution/docs/design/productdetails.md):
 - Declare states for size selection and active gallery image:
@@ -72,12 +72,12 @@ Modify [index.tsx](file:///D:/TrenLop/ASP.NET/AnhCMS_Solution/cms.frontend/src/p
   const relatedProducts = relatedResult?.items?.filter((p: any) => p.id !== product.id).slice(0, 4) || [];
 ```
 
-- [ ] **Step 2: Verify TypeScript Compilation**
+- [x] **Step 2: Verify TypeScript Compilation**
 
 Run: `npx tsc --noEmit` inside `cms.frontend/`
 Expected: Compile successfully.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add cms.frontend/src/pages/product-detail/index.tsx
