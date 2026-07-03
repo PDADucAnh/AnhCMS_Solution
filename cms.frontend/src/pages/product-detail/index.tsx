@@ -221,6 +221,7 @@ const ProductDetailPage = () => {
 
           {/* Right Column: Product Details */}
           <div className="lg:col-span-5 flex flex-col pt-2 md:pt-0 sticky top-stack-lg">
+            {/* Header badge & Clean Title */}
             <div className="flex items-center gap-2 mb-2">
               <span className="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-sm text-label-sm">Bán chạy nhất</span>
               {product.categoryProductName && (
@@ -228,8 +229,7 @@ const ProductDetailPage = () => {
               )}
             </div>
             
-            <span className="font-label-sm text-label-sm text-secondary uppercase tracking-widest block mb-2">Mã: ANH-{product.id}</span>
-            <h1 className="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-2">{product.name}</h1>
+            <h1 className="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-2 font-bold tracking-tight">{product.name}</h1>
             
             <div className="flex items-baseline gap-4 mb-stack-md">
               <p className="font-headline-md text-headline-md text-primary">
@@ -265,9 +265,9 @@ const ProductDetailPage = () => {
                       <button
                         key={size}
                         onClick={() => setSelectedSize(size)}
-                        className={`rounded-lg py-3 text-center transition-all font-label-sm text-label-sm ${
+                        className={`rounded-lg py-3 text-center transition-all duration-300 font-label-sm text-label-sm hover:scale-[1.02] active:scale-[0.98] ${
                           isSelected
-                            ? 'border-2 border-primary bg-surface-container-lowest shadow-[0_4px_20px_rgba(171,44,93,0.05)] text-primary font-semibold'
+                            ? 'border-2 border-primary bg-surface-container-lowest shadow-[0_4px_20px_rgba(171,44,93,0.08)] text-primary font-semibold'
                             : 'border border-outline-variant hover:border-primary hover:bg-surface-container-low text-on-surface-variant'
                         }`}
                       >
@@ -320,7 +320,7 @@ const ProductDetailPage = () => {
               </div>
 
               <button
-                className="flex-1 bg-primary text-on-primary h-[52px] rounded-lg font-label-md text-label-md shadow-[0_4px_20px_rgba(171,44,93,0.2)] hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="flex-1 bg-primary text-on-primary h-[52px] rounded-lg font-label-md text-label-md shadow-[0_4px_20px_rgba(171,44,93,0.2)] hover:shadow-[0_8px_30px_rgba(171,44,93,0.3)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
                 disabled={!canAddToCart}
                 onClick={handleAddToCart}
               >
@@ -341,7 +341,7 @@ const ProductDetailPage = () => {
             <button
               disabled={!canAddToCart}
               onClick={handleBuyNow}
-              className="w-full h-[52px] bg-transparent text-primary border border-primary rounded-lg font-label-md text-label-md hover:bg-primary-container/10 transition-colors flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed mb-stack-lg"
+              className="w-full h-[52px] bg-transparent text-primary border border-primary hover:bg-primary-container/10 active:scale-[0.98] transition-all rounded-lg font-label-md text-label-md flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed mb-stack-lg"
             >
               <span className="material-symbols-outlined">flash_on</span>
               Mua ngay
