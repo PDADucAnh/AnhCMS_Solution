@@ -16,7 +16,7 @@ const OrderDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const orderId = Number(id);
   const { data: order, isLoading, isError } = useOrderDetail(orderId);
-  const cancelOrder = useCancelOrder();
+  const cancelOrder = useCancelOrder(() => setShowCancel(false));
   const [showCancel, setShowCancel] = useState(false);
   const { ref, isVisible } = useScrollReveal({ threshold: 0 });
 
@@ -230,7 +230,7 @@ const OrderDetailPage: React.FC = () => {
       <CancelModal
         open={showCancel}
         onClose={() => setShowCancel(false)}
-        onConfirm={() => cancelOrder.mutate(order.id, { onSettled: () => setShowCancel(false) })}
+        onConfirm={() => cancelOrder.mutate(order.id)}
         loading={cancelOrder.isPending}
       />
     </div>

@@ -27,12 +27,11 @@ export const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
 export const CancelModal: React.FC<{ open: boolean; onClose: () => void; onConfirm: () => void; loading: boolean }> = ({ open, onClose, onConfirm, loading }) => {
   const { ref, isVisible } = useScrollReveal({ threshold: 0, once: false });
 
-  if (!open) return null;
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-sm bg-black/20 transition-all duration-300"
+      className={`fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-sm bg-black/20 transition-all duration-300 ${open ? 'visible' : 'invisible'}`}
       onClick={onClose}
-      style={{ opacity: isVisible ? 1 : 0 }}
+      style={{ opacity: open && isVisible ? 1 : 0 }}
     >
       <div
         ref={ref}
@@ -58,7 +57,7 @@ export const CancelModal: React.FC<{ open: boolean; onClose: () => void; onConfi
             </button>
             <button
               onClick={onConfirm}
-              disabled={loading}
+              disabled={loading || !open}
               className="flex-1 bg-error text-on-error px-lg py-3 text-label-sm uppercase tracking-widest font-bold border border-error cursor-pointer hover:bg-error/90 transition-all duration-300 disabled:opacity-50 btn-luxury"
               style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
             >

@@ -30,7 +30,7 @@ export const useOrderDetail = (id: number) => {
   });
 };
 
-export const useCancelOrder = () => {
+export const useCancelOrder = (onModalClose?: () => void) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: number) => orderService.cancelOrder(id),
@@ -41,6 +41,9 @@ export const useCancelOrder = () => {
     onError: (error: any) => {
       const msg = error?.response?.data?.message || 'Không thể hủy đơn. Vui lòng thử lại.';
       toast.error(msg);
+    },
+    onSettled: () => {
+      onModalClose?.();
     },
   });
 };

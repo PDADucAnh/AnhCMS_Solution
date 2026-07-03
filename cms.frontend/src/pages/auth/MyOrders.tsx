@@ -18,13 +18,13 @@ const statusStyles: Record<string, string> = {
 
 const MyOrders: React.FC = () => {
   const { data: orders, isLoading, isError } = useMyOrders();
-  const cancelOrder = useCancelOrder();
+  const cancelOrder = useCancelOrder(() => setCancelTarget(null));
   const [cancelTarget, setCancelTarget] = useState<number | null>(null);
   const { ref, isVisible } = useScrollReveal({ threshold: 0 });
 
   const handleCancel = () => {
     if (cancelTarget !== null) {
-      cancelOrder.mutate(cancelTarget, { onSettled: () => setCancelTarget(null) });
+      cancelOrder.mutate(cancelTarget);
     }
   };
 

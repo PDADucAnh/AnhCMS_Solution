@@ -3,6 +3,30 @@
 @{
     ViewData["Title"] = "Đơn hàng";
     Layout = "_LayoutAdmin";
+
+    string OrderStatusClass(OrderStatus s) => s switch
+    {
+        OrderStatus.Pending => "bg-surface-variant text-on-surface-variant border-outline-variant/30 dot-tertiary",
+        OrderStatus.PendingVerification => "bg-warning/10 text-warning border-warning/30 dot-warning",
+        OrderStatus.Confirmed => "bg-info/10 text-info border-info/30 dot-info",
+        OrderStatus.Preparing => "bg-secondary/10 text-secondary border-secondary/30 dot-secondary",
+        OrderStatus.Shipping => "bg-[#E3F2FD] text-[#1565C0] border-[#90CAF9]/50 dot-[#1E88E5]",
+        OrderStatus.Completed => "bg-[#E8F5E9] text-[#2E7D32] border-[#A5D6A7]/50 dot-[#43A047]",
+        OrderStatus.Cancelled => "bg-[#FFEBEE] text-[#C62828] border-[#EF9A9A]/50 dot-[#E53935]",
+        _ => "bg-surface-variant text-on-surface-variant border-outline-variant/30 dot-tertiary"
+    };
+
+    string OrderStatusLabel(OrderStatus s) => s switch
+    {
+        OrderStatus.Pending => "Chờ xử lý",
+        OrderStatus.PendingVerification => "Chờ xác minh",
+        OrderStatus.Confirmed => "Đã xác nhận",
+        OrderStatus.Preparing => "Đang cắm hoa",
+        OrderStatus.Shipping => "Đang giao",
+        OrderStatus.Completed => "Đã giao",
+        OrderStatus.Cancelled => "Đã hủy",
+        _ => "Không xác định"
+    };
 }
 
 <div class="space-y-stack-lg">
@@ -23,35 +47,18 @@
         </div>
     </div>
 
-    <!-- Filters & Controls -->
-    <div class="flex flex-wrap items-center justify-between gap-4">
-        <div class="flex bg-surface-container-low p-1 rounded-lg border border-outline-variant/20">
-            <button class="px-6 py-2 rounded-md bg-surface text-primary font-label-md text-label-md shadow-sm transition-all">Tất cả</button>
-            <button class="px-6 py-2 rounded-md text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all">Chờ xử lý</button>
-            <button class="px-6 py-2 rounded-md text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all">Đang giao</button>
-            <button class="px-6 py-2 rounded-md text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all">Đã giao</button>
-        </div>
-        <div class="flex gap-3">
-            <div class="relative">
-                <select class="appearance-none bg-surface border border-outline-variant/40 rounded-lg pl-4 pr-10 py-2 font-label-sm text-label-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer">
-                    <option>7 ngày qua</option>
-                    <option>30 ngày qua</option>
-                    <option>Tháng này</option>
-                </select>
-                <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[18px] text-on-surface-variant pointer-events-none">expand_more</span>
-            </div>
-        </div>
-    </div>
-
     <!-- Orders Table -->
     <div class="bg-surface rounded-xl border border-outline-variant/30 petal-shadow-1 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="border-b border-outline-variant/20 bg-surface-container-lowest">
-                        <th class="py-4 px-6 font-label-md text-label-md text-on-surface-variant font-medium">Mã đơn hàng</th>
+                        <th class="py-4 px-6 font-label-md text-label-md text-on-surface-variant font-medium">Sản phẩm</th>
+                        <th class="py-4 px-6 font-label-md text-label-md text-on-surface-variant font-medium">Mã đơn</th>
                         <th class="py-4 px-6 font-label-md text-label-md text-on-surface-variant font-medium">Khách hàng</th>
                         <th class="py-4 px-6 font-label-md text-label-md text-on-surface-variant font-medium">Ngày</th>
+                        <th class="py-4 px-6 font-label-md text-label-md text-on-surface-variant font-medium">Tổng tiền</th>
+                        <th class="py-4 px-6 font-label-md text-label-md text-on-surface-variant font-medium">Thanh toán</th>
                         <th class="py-4 px-6 font-label-md text-label-md text-on-surface-variant font-medium">Trạng thái</th>
                         <th class="py-4 px-6 font-label-md text-label-md text-on-surface-variant font-medium text-right">Thao tác</th>
                     </tr>
@@ -59,45 +66,44 @@
                 <tbody class="divide-y divide-outline-variant/10">
                     @foreach (var order in Model)
                     {
+                        var preview = order.OrderDetails?.FirstOrDefault();
+                        var total = order.OrderDetails?.Sum(d => d.Quantity * d.UnitPrice) ?? 0;
                         <tr class="hover:bg-surface-container-low/50 transition-colors group">
-                            <td class="py-4 px-6 font-label-md text-label-md text-primary">#ORD-@order.Id</td>
                             <td class="py-4 px-6">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-primary font-headline-sm text-headline-sm text-[14px] font-bold">
-                                        @(order.CustomerName?.Length >= 2 ? order.CustomerName.Substring(0, 2).ToUpper() : "??")
+                                @if (preview != null && !string.IsNullOrEmpty(preview.ProductImageUrl))
+                                {
+                                    <img src="@preview.ProductImageUrl" class="w-12 h-12 object-cover rounded-lg border border-outline-variant/20" />
+                                }
+                                else
+                                {
+                                    <div class="w-12 h-12 rounded-lg bg-surface-container-low flex items-center justify-center border border-outline-variant/20">
+                                        <span class="material-symbols-outlined text-lg text-outline">inventory_2</span>
                                     </div>
+                                }
+                            </td>
+                            <td class="py-4 px-6 font-label-md text-label-md text-primary font-bold">#ORD-@order.Id</td>
+                            <td class="py-4 px-6">
+                                <div class="flex flex-col">
                                     <span class="font-body-md text-body-md font-medium text-on-surface">@(order.CustomerName ?? "Không xác định")</span>
+                                    <span class="text-xs text-on-surface-variant">@(order.CustomerEmail ?? "")</span>
                                 </div>
                             </td>
                             <td class="py-4 px-6 font-body-md text-body-md text-on-surface-variant">@order.OrderDate.ToString("dd/MM/yyyy")</td>
+                            <td class="py-4 px-6 font-semibold text-primary">@total.ToString("N0")₫</td>
                             <td class="py-4 px-6">
-                                @switch (order.Status)
-                                {
-                                    case OrderStatus.Pending:
-                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-variant text-on-surface-variant font-label-sm text-label-sm border border-outline-variant/30">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
-                                            Chờ xử lý
-                                        </span>
-                                        break;
-                                    case OrderStatus.Shipping:
-                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#E3F2FD] text-[#1565C0] font-label-sm text-label-sm border border-[#90CAF9]/50">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-[#1E88E5]"></span>
-                                            Đang giao
-                                        </span>
-                                        break;
-                                    case OrderStatus.Completed:
-                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#E8F5E9] text-[#2E7D32] font-label-sm text-label-sm border border-[#A5D6A7]/50">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-[#43A047]"></span>
-                                            Đã giao
-                                        </span>
-                                        break;
-                                    default:
-                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-variant text-on-surface-variant font-label-sm text-label-sm border border-outline-variant/30">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
-                                            Không xác định
-                                        </span>
-                                        break;
+                                <span class="text-xs font-bold uppercase tracking-wider">@(order.PaymentMethod == PaymentMethod.COD ? "COD" : "Online")</span>
+                            </td>
+                            <td class="py-4 px-6">
+                                @{
+                                    var cls = OrderStatusClass(order.Status);
+                                    var parts = cls.Split(' ');
+                                    var bg = string.Join(" ", parts.Take(4));
+                                    var dot = parts.LastOrDefault() ?? "dot-tertiary";
                                 }
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-label-sm text-label-sm border @bg">
+                                    <span class="w-1.5 h-1.5 rounded-full @dot"></span>
+                                    @OrderStatusLabel(order.Status)
+                                </span>
                             </td>
                             <td class="py-4 px-6 text-right">
                                 <div class="flex items-center justify-end gap-2">
