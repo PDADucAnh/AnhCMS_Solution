@@ -202,19 +202,12 @@ const ProductDetailPage = () => {
                 </div>
               ))}
               
-              {/* Video Thumbnail (4th Slot) */}
+              {/* Video Thumbnail (4th Slot) - Clean grey background as mockup */}
               <div
                 onClick={() => setShowVideoModal(true)}
                 className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-outline-variant transition-colors bg-surface-container flex items-center justify-center relative group"
               >
-                {galleryImages[3] && (
-                  <img
-                    alt="Video thumbnail"
-                    className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-300"
-                    src={formatImageUrl(galleryImages[3])}
-                  />
-                )}
-                <span className="material-symbols-outlined text-primary text-3xl z-10 transition-transform group-hover:scale-110">play_circle</span>
+                <span className="material-symbols-outlined text-outline text-3xl z-10 transition-transform group-hover:scale-110">play_circle</span>
               </div>
             </div>
           </div>
@@ -229,7 +222,7 @@ const ProductDetailPage = () => {
               )}
             </div>
             
-            <h1 className="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-2 font-bold tracking-tight">{product.name}</h1>
+            <h1 className="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-2">{product.name}</h1>
             
             <div className="flex items-baseline gap-4 mb-stack-md">
               <p className="font-headline-md text-headline-md text-primary">
@@ -280,7 +273,7 @@ const ProductDetailPage = () => {
             </div>
 
             {/* Add to Cart Area */}
-            <div className="flex items-center gap-stack-sm mb-stack-md">
+            <div className="flex items-center gap-stack-sm mb-stack-lg">
               <div className="flex items-center border border-outline-variant rounded-lg bg-surface-container-lowest h-[52px]">
                 <button
                   aria-label="Giảm số lượng"
