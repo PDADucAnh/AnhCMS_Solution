@@ -148,6 +148,8 @@ namespace CMS.Backend.Services
 
                 var customer = await _context.Customers.FindAsync(customerId);
 
+                using var transaction = await _context.Database.BeginTransactionAsync();
+
                 var method = paymentMethod ?? PaymentMethod.COD;
                 var initialStatus = status ?? (method == PaymentMethod.COD ? OrderStatus.PendingVerification : OrderStatus.Pending);
 
@@ -232,13 +234,14 @@ namespace CMS.Backend.Services
                     TargetFinishedTime = targetFinishedTime
                 };
 
+                Dictionary<int, Product> productDict = new Dictionary<int, Product>();
                 if (items != null && items.Count > 0)
                 {
                     var productIds = items.Select(i => i.ProductId).ToList();
                     var products = await _context.Products
                         .Where(p => productIds.Contains(p.Id))
                         .ToListAsync();
-                    var productDict = products.ToDictionary(p => p.Id);
+                    productDict = products.ToDictionary(p => p.Id);
 
                     foreach (var item in items)
                     {
@@ -252,20 +255,14 @@ namespace CMS.Backend.Services
                     }
 
                     newOrder.OrderDetails = items.Select(item =>
+                {
+                    return new OrderDetail
                     {
-                        var product = productDict[item.ProductId];
-                        if (method != PaymentMethod.OnlinePayment)
-                        {
-                            product.StockQuantity -= item.Quantity;
-                        }
-
-                        return new OrderDetail
-                        {
-                            ProductId = item.ProductId,
-                            Quantity = item.Quantity,
-                            UnitPrice = item.UnitPrice
-                        };
-                    }).ToList();
+                        ProductId = item.ProductId,
+                        Quantity = item.Quantity,
+                        UnitPrice = item.UnitPrice
+                    };
+                }).ToList();
 
                     if (method == PaymentMethod.OnlinePayment)
                     {
@@ -276,23 +273,39 @@ namespace CMS.Backend.Services
                     }
                 }
 
-                _context.Orders.Add(newOrder);
-                await _context.SaveChangesAsync();
-
-                if (method == PaymentMethod.COD && customer != null)
+            if (method == PaymentMethod.COD && items != null)
+            {
+                foreach (var item in items)
                 {
-                    var requiresVerification = await _fraudDetectionService.RequiresVerification(customer);
-                    if (!requiresVerification)
+                    var affected = await _context.Database.ExecuteSqlRawAsync(
+                        "UPDATE Products SET StockQuantity = StockQuantity - {0} WHERE Id = {1} AND StockQuantity >= {0}",
+                        item.Quantity, item.ProductId);
+                    if (affected == 0)
                     {
-                        newOrder.Status = OrderStatus.Confirmed;
-                        newOrder.IsVerified = true;
-                        newOrder.VerifiedAt = DateTime.Now;
-                        customer.TotalOrders++;
-                        await _context.SaveChangesAsync();
+                        await transaction.RollbackAsync();
+                        return (false, $"Sản phẩm '{productDict[item.ProductId].Name}' vừa hết hàng, vui lòng thử lại.", 0);
                     }
                 }
+            }
 
-                return (true, "Đặt hàng thành công!", newOrder.Id);
+            _context.Orders.Add(newOrder);
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            if (method == PaymentMethod.COD && customer != null)
+            {
+                var requiresVerification = await _fraudDetectionService.RequiresVerification(customer);
+                if (!requiresVerification)
+                {
+                    newOrder.Status = OrderStatus.Confirmed;
+                    newOrder.IsVerified = true;
+                    newOrder.VerifiedAt = DateTime.Now;
+                    customer.TotalOrders++;
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+            return (true, "Đặt hàng thành công!", newOrder.Id);
             }
             catch (DbUpdateException ex)
             {

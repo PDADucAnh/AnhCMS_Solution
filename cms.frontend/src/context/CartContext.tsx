@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect, useCallback, useMemo, type ReactNode } from 'react';
 import type { Product } from '../types/product';
+import toast from 'react-hot-toast';
 
 export interface CartItem extends Product {
   quantity: number;
@@ -46,7 +47,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
       if (requestedQty > maxStock) {
         const cappedQty = Math.max(maxStock, 0);
-        if (cappedQty <= 0) return prevItems;
+        if (cappedQty <= 0) {
+          toast.error(`"${product.name}" đã hết hàng.`);
+          return prevItems;
+        }
+        toast.error(`"${product.name}" chỉ còn ${maxStock} sản phẩm trong kho.`);
         if (existingItem) {
           return prevItems.map((item) =>
             item.id === product.id ? { ...item, quantity: cappedQty } : item
@@ -71,9 +76,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const updateQuantity = useCallback((productId: number, quantity: number) => {
     if (quantity < 1) return;
     setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === productId ? { ...item, quantity } : item
-      )
+      prevItems.map((item) => {
+        if (item.id !== productId) return item;
+        const capped = Math.min(quantity, item.stockQuantity);
+        if (capped !== quantity) {
+          toast.error(`"${item.name}" chỉ còn ${item.stockQuantity} sản phẩm trong kho.`);
+        }
+        return { ...item, quantity: capped };
+      })
     );
   }, []);
 

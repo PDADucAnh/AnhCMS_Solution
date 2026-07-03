@@ -1,6 +1,7 @@
 using CMS.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -8,6 +9,7 @@ namespace CMS.Data
 {
     public interface IApplicationDbContext
     {
+        DatabaseFacade Database { get; }
         DbSet<Category> Categories { get; set; }
         DbSet<Post> Posts { get; set; }
         DbSet<User> Users { get; set; }

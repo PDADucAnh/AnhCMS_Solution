@@ -9,8 +9,9 @@ export const useCreateOrder = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });
     },
-    onError: () => {
-      toast.error('An error occurred during the transaction. Please try again.');
+    onError: (error: any) => {
+      const msg = error?.response?.data?.message || 'Lỗi kết nối, vui lòng thử lại.';
+      toast.error(msg);
     },
   });
 };

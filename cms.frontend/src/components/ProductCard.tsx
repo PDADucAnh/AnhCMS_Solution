@@ -15,16 +15,19 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, variant = 'standard' })
     const navigate = useNavigate();
 
     const imageUrl = getImageUrl(item.imageUrl);
+    const isOutOfStock = item.stockQuantity === 0;
 
     const handleAddToCart = (e: MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
+        if (isOutOfStock) return;
         addToCart(item);
     };
 
     const handleBuyNow = (e: MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
+        if (isOutOfStock) return;
         addToCart(item);
         navigate('/checkout');
     };
@@ -63,17 +66,19 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, variant = 'standard' })
                     <div className="flex gap-2 w-full mt-auto" onClick={(e) => e.stopPropagation()}>
                         <button
                             onClick={handleAddToCart}
-                            className="flex-1 flex items-center justify-center gap-1 py-2 border border-primary text-primary font-label-sm rounded hover:bg-primary hover:text-on-primary transition-colors cursor-pointer bg-transparent"
+                            disabled={isOutOfStock}
+                            className="flex-1 flex items-center justify-center gap-1 py-2 border border-primary text-primary font-label-sm rounded hover:bg-primary hover:text-on-primary transition-colors cursor-pointer bg-transparent disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-primary"
                         >
                             <span className="material-symbols-outlined text-[18px]">shopping_cart</span>
-                            Thêm vào giỏ
+                            {isOutOfStock ? 'Hết hàng' : 'Thêm vào giỏ'}
                         </button>
                         <button
                             onClick={handleBuyNow}
-                            className="flex-1 flex items-center justify-center gap-1 py-2 bg-primary-container text-on-primary font-label-sm rounded hover:opacity-90 transition-opacity cursor-pointer border-0"
+                            disabled={isOutOfStock}
+                            className="flex-1 flex items-center justify-center gap-1 py-2 bg-primary-container text-on-primary font-label-sm rounded hover:opacity-90 transition-opacity cursor-pointer border-0 disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                             <span className="material-symbols-outlined text-[18px]">bolt</span>
-                            Mua ngay
+                            {isOutOfStock ? 'Hết hàng' : 'Mua ngay'}
                         </button>
                     </div>
                 </div>
@@ -111,17 +116,19 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, variant = 'standard' })
                 <div className="flex gap-2 w-full mt-auto" onClick={(e) => e.stopPropagation()}>
                     <button
                         onClick={handleAddToCart}
-                        className="flex-1 flex items-center justify-center gap-1 py-2 border border-primary text-primary font-label-sm rounded hover:bg-primary hover:text-on-primary transition-colors cursor-pointer bg-transparent"
+                        disabled={isOutOfStock}
+                        className="flex-1 flex items-center justify-center gap-1 py-2 border border-primary text-primary font-label-sm rounded hover:bg-primary hover:text-on-primary transition-colors cursor-pointer bg-transparent disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-primary"
                     >
                         <span className="material-symbols-outlined text-[18px]">shopping_cart</span>
-                        Thêm vào giỏ
+                        {isOutOfStock ? 'Hết hàng' : 'Thêm vào giỏ'}
                     </button>
                     <button
                         onClick={handleBuyNow}
-                        className="flex-1 flex items-center justify-center gap-1 py-2 bg-primary-container text-on-primary font-label-sm rounded hover:opacity-90 transition-opacity cursor-pointer border-0"
+                        disabled={isOutOfStock}
+                        className="flex-1 flex items-center justify-center gap-1 py-2 bg-primary-container text-on-primary font-label-sm rounded hover:opacity-90 transition-opacity cursor-pointer border-0 disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                         <span className="material-symbols-outlined text-[18px]">bolt</span>
-                        Mua ngay
+                        {isOutOfStock ? 'Hết hàng' : 'Mua ngay'}
                     </button>
                 </div>
             </div>
