@@ -18,6 +18,7 @@ export interface AuthContextType {
   login: (username: string, password: string) => Promise<any>;
   logout: () => void;
   refreshProfile: () => Promise<void>;
+  updateProfile: (fullName: string, phone: string, address: string) => Promise<any>;
 }
 
 export interface CartItem extends Product {

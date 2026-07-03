@@ -28,6 +28,15 @@ const authService = {
             throw error;
         }
     },
+    updateProfile: async (profileData: { fullName: string; phone: string; address: string }) => {
+        try {
+            const response = await axiosClient.put('/Auth/profile', profileData);
+            return response.data || response;
+        } catch (error) {
+            console.error("Lỗi cập nhật hồ sơ:", error);
+            throw error;
+        }
+    },
     forgotPassword: async (email: string) => {
         try {
             const response = await axiosClient.post('/Auth/forgot-password', { email });

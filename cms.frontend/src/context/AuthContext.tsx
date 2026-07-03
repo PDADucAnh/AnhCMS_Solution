@@ -63,9 +63,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     }, []);
 
+    const updateProfile = useCallback(async (fullName: string, phone: string, address: string) => {
+        const response = await authService.updateProfile({ fullName, phone, address });
+        if (response.token) {
+            tokenService.setToken(response.token);
+        }
+        if (response.user) {
+            setUser(response.user);
+        }
+        return response;
+    }, []);
+
     const isAuthenticated = !!user;
 
-    const value: AuthContextType = { user, login, logout, refreshProfile, isAuthenticated, loading, token: tokenService.getToken() };
+    const value: AuthContextType = { user, login, logout, refreshProfile, updateProfile, isAuthenticated, loading, token: tokenService.getToken() };
 
     return (
         <AuthContext.Provider value={value}>
