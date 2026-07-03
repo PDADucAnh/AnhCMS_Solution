@@ -120,6 +120,63 @@ namespace CMS.Backend.Controllers.Api
             });
         }
 
+        [Authorize]
+        [HttpPut("profile")]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
+        {
+            var username = User.Identity?.Name;
+            if (string.IsNullOrEmpty(username))
+                return Unauthorized(new { message = "Invalid token" });
+
+            var authType = User.FindFirst("AuthType")?.Value ?? "User";
+
+            var (success, message, result) = await _authService.UpdateProfile(username, authType, request.FullName, request.Phone, request.Address);
+            if (!success || result == null)
+                return BadRequest(new { message });
+
+            // Generate a new JWT token to update claims
+            var jwtKey = _configuration["Jwt:SecretKey"]
+                ?? throw new InvalidOperationException("Jwt:SecretKey is not configured.");
+            var issuer = _configuration["Jwt:Issuer"]
+                ?? throw new InvalidOperationException("Jwt:Issuer is not configured.");
+            var audience = _configuration["Jwt:Audience"]
+                ?? throw new InvalidOperationException("Jwt:Audience is not configured.");
+            if (!int.TryParse(_configuration["Jwt:ExpiryMinutes"], out var expiryMinutes))
+                expiryMinutes = 60;
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.UTF8.GetBytes(jwtKey);
+            var expiration = DateTime.UtcNow.AddMinutes(expiryMinutes);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(BuildUserClaims(result)),
+                Expires = expiration,
+                Issuer = issuer,
+                Audience = audience,
+                SigningCredentials = new SigningCredentials(
+                    new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha256)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var tokenString = tokenHandler.WriteToken(token);
+
+            return Ok(new
+            {
+                token = tokenString,
+                user = new
+                {
+                    id = result.Id,
+                    username = result.Username,
+                    fullName = result.FullName,
+                    email = result.Email,
+                    phone = result.Phone,
+                    address = result.Address,
+                    role = result.Role
+                },
+                message
+            });
+        }
+
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest register)
         {

@@ -272,5 +272,39 @@ namespace CMS.Backend.Services
 
             return (true, "Đổi mật khẩu thành công!");
         }
+
+        public async Task<(bool Success, string Message, LoginResult? Result)> UpdateProfile(string identifier, string authType, string fullName, string? phone, string? address)
+        {
+            if (string.IsNullOrWhiteSpace(fullName))
+                return (false, "Họ tên không được để trống", null);
+
+            if (authType == "User")
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == identifier);
+                if (user == null) return (false, "Không tìm thấy người dùng", null);
+
+                user.FullName = fullName;
+                user.Phone = phone;
+                user.Address = address;
+
+                await _context.SaveChangesAsync();
+                return (true, "Cập nhật thông tin thành công", MapUserToResult(user));
+            }
+
+            if (authType == "Customer")
+            {
+                var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Email == identifier);
+                if (customer == null) return (false, "Không tìm thấy khách hàng", null);
+
+                customer.FullName = fullName;
+                customer.Phone = phone;
+                customer.Address = address;
+
+                await _context.SaveChangesAsync();
+                return (true, "Cập nhật thông tin thành công", MapCustomerToResult(customer));
+            }
+
+            return (false, "Vai trò không hợp lệ", null);
+        }
     }
 }

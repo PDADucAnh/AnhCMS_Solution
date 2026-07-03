@@ -29,4 +29,14 @@ namespace CMS.Backend.Models.DTOs
 
         public string? Address { get; set; }
     }
+
+    public class UpdateProfileRequest
+    {
+        [Required(ErrorMessage = "Họ tên không được để trống")]
+        public string FullName { get; set; } = string.Empty;
+
+        public string? Phone { get; set; }
+
+        public string? Address { get; set; }
+    }
 }
