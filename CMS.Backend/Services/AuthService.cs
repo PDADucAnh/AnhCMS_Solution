@@ -96,7 +96,7 @@ namespace CMS.Backend.Services
             var checkExist = await _context.Customers.AnyAsync(c => c.Email == email);
             if (checkExist)
             {
-                return (false, "Email already exists!");
+                return (false, "Email đã tồn tại!");
             }
 
             var newCustomer = new Customer
@@ -113,7 +113,7 @@ namespace CMS.Backend.Services
             _context.Customers.Add(newCustomer);
             await _context.SaveChangesAsync();
 
-            return (true, "Registration successful!");
+            return (true, "Đăng ký thành công!");
         }
 
         private static string GenerateRefreshToken()
@@ -305,6 +305,39 @@ namespace CMS.Backend.Services
             }
 
             return (false, "Vai trò không hợp lệ", null);
+        }
+
+        public async Task<(bool Success, string Message)> ChangePassword(string identifier, string authType, string currentPassword, string newPassword)
+        {
+            if (authType == "User")
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == identifier);
+                if (user == null) return (false, "Không tìm thấy người dùng");
+
+                var verificationResult = _userPasswordHasher.VerifyHashedPassword(user, user.PasswordHash, currentPassword);
+                if (verificationResult == PasswordVerificationResult.Failed)
+                    return (false, "Mật khẩu hiện tại không đúng");
+
+                user.PasswordHash = _userPasswordHasher.HashPassword(user, newPassword);
+                await _context.SaveChangesAsync();
+                return (true, "Đổi mật khẩu thành công");
+            }
+
+            if (authType == "Customer")
+            {
+                var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Email == identifier);
+                if (customer == null) return (false, "Không tìm thấy khách hàng");
+
+                var verificationResult = _customerPasswordHasher.VerifyHashedPassword(customer, customer.PasswordHash, currentPassword);
+                if (verificationResult == PasswordVerificationResult.Failed)
+                    return (false, "Mật khẩu hiện tại không đúng");
+
+                customer.PasswordHash = _customerPasswordHasher.HashPassword(customer, newPassword);
+                await _context.SaveChangesAsync();
+                return (true, "Đổi mật khẩu thành công");
+            }
+
+            return (false, "Vai trò không hợp lệ");
         }
     }
 }

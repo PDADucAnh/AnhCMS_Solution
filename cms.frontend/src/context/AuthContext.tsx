@@ -58,8 +58,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             if (profile) {
                 setUser((prev) => prev ? { ...prev, ...profile } : profile);
             }
-        } catch {
-            // silently fail
+        } catch (error: any) {
+            console.warn('refreshProfile failed, token may be expired:', error);
+            if (error?.response?.status === 401) {
+                tokenService.removeToken();
+                setUser(null);
+            }
         }
     }, []);
 
@@ -74,9 +78,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return response;
     }, []);
 
+    const changePassword = useCallback(async (currentPassword: string, newPassword: string) => {
+        const response = await authService.changePassword({ currentPassword, newPassword });
+        return response;
+    }, []);
+
     const isAuthenticated = !!user;
 
-    const value: AuthContextType = { user, login, logout, refreshProfile, updateProfile, isAuthenticated, loading, token: tokenService.getToken() };
+    const value: AuthContextType = { user, login, logout, refreshProfile, updateProfile, changePassword, isAuthenticated, loading, token: tokenService.getToken() };
 
     return (
         <AuthContext.Provider value={value}>

@@ -1,4 +1,4 @@
-export type OrderStatus = 'Pending' | 'Shipping' | 'Completed' | 'Cancelled';
+export type OrderStatus = 'Pending' | 'PendingVerification' | 'Confirmed' | 'Preparing' | 'Shipping' | 'Completed' | 'Cancelled';
 
 export interface OrderDetail {
   id: number;
@@ -16,10 +16,24 @@ export interface Order {
   customerId: number;
   customerName?: string;
   customerEmail?: string;
+  customerPhone?: string;
   orderDate: string;
   status: OrderStatus;
   notes?: string;
   orderDetails?: OrderDetail[];
+  paymentMethod: number;
+  paymentStatus: number;
+  paymentTransactionId?: string;
+  paymentPaidAt?: string;
+  deliveryDate?: string;
+  deliveryTimeSlot?: string;
+  deliveryDistrict?: string;
+  deliveryAddress?: string;
+  cancelledAt?: string;
+  cancellationReason?: string;
+  isVerified: boolean;
+  refundAmount: number;
+  canCancel: boolean;
 }
 
 export interface OrderInput {

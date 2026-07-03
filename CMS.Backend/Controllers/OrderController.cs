@@ -77,7 +77,11 @@ namespace CMS.Backend.Controllers
                 CustomerId = order.CustomerId,
                 OrderDate = order.OrderDate,
                 Status = order.Status,
-                Notes = order.Notes
+                Notes = order.Notes,
+                DeliveryDate = order.DeliveryDate,
+                DeliveryTimeSlot = order.DeliveryTimeSlot,
+                DeliveryDistrict = order.DeliveryDistrict,
+                DeliveryAddress = order.DeliveryAddress
             };
 
             return View(model);

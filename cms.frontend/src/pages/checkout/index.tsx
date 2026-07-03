@@ -6,6 +6,7 @@ import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useCreateOrder } from '../../hooks/useOrders';
 import { formatCurrency } from '../../utils/currency';
+import { getImageUrl } from '../../utils/apiUtils';
 import { checkoutSchema, type CheckoutFormData } from '../../schemas/checkoutSchema';
 import axiosClient from '../../api/axiosClient';
 import toast from 'react-hot-toast';
@@ -34,8 +35,6 @@ const CheckoutPage: React.FC = () => {
   const [isBlacklisted, setIsBlacklisted] = useState(false);
   const [checkingBlacklist, setCheckingBlacklist] = useState(false);
   const [recipientIsBuyer, setRecipientIsBuyer] = useState(false);
-
-  const deliveryDistrict = localStorage.getItem('delivery_district') || '';
 
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<CheckoutFormData>({
     resolver: zodResolver(checkoutSchema),
@@ -86,13 +85,6 @@ const CheckoutPage: React.FC = () => {
     refreshProfile();
   }, [refreshProfile]);
 
-  useEffect(() => {
-    if (!deliveryDistrict && cartItems.length > 0) {
-      toast.error('Vui lòng chọn Quận/Huyện giao hàng trước khi thanh toán.');
-      navigate('/cart');
-    }
-  }, [deliveryDistrict, cartItems, navigate]);
-
   const handlePhoneBlur = async (phoneVal: string) => {
     if (!phoneVal || phoneVal.length < 10) return;
     setCheckingBlacklist(true);
@@ -128,10 +120,6 @@ const CheckoutPage: React.FC = () => {
 
   const onSubmit = async (formData: CheckoutFormData) => {
     if (cartItems.length === 0) return;
-    if (!deliveryDistrict) {
-      toast.error('Vui lòng chọn Quận/Huyện trước khi đặt hàng.');
-      return;
-    }
 
     const formattedNotes = [
       `Người mua: ${formData.fullname} (SĐT: ${formData.phone}, Email: ${formData.email})`,
@@ -151,7 +139,6 @@ const CheckoutPage: React.FC = () => {
       paymentMethod: formData.paymentMethod === 'OnlinePayment' ? 0 : 1,
       deliveryDate: formData.deliveryDate,
       deliveryTimeSlot: formData.deliveryTimeSlot,
-      deliveryDistrict: deliveryDistrict,
       deliveryAddress: formData.deliveryAddress,
     };
 
@@ -159,10 +146,8 @@ const CheckoutPage: React.FC = () => {
       const result = await createOrder.mutateAsync(orderPayload);
       clearCart();
       if (formData.paymentMethod === 'OnlinePayment') {
-        localStorage.removeItem('delivery_district');
         navigate(`/momo-mock?orderId=${result.orderId}`);
       } else {
-        localStorage.removeItem('delivery_district');
         navigate(`/order-confirmation?orderId=${result.orderId}`);
       }
     } catch {
@@ -354,20 +339,6 @@ const CheckoutPage: React.FC = () => {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="col-span-1 md:col-span-2">
-                  <label className="block font-label-md text-label-md text-on-surface-variant mb-2" htmlFor="district">
-                    Quận/Huyện giao hàng (Gated)
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      id="district"
-                      value={deliveryDistrict}
-                      disabled
-                      className="w-full bg-[#FCE4EC]/50 border border-outline-variant rounded-lg px-4 py-3 text-on-surface/60 font-body-md text-body-md cursor-not-allowed focus:outline-none"
-                    />
-                  </div>
-                </div>
-                <div className="col-span-1 md:col-span-2">
                   <label className="block font-label-md text-label-md text-on-surface-variant mb-2" htmlFor="address">
                     Địa chỉ chi tiết
                   </label>
@@ -497,7 +468,7 @@ const CheckoutPage: React.FC = () => {
                     <div className="w-20 h-24 bg-surface-container-low rounded-lg overflow-hidden flex-shrink-0 mr-4 petal-shadow">
                       <img
                         className="w-full h-full object-cover"
-                        src={item.imageUrl || '/placeholder-product.jpg'}
+                        src={getImageUrl(item.imageUrl)}
                         alt={item.name}
                       />
                     </div>

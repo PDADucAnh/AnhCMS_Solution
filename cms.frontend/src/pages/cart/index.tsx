@@ -1,23 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import CartTable from './CartTable';
 import { formatCurrency } from '../../utils/currency';
-import { LocationGatingModal } from '../../components/LocationGatingModal';
 
 const ShoppingCartPage: React.FC = () => {
   const navigate = useNavigate();
   const { cartItems, removeFromCart, updateQuantity, cartTotal } = useCart();
-  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
-
-  const handleCheckout = () => {
-    const savedDistrict = localStorage.getItem('delivery_district');
-    if (savedDistrict) {
-      navigate('/checkout');
-    } else {
-      setIsLocationModalOpen(true);
-    }
-  };
 
   if (cartItems.length === 0) {
     return (
@@ -90,7 +79,7 @@ const ShoppingCartPage: React.FC = () => {
               
               <button
                 className="w-full bg-primary text-on-primary py-4 rounded-lg font-label-md text-label-md interactive-lift hover:opacity-90 transition-all flex items-center justify-center space-x-2 group border-0 cursor-pointer"
-                onClick={handleCheckout}
+                onClick={() => navigate('/checkout')}
               >
                 <span>TIẾN HÀNH THANH TOÁN</span>
                 <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
@@ -111,16 +100,6 @@ const ShoppingCartPage: React.FC = () => {
           </aside>
         </div>
       </main>
-
-      <LocationGatingModal
-        isOpen={isLocationModalOpen}
-        onClose={() => setIsLocationModalOpen(false)}
-        onSuccess={(district) => {
-          setIsLocationModalOpen(false);
-          navigate('/checkout');
-        }}
-        items={cartItems.map((item) => ({ productId: item.id, quantity: item.quantity }))}
-      />
     </div>
   );
 };

@@ -234,7 +234,7 @@ namespace CMS.Backend.Models.DTOs
                 Id = detail.Id,
                 OrderId = detail.OrderId,
                 ProductId = detail.ProductId,
-                ProductName = detail.Product?.Name ?? $"Sản phẩm #{detail.Product.Id}",
+                ProductName = detail.Product?.Name ?? $"Sản phẩm #{detail.ProductId}",
                 ProductImageUrl = detail.Product?.ImageUrl,
                 CustomerName = detail.Order?.Customer?.FullName,
                 Quantity = detail.Quantity,

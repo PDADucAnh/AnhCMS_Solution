@@ -108,8 +108,38 @@ const OrderDetailPage: React.FC = () => {
                 <div className="space-y-1">
                   <p className="font-label-md text-on-surface-variant">Khách hàng</p>
                   <p className="font-body-md font-medium">{order.customerName || 'N/A'}</p>
+                  {order.customerEmail && <p className="font-body-md text-sm text-on-surface-variant">{order.customerEmail}</p>}
+                  {order.customerPhone && <p className="font-body-md text-sm text-on-surface-variant">{order.customerPhone}</p>}
                 </div>
               </div>
+
+              {(order.deliveryDate || order.deliveryTimeSlot || order.deliveryDistrict || order.deliveryAddress) && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-stack-md pb-stack-lg border-b border-outline-variant/30">
+                  <div className="space-y-1">
+                    <p className="font-label-md text-on-surface-variant">Giao hàng</p>
+                    {order.deliveryDate && <p className="font-body-md">{new Date(order.deliveryDate).toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' })}</p>}
+                    {order.deliveryTimeSlot && <p className="font-body-md text-sm text-on-surface-variant">Khung giờ: {order.deliveryTimeSlot}</p>}
+                  </div>
+                  <div className="space-y-1">
+                    <p className="font-label-md text-on-surface-variant">Địa chỉ nhận</p>
+                    {order.deliveryDistrict && <p className="font-body-md">{order.deliveryDistrict}</p>}
+                    {order.deliveryAddress && <p className="font-body-md text-sm text-on-surface-variant">{order.deliveryAddress}</p>}
+                  </div>
+                </div>
+              )}
+
+              {(order.paymentMethod !== undefined || order.paymentStatus !== undefined) && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-stack-md pb-stack-lg border-b border-outline-variant/30">
+                  <div className="space-y-1">
+                    <p className="font-label-md text-on-surface-variant">Thanh toán</p>
+                    <p className="font-body-md">{order.paymentMethod === 1 ? 'COD (tiền mặt)' : 'Chuyển khoản / Online'}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="font-label-md text-on-surface-variant">Trạng thái thanh toán</p>
+                    <p className="font-body-md">{order.paymentStatus === 1 ? 'Đã thanh toán' : order.paymentStatus === 2 ? 'Thất bại' : order.paymentStatus === 3 ? 'Đã hoàn tiền' : 'Chưa thanh toán'}</p>
+                  </div>
+                </div>
+              )}
 
               <div>
                 <h3 className="font-label-md text-on-surface-variant mb-stack-md flex items-center gap-2">
@@ -169,7 +199,19 @@ const OrderDetailPage: React.FC = () => {
                 </div>
               )}
 
-              {order.status === 'Pending' && (
+              {order.status === 'Cancelled' && order.cancelledAt && (
+                <div className="pt-stack-lg border-t border-outline-variant/30 bg-error-container/10 rounded-lg p-stack-md">
+                  <h3 className="font-label-md text-error mb-stack-sm flex items-center gap-2">
+                    <span className="material-symbols-outlined text-lg">cancel</span>
+                    Thông tin hủy đơn
+                  </h3>
+                  <p className="font-body-md text-sm">Đã hủy lúc: {new Date(order.cancelledAt).toLocaleString('vi-VN')}</p>
+                  {order.cancellationReason && <p className="font-body-md text-sm">Lý do: {order.cancellationReason}</p>}
+                  {order.refundAmount > 0 && <p className="font-body-md text-sm">Tiền hoàn: {formatCurrency(order.refundAmount)}</p>}
+                </div>
+              )}
+
+              {order.canCancel && (
                 <div className="pt-stack-lg border-t border-outline-variant/30 flex justify-end">
                   <button
                     onClick={() => setShowCancel(true)}

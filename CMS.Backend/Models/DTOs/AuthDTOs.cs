@@ -39,4 +39,14 @@ namespace CMS.Backend.Models.DTOs
 
         public string? Address { get; set; }
     }
+
+    public class ChangePasswordRequest
+    {
+        [Required(ErrorMessage = "Mật khẩu hiện tại không được để trống")]
+        public string CurrentPassword { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Mật khẩu mới không được để trống")]
+        [MinLength(6, ErrorMessage = "Mật khẩu mới phải dài tối thiểu 6 ký tự")]
+        public string NewPassword { get; set; } = string.Empty;
+    }
 }

@@ -76,6 +76,10 @@
                     <p class="text-label-sm text-secondary uppercase tracking-widest">Email</p>
                     <p class="text-body-md">@(Model.CustomerEmail ?? "N/A")</p>
                 </div>
+                <div class="space-y-xs">
+                    <p class="text-label-sm text-secondary uppercase tracking-widest">SĐT</p>
+                    <p class="text-body-md">@(Model.CustomerPhone ?? "N/A")</p>
+                </div>
                 <div class="space-y-xs pt-4 border-t border-outline-variant">
                     <p class="text-label-sm text-secondary uppercase tracking-widest">Trạng thái</p>
                     @switch (Model.Status)
@@ -100,6 +104,87 @@
                     </div>
                 }
             </div>
+
+            <div class="bg-surface-container-lowest border border-outline-variant p-lg space-y-md">
+                <h4 class="text-headline-sm uppercase tracking-widest mb-md border-b border-outline-variant pb-md">Giao hàng</h4>
+                <div class="space-y-xs">
+                    <p class="text-label-sm text-secondary uppercase tracking-widest">Ngày nhận</p>
+                    <p class="text-body-md">@(Model.DeliveryDate?.ToString("dd/MM/yyyy") ?? "Chưa cập nhật")</p>
+                </div>
+                <div class="space-y-xs">
+                    <p class="text-label-sm text-secondary uppercase tracking-widest">Khung giờ</p>
+                    <p class="text-body-md">@(Model.DeliveryTimeSlot ?? "Chưa cập nhật")</p>
+                </div>
+                <div class="space-y-xs">
+                    <p class="text-label-sm text-secondary uppercase tracking-widest">Quận/Huyện</p>
+                    <p class="text-body-md">@(Model.DeliveryDistrict ?? "Chưa cập nhật")</p>
+                </div>
+                <div class="space-y-xs">
+                    <p class="text-label-sm text-secondary uppercase tracking-widest">Địa chỉ</p>
+                    <p class="text-body-md">@(Model.DeliveryAddress ?? "Chưa cập nhật")</p>
+                </div>
+            </div>
+
+            <div class="bg-surface-container-lowest border border-outline-variant p-lg space-y-md">
+                <h4 class="text-headline-sm uppercase tracking-widest mb-md border-b border-outline-variant pb-md">Thanh toán</h4>
+                <div class="space-y-xs">
+                    <p class="text-label-sm text-secondary uppercase tracking-widest">Phương thức</p>
+                    <p class="text-body-md">@(Model.PaymentMethod == PaymentMethod.COD ? "COD (tiền mặt)" : "Chuyển khoản / Online")</p>
+                </div>
+                <div class="space-y-xs">
+                    <p class="text-label-sm text-secondary uppercase tracking-widest">Trạng thái</p>
+                    @switch (Model.PaymentStatus)
+                    {
+                        case PaymentStatus.Pending: <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 border border-warning bg-warning/10 text-warning">Chờ thanh toán</span> break;
+                        case PaymentStatus.Completed: <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 bg-primary text-on-primary">Đã thanh toán</span> break;
+                        case PaymentStatus.Failed: <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 bg-error text-on-error">Thất bại</span> break;
+                        case PaymentStatus.Refunded: <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 bg-surface-container-low text-secondary">Đã hoàn tiền</span> break;
+                        case PaymentStatus.PartialRefund: <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 bg-surface-container-low text-secondary">Hoàn tiền một phần</span> break;
+                    }
+                </div>
+                @if (!string.IsNullOrEmpty(Model.PaymentTransactionId))
+                {
+                    <div class="space-y-xs">
+                        <p class="text-label-sm text-secondary uppercase tracking-widest">Mã giao dịch</p>
+                        <p class="text-body-md">@Model.PaymentTransactionId</p>
+                    </div>
+                }
+                @if (Model.PaymentPaidAt.HasValue)
+                {
+                    <div class="space-y-xs">
+                        <p class="text-label-sm text-secondary uppercase tracking-widest">Thanh toán lúc</p>
+                        <p class="text-body-md">@Model.PaymentPaidAt.Value.ToString("dd/MM/yyyy HH:mm")</p>
+                    </div>
+                }
+                @if (Model.RefundAmount > 0)
+                {
+                    <div class="space-y-xs">
+                        <p class="text-label-sm text-secondary uppercase tracking-widest">Tiền hoàn</p>
+                        <p class="text-body-md">@Model.RefundAmount.ToString("C2")</p>
+                    </div>
+                }
+            </div>
+
+            @if (Model.Status == OrderStatus.Cancelled)
+            {
+                <div class="bg-surface-container-lowest border border-error/30 p-lg space-y-md">
+                    <h4 class="text-headline-sm uppercase tracking-widest mb-md border-b border-error/30 pb-md text-error">Thông tin hủy</h4>
+                    @if (Model.CancelledAt.HasValue)
+                    {
+                        <div class="space-y-xs">
+                            <p class="text-label-sm text-secondary uppercase tracking-widest">Hủy lúc</p>
+                            <p class="text-body-md">@Model.CancelledAt.Value.ToString("dd/MM/yyyy HH:mm")</p>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.CancellationReason))
+                    {
+                        <div class="space-y-xs">
+                            <p class="text-label-sm text-secondary uppercase tracking-widest">Lý do</p>
+                            <p class="text-body-md">@Model.CancellationReason</p>
+                        </div>
+                    }
+                </div>
+            }
 
             <div class="bg-surface-container-lowest border border-outline-variant p-lg space-y-md">
                 <h4 class="text-headline-sm uppercase tracking-widest mb-md border-b border-outline-variant pb-md">Ghi chú</h4>

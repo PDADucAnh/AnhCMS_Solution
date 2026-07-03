@@ -36,10 +36,10 @@ export const useCancelOrder = () => {
     mutationFn: (id: number) => orderService.cancelOrder(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });
-      toast.success('Order has been cancelled.');
+      toast.success('Hủy đơn thành công.');
     },
     onError: () => {
-      toast.error('Could not cancel order. Only pending orders can be cancelled.');
+      toast.error('Không thể hủy đơn. Chỉ có thể hủy đơn ở trạng thái chờ xử lý.');
     },
   });
 };

@@ -4,6 +4,9 @@ import { useScrollReveal } from '../hooks/useScrollReveal';
 
 export const statusConfig: Record<string, { label: string; dot: string; bg: string; border: string }> = {
   Pending: { label: 'Chờ xử lý', dot: 'bg-tertiary', bg: 'bg-surface-variant text-on-surface-variant', border: 'border-outline-variant/30' },
+  PendingVerification: { label: 'Chờ xác minh', dot: 'bg-warning', bg: 'bg-warning/10 text-warning', border: 'border-warning/30' },
+  Confirmed: { label: 'Đã xác nhận', dot: 'bg-info', bg: 'bg-info/10 text-info', border: 'border-info/30' },
+  Preparing: { label: 'Đang cắm hoa', dot: 'bg-secondary', bg: 'bg-secondary/10 text-secondary', border: 'border-secondary/30' },
   Shipping: { label: 'Đang giao', dot: 'bg-[#1E88E5]', bg: 'bg-[#E3F2FD] text-[#1565C0]', border: 'border-[#90CAF9]/50' },
   Completed: { label: 'Hoàn thành', dot: 'bg-[#43A047]', bg: 'bg-[#E8F5E9] text-[#2E7D32]', border: 'border-[#A5D6A7]/50' },
   Cancelled: { label: 'Đã hủy', dot: 'bg-[#E53935]', bg: 'bg-[#FFEBEE] text-[#C62828]', border: 'border-[#EF9A9A]/50' },

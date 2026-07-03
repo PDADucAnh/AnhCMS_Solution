@@ -11,7 +11,6 @@ using System.Text;
 
 namespace CMS.Backend.Controllers.Api
 {
-    [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
@@ -38,6 +37,7 @@ namespace CMS.Backend.Controllers.Api
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest login)
         {
@@ -177,6 +177,7 @@ namespace CMS.Backend.Controllers.Api
             });
         }
 
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest register)
         {
@@ -190,6 +191,25 @@ namespace CMS.Backend.Controllers.Api
             return Ok(new { message });
         }
 
+        [AllowAnonymous]
+        [Authorize]
+        [HttpPut("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+        {
+            var username = User.Identity?.Name;
+            if (string.IsNullOrEmpty(username))
+                return Unauthorized(new { message = "Invalid token" });
+
+            var authType = User.FindFirst("AuthType")?.Value ?? "User";
+
+            var (success, message) = await _authService.ChangePassword(username, authType, request.CurrentPassword, request.NewPassword);
+            if (!success)
+                return BadRequest(new { message });
+
+            return Ok(new { message });
+        }
+
+        [AllowAnonymous]
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
         {
@@ -199,6 +219,7 @@ namespace CMS.Backend.Controllers.Api
             return Ok(new { message });
         }
 
+        [AllowAnonymous]
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
         {
