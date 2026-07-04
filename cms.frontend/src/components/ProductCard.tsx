@@ -50,6 +50,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, variant = 'standard' })
                             alt={item.name}
                         />
                     </Link>
+                    {item.trendingBadge && (
+                        <div className="absolute top-2 right-2 bg-amber-500/90 text-white px-2 py-1 rounded text-[10px] font-label-sm uppercase tracking-widest shadow-sm">
+                            {item.trendingBadge}
+                        </div>
+                    )}
                     {item.stockQuantity <= 5 && (
                         <div className="absolute top-2 left-2 bg-primary/90 text-on-primary px-2 py-1 rounded text-[10px] font-label-sm uppercase tracking-widest">
                             Chỉ còn {item.stockQuantity} sản phẩm
@@ -100,6 +105,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ item, variant = 'standard' })
                         alt={item.name}
                     />
                 </Link>
+                {item.trendingBadge && (
+                    <div className="absolute top-2 right-2 bg-amber-500/90 text-white px-2 py-1 rounded text-[10px] font-label-sm uppercase tracking-widest shadow-sm">
+                        {item.trendingBadge}
+                    </div>
+                )}
                 {item.stockQuantity <= 5 && (
                     <div className="absolute top-2 left-2 bg-primary/90 text-on-primary px-2 py-1 rounded text-[10px] font-label-sm uppercase tracking-widest">
                         Chỉ còn {item.stockQuantity} sản phẩm

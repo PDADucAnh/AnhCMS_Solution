@@ -10,10 +10,15 @@ namespace CMS.Backend.Models.DTOs
         public string? Description { get; set; }
         public string? Slug { get; set; }
         public decimal Price { get; set; }
+        public decimal? DiscountPrice { get; set; }
         public int StockQuantity { get; set; }
         public string? ImageUrl { get; set; }
         public int CategoryProductId { get; set; }
         public string? CategoryProductName { get; set; }
+        public int ViewCount { get; set; }
+        public int AddToCartCount { get; set; }
+        public double TrendingScore { get; set; }
+        public string? TrendingBadge { get; set; }
     }
 
     public class CreateProductDTO

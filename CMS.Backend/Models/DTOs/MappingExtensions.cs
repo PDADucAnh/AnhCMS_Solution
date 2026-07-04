@@ -107,10 +107,13 @@ namespace CMS.Backend.Models.DTOs
                 Description = product.Description,
                 Slug = product.Slug,
                 Price = product.Price,
+                DiscountPrice = product.DiscountPrice,
                 StockQuantity = product.StockQuantity,
                 ImageUrl = product.ImageUrl,
                 CategoryProductId = product.CategoryProductId,
-                CategoryProductName = product.CategoryProduct?.Name
+                CategoryProductName = product.CategoryProduct?.Name,
+                ViewCount = product.ViewCount,
+                AddToCartCount = product.AddToCartCount
             };
         }
 

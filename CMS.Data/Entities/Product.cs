@@ -24,6 +24,8 @@ namespace CMS.Data.Entities
         [Column(TypeName = "decimal(18,0)")]
         public decimal Price { get; set; }
 
+        public decimal? DiscountPrice { get; set; }
+
         public int StockQuantity { get; set; }
 
         public string? ImageUrl { get; set; }
@@ -32,5 +34,9 @@ namespace CMS.Data.Entities
 
         [ForeignKey("CategoryProductId")]
         public virtual CategoryProduct? CategoryProduct { get; set; }
+
+        public int ViewCount { get; set; }
+
+        public int AddToCartCount { get; set; }
     }
 }

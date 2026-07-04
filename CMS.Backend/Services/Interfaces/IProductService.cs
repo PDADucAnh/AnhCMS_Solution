@@ -14,5 +14,8 @@ namespace CMS.Backend.Services.Interfaces
         Task<bool> Update(int id, UpdateProductDTO dto);
         Task<bool> Delete(int id);
         Task<IEnumerable<ProductDTO>> Search(string query);
+        Task<IEnumerable<ProductDTO>> GetTrending(int count = 10);
+        Task TrackView(int productId);
+        Task TrackAddToCart(int productId);
     }
 }

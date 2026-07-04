@@ -11,6 +11,10 @@ export interface Product {
   categoryProductName?: string;
   createdDate?: string;
   categoryProductId?: number;
+  viewCount?: number;
+  addToCartCount?: number;
+  trendingScore?: number;
+  trendingBadge?: string;
 }
 
 export interface ProductInput {

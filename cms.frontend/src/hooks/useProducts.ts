@@ -48,11 +48,10 @@ export const useLatestProducts = (limit: number) => {
 };
 
 export const useBestSellingProducts = (limit: number) => {
-  const query = useProducts();
-  return {
-    ...query,
-    data: query.data?.slice(0, limit) ?? [],
-  };
+  return useQuery({
+    queryKey: ['products', 'trending', limit],
+    queryFn: () => productService.getTrendingProducts(limit),
+  });
 };
 
 export const useSearchProducts = (query: string) => {

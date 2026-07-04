@@ -58,6 +58,14 @@ namespace CMS.Backend.Controllers.Api
         }
 
         [AllowAnonymous]
+        [HttpGet("trending")]
+        public async Task<IActionResult> GetTrending([FromQuery] int count = 10)
+        {
+            var products = await _productService.GetTrending(count);
+            return Ok(products);
+        }
+
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDetail(int id)
         {
@@ -67,6 +75,8 @@ namespace CMS.Backend.Controllers.Api
             {
                 return NotFound(new { message = "Không tìm thấy sản phẩm này trong hệ thống" });
             }
+
+            await _productService.TrackView(id);
 
             return Ok(product);
         }
@@ -98,6 +108,14 @@ namespace CMS.Backend.Controllers.Api
 
             await _notificationService.NotifyEntityChanged("Product");
             return NoContent();
+        }
+
+        [AllowAnonymous]
+        [HttpPost("{id}/track-add-to-cart")]
+        public async Task<IActionResult> TrackAddToCart(int id)
+        {
+            await _productService.TrackAddToCart(id);
+            return Ok(new { success = true });
         }
 
         [HttpDelete("{id}")]

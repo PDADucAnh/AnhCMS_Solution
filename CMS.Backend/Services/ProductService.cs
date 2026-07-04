@@ -164,5 +164,75 @@ namespace CMS.Backend.Services
 
             return products.Select(p => p.ToDTO());
         }
+
+        public async Task TrackView(int productId)
+        {
+            var product = await _context.Products.FindAsync(productId);
+            if (product != null)
+            {
+                product.ViewCount++;
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task TrackAddToCart(int productId)
+        {
+            var product = await _context.Products.FindAsync(productId);
+            if (product != null)
+            {
+                product.AddToCartCount++;
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task<IEnumerable<ProductDTO>> GetTrending(int count = 10)
+        {
+            var sevenDaysAgo = DateTime.Now.AddDays(-7);
+            var thirtyDaysAgo = DateTime.Now.AddDays(-30);
+
+            var sales7d = await _context.OrderDetails
+                .Where(od => od.Order != null && od.Order.OrderDate >= sevenDaysAgo)
+                .GroupBy(od => od.ProductId)
+                .Select(g => new { ProductId = g.Key, TotalQty = g.Sum(od => od.Quantity) })
+                .ToListAsync();
+
+            var sales30d = await _context.OrderDetails
+                .Where(od => od.Order != null && od.Order.OrderDate >= thirtyDaysAgo && od.Order.OrderDate < sevenDaysAgo)
+                .GroupBy(od => od.ProductId)
+                .Select(g => new { ProductId = g.Key, TotalQty = g.Sum(od => od.Quantity) })
+                .ToListAsync();
+
+            var sales7dLookup = sales7d.ToDictionary(x => x.ProductId, x => x.TotalQty);
+            var sales30dLookup = sales30d.ToDictionary(x => x.ProductId, x => x.TotalQty);
+
+            const double W1 = 3.0;
+            const double W2 = 1.0;
+            const double W3 = 0.5;
+
+            var products = await BuildQuery()
+                .Where(p => p.StockQuantity > 0)
+                .ToListAsync();
+
+            var scored = products.Select(p =>
+            {
+                var s7d = sales7dLookup.GetValueOrDefault(p.Id, 0);
+                var s30d = sales30dLookup.GetValueOrDefault(p.Id, 0);
+                var score = (W1 * s7d) + (W2 * s30d) + (W3 * p.ViewCount);
+                var dto = p.ToDTO();
+                dto.TrendingScore = score;
+                if (s7d >= 3)
+                    dto.TrendingBadge = "Bán chạy";
+                else if (score >= 10)
+                    dto.TrendingBadge = "Hot";
+                else if (score >= 5)
+                    dto.TrendingBadge = "Trending";
+                return dto;
+            })
+            .OrderByDescending(p => p.TrendingScore)
+            .Take(count)
+            .ToList();
+
+            return scored;
+        }
     }
 }

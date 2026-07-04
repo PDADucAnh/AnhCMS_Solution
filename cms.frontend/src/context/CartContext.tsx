@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect, useCallback, useMemo, type ReactNode } from 'react';
 import type { Product } from '../types/product';
 import toast from 'react-hot-toast';
+import productService from '../services/productService';
 
 export interface CartItem extends Product {
   quantity: number;
@@ -39,6 +40,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, [cartItems]);
 
   const addToCart = useCallback((product: Product, quantity = 1) => {
+    productService.trackAddToCart(product.id);
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((item) => item.id === product.id);
       const currentQty = existingItem ? existingItem.quantity : 0;

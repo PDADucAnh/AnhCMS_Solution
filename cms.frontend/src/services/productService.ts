@@ -62,6 +62,24 @@ const productService = {
             console.error('API searchProducts error:', error);
             throw error;
         }
+    },
+
+    getTrendingProducts: async (count: number = 10) => {
+        try {
+            const response = await axiosClient.get(`/Products/trending?count=${count}`);
+            return response.data || response;
+        } catch (error) {
+            console.error('API getTrendingProducts error:', error);
+            throw error;
+        }
+    },
+
+    trackAddToCart: async (productId: number) => {
+        try {
+            await axiosClient.post(`/Products/${productId}/track-add-to-cart`);
+        } catch (error) {
+            console.error('API trackAddToCart error:', error);
+        }
     }
 };
 
