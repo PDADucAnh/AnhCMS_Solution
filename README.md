@@ -1,17 +1,32 @@
 # 🚀 TÀI LIỆU DỰ ÁN: AnhCMS_Solution
 ### 🌐 Full-Stack ASP.NET Core & ReactJS
 
-> **💡 Tổng quan:** Dự án AnhCMS_Solution là một hệ thống Website Full-Stack kết hợp giữa nền tảng Thương mại điện tử (bán hàng thời trang công sở & dạ hội) và Hệ thống quản trị nội dung tin tức/blog.
+> **💡 Tổng quan:** Dự án AnhCMS_Solution là một hệ thống Website Full-Stack kết hợp giữa nền tảng Thương mại điện tử (cửa hàng hoa tươi **PDA FLOWER**) và Hệ thống quản trị nội dung tin tức/blog, xây dựng trên ASP.NET Core 8.0 + React 19.
+
+---
+
+## 📚 Tài liệu Chi tiết
+
+| Tài liệu | Mô tả |
+|----------|-------|
+| [📖 Hướng dẫn Cài đặt](./docs/setup-guide.md) | Yêu cầu hệ thống, cài đặt môi trường, cấu hình Backend & Frontend, tạo Database, chạy dự án, xử lý sự cố |
+| [🏗️ Kiến trúc & Workflow Chi tiết](./docs/architecture-overview.md) | Sơ đồ kiến trúc, ER Diagram, workflow từng chức năng (mua hàng, đơn hàng, hủy đơn, giỏ hàng, auth, v.v.), danh sách API |
+| [📧 Cấu hình Gmail SMTP](./docs/gmail-setup-guide.md) | Hướng dẫn tạo App Password Google và cấu hình gửi email tự động |
+| [❌ Hủy đơn hàng](./docs/workflow/order-cancellation-workflow.md) | Workflow chi tiết chức năng hủy đơn hàng |
+| [🔍 Tìm kiếm & Lọc](./docs/workflow/Search.md) | Chi tiết chức năng tìm kiếm và lọc sản phẩm |
+| [💲 Lọc theo giá](./docs/workflow/Price-Range-Filter.md) | Chi tiết chức năng lọc sản phẩm theo khoảng giá |
 
 ---
 
 ## 📑 Mục lục
-1. [Định hướng và Mục tiêu dự án](#-1-định-hướng-và-mục-tiêu-dự-án)
-2. [Môi trường & Công nghệ (Tech Stack)](#️-2-môi-trường--công-nghệ-tech-stack)
-3. [Kiến trúc Solution 3 lớp](#️-3-kiến-trúc-solution-3-lớp)
-4. [Cấu trúc Cơ sở dữ liệu (Database Schema)](#-4-cấu-trúc-cơ-sở-dữ-liệu-database-schema)
-5. [Lộ trình phát triển dự án](#-5-lộ-trình-phát-triển-dự-án-theo-từng-buổi)
-6. [Những lưu ý kỹ thuật cốt lõi](#️-6-những-lưu-ý-kỹ-thuật-cốt-lõi)
+1. [Tài liệu Chi tiết](#-tài-liệu-chi-tiết)
+2. [Định hướng và Mục tiêu dự án](#-1-định-hướng-và-mục-tiêu-dự-án)
+3. [Môi trường & Công nghệ (Tech Stack)](#️-2-môi-trường--công-nghệ-tech-stack)
+4. [Kiến trúc Solution](#️-3-kiến-trúc-solution)
+5. [Cấu trúc Cơ sở dữ liệu (Database Schema)](#-4-cấu-trúc-cơ-sở-dữ-liệu-database-schema)
+6. [Tính năng chính](#-5-tính-năng-chính)
+7. [Lộ trình phát triển dự án](#-6-lộ-trình-phát-triển-dự-án-theo-từng-buổi)
+8. [Những lưu ý kỹ thuật cốt lõi](#️-7-những-lưu-ý-kỹ-thuật-cốt-lõi)
 
 ---
 
@@ -28,41 +43,96 @@ Hệ thống được thiết kế theo **kiến trúc Lai (Hybrid)** và **phâ
 
 | Phân hệ | Công nghệ & Công cụ sử dụng |
 | :--- | :--- |
-| **Backend** | .NET 6.0 / .NET 8.0 SDK, ASP.NET Core MVC, ASP.NET Core Web API |
-| **Frontend** | ReactJS, Axios, Bootstrap 4.6/5, FontAwesome |
+| **Backend** | .NET 8.0 SDK, ASP.NET Core MVC, ASP.NET Core Web API, SignalR |
+| **Frontend** | React 19, TypeScript 6, Tailwind CSS 3.4, TanStack React Query 5, Axios |
 | **Database** | SQL Server (Express/LocalDB), Entity Framework Core (Code-First Migration) |
-| **Công cụ** | Visual Studio 2022 *(cài đặt workload ASP.NET and web development & .NET desktop)*, SSMS, Node.js (LTS), Postman, Swagger UI |
+| **Auth** | JWT Bearer (API) + Cookie Authentication (Admin MVC), Dual Policy Scheme |
+| **Real-time** | SignalR WebSocket (`/hubs/notifications`) |
+| **Testing** | xUnit + InMemory Database |
+| **Công cụ** | Visual Studio 2022, SSMS, Node.js LTS, Postman, Swagger UI |
 
 ---
 
-## 🏗 3. KIẾN TRÚC SOLUTION 3 LỚP
+## 🏗 3. KIẾN TRÚC SOLUTION
 
-Dự án được chia thành 3 Project độc lập để dễ dàng quản lý mã nguồn:
+Dự án được chia thành **4 Project** độc lập:
 
-1. 📦 **CMS.Data (Lớp Dữ liệu):** Class Library chứa lớp `ApplicationDbContext` và định nghĩa toàn bộ 8 thực thể (Entities) của Database.
-2. ⚙️ **CMS.Backend (Lớp Xử lý):** Đóng vai trò là "trạm điều khiển" cung cấp giao diện quản trị Admin (Controller, View) và mở các cổng Web API RESTful. Lớp này được cấu hình Reference tới `CMS.Data`.
-3. 🎨 **cms.frontend (Lớp Giao diện):** Ứng dụng ReactJS giao tiếp với Backend qua cổng API.
+1. 📦 **CMS.Data (Lớp Dữ liệu):** Class Library chứa `ApplicationDbContext` và định nghĩa toàn bộ **13 thực thể (Entities)** của Database.
+2. ⚙️ **CMS.Backend (Lớp Xử lý):** "Trạm điều khiển" cung cấp giao diện quản trị Admin (17 MVC Controllers) và RESTful Web API (12 API Controllers), kèm SignalR Hub, Middleware, Background Services.
+3. 🎨 **cms.frontend (Lớp Giao diện):** React SPA với 17 trang, TanStack Query, Context API (Auth, Cart, Wishlist), SignalR client.
+4. ✅ **CMS.Tests (Lớp Kiểm thử):** xUnit unit tests với InMemory Database.
 
 ---
 
 ## 🗄 4. CẤU TRÚC CƠ SỞ DỮ LIỆU (DATABASE SCHEMA)
 
-Hệ thống gồm 8 bảng có mối quan hệ chặt chẽ với nhau:
+Hệ thống gồm **13 bảng** với các mối quan hệ phức tạp:
 
-| Tên Bảng | Mô tả & Trường dữ liệu cốt lõi |
+| Tên Bảng | Mô tả |
 | :--- | :--- |
-| **Categories** | Danh mục tin tức blog. Khóa chính `Id`, `Name`, `Description`. |
-| **Posts** | Bài viết. `Title`, `Content`, `ImageUrl`, khóa ngoại `CategoryId`. |
-| **Users** | Quản trị viên hệ thống. `Username`, `PasswordHash`, `FullName`, `Role`. |
-| **CategoriesProducts**| Danh mục sản phẩm thời trang. `Id`, `Name`, `Description`. |
-| **Products** | Sản phẩm. `Name`, `Price`, `StockQuantity`, `ImageUrl`, khóa ngoại `CategoryProductId`. |
-| **Customers** | Khách hàng mua sắm trực tuyến. `FullName`, `Email`, `Address`, `Password`. |
-| **Orders** | Đơn hàng. `OrderDate`, `Status` (0: Chờ duyệt, 1: Đang giao, 2: Đã xong), `Notes`, khóa ngoại `CustomerId`. |
-| **OrderDetails** | Chi tiết đơn hàng. Số lượng `Quantity`, giá mua `UnitPrice`, khóa ngoại `OrderId` và `ProductId`. |
+| **Users** | Quản trị viên (Admin/Editor), phân quyền theo Role |
+| **Categories** | Danh mục tin tức blog (phân cấp ParentId) |
+| **Posts** | Bài viết blog với nội dung HTML (CKEditor 5) |
+| **CategoriesProducts** | Danh mục sản phẩm hoa |
+| **Products** | Sản phẩm hoa (SKU unique, có index trên Price) |
+| **Customers** | Khách hàng (Email unique, hỗ trợ reset password token) |
+| **Orders** | Đơn hàng với 7 trạng thái, thông tin giao hàng, thanh toán |
+| **OrderDetails** | Chi tiết đơn hàng (sản phẩm + số lượng + giá) |
+| **DeliverySlots** | Khung giờ giao hàng theo sản phẩm (capacity, day-of-week) |
+| **Advertisements** | Banner quảng cáo (vị trí, thời gian hiệu lực) |
+| **Payments** | Giao dịch thanh toán (webhook, 4 trạng thái) |
+| **RefreshTokens** | JWT Refresh Token quản lý phiên đăng nhập |
+| **PhoneBlacklists** | SĐT nằm trong danh sách đen (chống gian lận) |
+
+> 📖 **Xem chi tiết:** [Sơ đồ ER Diagram và mô tả đầy đủ](./docs/architecture-overview.md#3-database-schema)
 
 ---
 
-## 🗓 5. LỘ TRÌNH PHÁT TRIỂN DỰ ÁN (THEO TỪNG BUỔI)
+## 🚀 5. TÍNH NĂNG CHÍNH
+
+### 👤 Người dùng (Frontend React SPA)
+
+| Tính năng | Mô tả |
+|-----------|-------|
+| **Trang chủ** | Hero banner quảng cáo (Slider), sản phẩm bán chạy (top 3), danh sách sản phẩm phân trang, bài viết mới nhất |
+| **Cửa hàng** | Lọc theo danh mục, khoảng giá (preset + custom), sắp xếp, phân trang 9 sản phẩm/trang |
+| **Tìm kiếm** | Tìm kiếm toàn văn theo tên/SKU sản phẩm |
+| **Chi tiết sản phẩm** | Hình ảnh + lightbox, chọn kích thước (Classic/Deluxe/Grand), số lượng, thêm giỏ hàng/mua ngay |
+| **Giỏ hàng** | LocalStorage persistence, kiểm tra tồn kho, cập nhật số lượng, xóa |
+| **Thanh toán** | Form đa bước (người mua, người nhận, thời gian giao, phương thức thanh toán) |
+| **Đơn hàng** | Lịch sử, chi tiết, hủy đơn (nếu hợp lệ) |
+| **Yêu thích** | Wishlist lưu trong localStorage |
+| **Xác thực** | Đăng nhập/đăng ký, quên mật khẩu, đặt lại mật khẩu qua email |
+| **Blog** | Danh sách bài viết phân trang, sidebar danh mục, chi tiết bài viết với rich content |
+| **Liên hệ** | Form gửi tin nhắn + thông tin cửa hàng |
+
+### 🔧 Quản trị (Admin Panel MVC)
+
+| Tính năng | Mô tả |
+|-----------|-------|
+| **Dashboard** | Thống kê tổng quan (đơn hàng, doanh thu, sản phẩm, khách hàng) |
+| **Quản lý Sản phẩm** | Thêm/sửa/xóa, upload hình ảnh |
+| **Quản lý Đơn hàng** | Duyệt đơn, xác nhận, cập nhật trạng thái, hủy đơn |
+| **Quản lý Bài viết** | Soạn thảo nội dung với CKEditor 5 |
+| **Quản lý Danh mục** | Danh mục blog & danh mục sản phẩm |
+| **Quản lý Người dùng** | Quản trị viên (Admin/Editor), khách hàng |
+| **Quản lý Quảng cáo** | Banner slider, vị trí hiển thị, thời gian hiệu lực |
+| **Phân quyền** | Admin (full) / Staff (Editor - giới hạn) |
+
+### 🧠 Tính năng Nâng cao
+
+| Tính năng | Mô tả |
+|-----------|-------|
+| **SignalR Real-time** | Thông báo CRUD đến tất cả client đang kết nối |
+| **Fraud Detection** | Kiểm tra SĐT blacklist, buộc OnlinePayment nếu nghi ngờ |
+| **Stock Locking** | Giữ chỗ tạm thời khi checkout (15 phút TTL) |
+| **Auto-expiry** | Tự động hủy đơn chưa xác minh sau 30 phút |
+| **Email Notifications** | Gửi email SMTP qua Gmail khi đơn hàng thay đổi trạng thái |
+| **Kích thước sản phẩm** | Classic (giá gốc), Deluxe (+300k), Grand (+600k) |
+| **Delivery Slots** | Khung giờ giao hàng linh hoạt, kiểm tra lead-time 2 tiếng |
+
+
+## 🗓 6. LỘ TRÌNH PHÁT TRIỂN DỰ ÁN (THEO TỪNG BUỔI)
 
 ### 🟢 Giai đoạn 1: Nền tảng Backend & Cơ sở dữ liệu
 * **Buổi 1: Khởi tạo kiến trúc dự án**
@@ -112,7 +182,7 @@ Hệ thống gồm 8 bảng có mối quan hệ chặt chẽ với nhau:
 
 ---
 
-## ⚠️ 6. NHỮNG LƯU Ý KỸ THUẬT CỐT LÕI
+## ⚠️ 7. NHỮNG LƯU Ý KỸ THUẬT CỐT LÕI
 
 > ⚠️ **Cảnh báo:** Việc bỏ qua các lưu ý dưới đây có thể dẫn đến các lỗi nghiêm trọng về bảo mật, hiệu năng hoặc sập hệ thống.
 

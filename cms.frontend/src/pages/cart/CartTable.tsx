@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { getImageUrl } from '../../utils/apiUtils';
 import { formatCurrency } from '../../utils/currency';
 import type { CartItem } from '../../context/CartContext';
@@ -10,6 +10,38 @@ interface CartTableProps {
 }
 
 const CartTable = ({ items, onUpdateQuantity, onRemove }: CartTableProps) => {
+  const [inputValues, setInputValues] = useState<Record<number, string>>({});
+
+  const handleInputChange = (id: number, value: string) => {
+    setInputValues((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleInputBlur = (id: number, stockQuantity: number) => {
+    const raw = inputValues[id];
+    const parsed = parseInt(raw, 10);
+    if (isNaN(parsed) || parsed < 1) {
+      onUpdateQuantity(id, 1);
+      setInputValues((prev) => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+      return;
+    }
+    const clamped = Math.min(parsed, stockQuantity);
+    onUpdateQuantity(id, clamped);
+    setInputValues((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+  };
+
+  const handleInputKeyDown = (e: React.KeyboardEvent, id: number, stockQuantity: number) => {
+    if (e.key === 'Enter') {
+      (e.target as HTMLInputElement).blur();
+    }
+  };
   return (
     <div className="bg-surface rounded-xl overflow-hidden">
       {/* Table Header */}
@@ -62,7 +94,16 @@ const CartTable = ({ items, onUpdateQuantity, onRemove }: CartTableProps) => {
                 >
                   -
                 </button>
-                <span className="px-4 font-label-md">{item.quantity}</span>
+                <input
+                  type="number"
+                  min={1}
+                  max={item.stockQuantity}
+                  value={inputValues[item.id] ?? item.quantity}
+                  onChange={(e) => handleInputChange(item.id, e.target.value)}
+                  onBlur={() => handleInputBlur(item.id, item.stockQuantity)}
+                  onKeyDown={(e) => handleInputKeyDown(e, item.id, item.stockQuantity)}
+                  className="w-14 text-center font-label-md border-0 bg-transparent outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
                 <button
                   onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
                   className="px-3 hover:bg-secondary-container transition-colors text-primary bg-transparent border-0 cursor-pointer h-full"
